@@ -6,50 +6,42 @@ class TrieNode:
     def __init__(self):
         self.children = {}
         self.is_end_of_word = False
+        self.coords = {'x': 0, 'y': 0}
 
 
 class Trie:
     def __init__(self):
         self.root = TrieNode()
 
-    def insert(self, word):
+    def insert(self, word, coords):
         node = self.root
         for char in word:
             if char not in node.children:
                 node.children[char] = TrieNode()
             node = node.children[char]
         node.is_end_of_word = True
-
-    def search(self, query):
-        node = self.root
-        found = []
-        for char in query:
-            if char not in node.children:
-                return False, found
-            node = node.children[char]
-        return True, found
+        node.coords = coords
 
     def search_all(self, text):
         node = self.root
         found = []
         current_match = []
-
+        coords = []
         for char in text:
             if char in node.children:
                 current_match.append(char)
                 node = node.children[char]
+                coords.append(node.coords)
                 if node.is_end_of_word:
                     found.append("".join(current_match))
             else:
                 if current_match:
                     found.extend(char)
+                    coords.append(node.coords)
                     current_match = []
                 node = self.root  # Reset to the root
 
-        if current_match:
-            found.extend(current_match)
-
-        return found
+        return found, coords
 
 
 class MemoryMap:
@@ -98,7 +90,7 @@ class MemoryMap:
                 if self.memory_map[cell_y][cell_x] != "":
                     cell_x += 1
                 self.memory_map[cell_y][cell_x] = char_c
-                self.text_trie.insert(char_c)
+                self.text_trie.insert(char_c, {'x': cell_x, 'y': cell_y})
 
     def extract_text_from_bbox(self, x0, x1, y0, y1):
         if not hasattr(self, "memory_map"):
@@ -122,5 +114,5 @@ class MemoryMap:
         return extracted_text
 
     def find_text(self, query):
-        found_text = self.text_trie.search_all(query)
-        return "".join(found_text)
+        found_text, coords = self.text_trie.search_all(query)
+        return "".join(found_text), coords
