@@ -1,47 +1,6 @@
 import math
 import xml.etree.ElementTree as ET
-
-
-class TrieNode:
-    def __init__(self):
-        self.children = {}
-        self.is_end_of_word = False
-        self.coords = {'x': 0, 'y': 0}
-
-
-class Trie:
-    def __init__(self):
-        self.root = TrieNode()
-
-    def insert(self, word, coords):
-        node = self.root
-        for char in word:
-            if char not in node.children:
-                node.children[char] = TrieNode()
-            node = node.children[char]
-        node.is_end_of_word = True
-        node.coords = coords
-
-    def search_all(self, text):
-        node = self.root
-        found = []
-        current_match = []
-        coords = []
-        for char in text:
-            if char in node.children:
-                current_match.append(char)
-                node = node.children[char]
-                coords.append(node.coords)
-                if node.is_end_of_word:
-                    found.append("".join(current_match))
-            else:
-                if current_match:
-                    found.extend(char)
-                    coords.append(node.coords)
-                    current_match = []
-                node = self.root  # Reset to the root
-
-        return found, coords
+from .trie import Trie
 
 
 class MemoryMap:
@@ -66,7 +25,7 @@ class MemoryMap:
                     memory_map_str += self.memory_map[row][col]
                 memory_map_str += "\n"
         else:
-            print("Memory Map not built yet!")
+            raise Exception("Memory map not built yet!")
 
         if save:
             with open(filename, "w", encoding="utf-8") as file:
@@ -75,8 +34,13 @@ class MemoryMap:
             print(memory_map_str)
 
     def load_memory_map(self, pages, format="xml"):
+        if  not hasattr(self, "memory_map"):
+            raise Exception("Memory map not built yet!")
+
         for page in pages:
             root = ET.fromstring(page)
+            char_instances = []
+
             for char in root.findall(".//char"):
                 char_x = float(char.attrib["x"])
                 char_y = float(char.attrib["y"])
@@ -90,7 +54,10 @@ class MemoryMap:
                 if self.memory_map[cell_y][cell_x] != "":
                     cell_x += 1
                 self.memory_map[cell_y][cell_x] = char_c
-                self.text_trie.insert(char_c, {'x': cell_x, 'y': cell_y})
+                char_instances.append((char_c, {"x": cell_x, "y": cell_y}))
+
+            for char_c, coords in char_instances:
+                self.text_trie.insert(char_c, coords)
 
     def extract_text_from_bbox(self, x0, x1, y0, y1):
         if not hasattr(self, "memory_map"):
@@ -114,5 +81,5 @@ class MemoryMap:
         return extracted_text
 
     def find_text(self, query):
-        found_text, coords = self.text_trie.search_all(query)
-        return "".join(found_text), coords
+        found_text = self.text_trie.search_all(query)
+        return found_text

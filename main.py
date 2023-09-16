@@ -11,4 +11,4 @@ if __name__ == "__main__":
     memory_map.display_memory_map(save=True)
 
     print(memory_map.extract_text_from_bbox(0, 85, 0, 50))
-    print(memory_map.find_text("IBAN"))
+    print(memory_map.find_text("Interest"))
