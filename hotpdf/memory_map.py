@@ -2,7 +2,6 @@ import math
 import xml.etree.ElementTree as ET
 from .trie import Trie
 
-
 class MemoryMap:
     def __init__(self, xmin=0, ymin=0, xmax=0, ymax=0, precision=0.5):
         self.xmin = xmin

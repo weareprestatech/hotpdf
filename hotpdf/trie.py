@@ -2,7 +2,7 @@ class TrieNode:
     def __init__(self):
         self.children = {}
         self.is_end_of_word = False
-        self.coords = {"x": 0, "y": 0}
+        self.coords = None
 
 
 class Trie:
@@ -16,7 +16,10 @@ class Trie:
                 node.children[char] = TrieNode()
             node = node.children[char]
         node.is_end_of_word = True
-        node.coords = coords
+        if node.coords is not None:
+            node.coords = node.coords + [coords]
+        else:
+            node.coords = [coords]
 
     def search_all(self, text):
         node = self.root
@@ -27,9 +30,9 @@ class Trie:
             if char in node.children:
                 current_match.append(char)
                 node = node.children[char]
-                coords.append(node.coords)
                 if node.is_end_of_word:
                     found.append("".join(current_match))
+                    coords.append(node.coords)
             else:
                 if current_match:
                     found.extend(char)
