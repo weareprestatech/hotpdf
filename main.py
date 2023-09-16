@@ -1,5 +1,6 @@
 from hotpdf.processor import get_document_xml
 from hotpdf.memory_map import MemoryMap
+from hotpdf.utils import filter_adjacent_coords
 
 if __name__ == "__main__":
     document_xml = get_document_xml("test.pdf")
@@ -9,6 +10,10 @@ if __name__ == "__main__":
     memory_map.build_memory_map()
     memory_map.load_memory_map([document_xml[0]])
     memory_map.display_memory_map(save=True)
+    print(memory_map.extract_text_from_bbox(306, 345, 531, 532))
 
-    print(memory_map.extract_text_from_bbox(0, 85, 0, 50))
-    print(memory_map.find_text("Interest"))
+    coords = filter_adjacent_coords(*memory_map.find_text("TERRAGNI"))
+    for coord in coords:
+        print()
+        print(coord)
+    # print(memory_map.find_text("TERRAGNI"))
