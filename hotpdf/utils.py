@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+
 def find_neighbour_coord(anchor_coord, coords_array, max_distance):
     for coord in coords_array:
         if (
@@ -19,7 +20,9 @@ def filter_adjacent_coords(text, coords):
     for anchor_coord in anchor_coords:
         neighbours = [anchor_coord]
         for idx, coords_j in enumerate(coords[1:]):
-            neighbour_coord = find_neighbour_coord(anchor_coord, coords_j, ((idx + 1) * 6))
+            neighbour_coord = find_neighbour_coord(
+                anchor_coord, coords_j, ((idx + 1) * 6)
+            )
             if neighbour_coord:
                 neighbours.append(neighbour_coord)
         if len(neighbours) == max_len:
