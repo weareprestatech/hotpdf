@@ -2,6 +2,7 @@ import math
 import xml.etree.ElementTree as ET
 from .trie import Trie
 
+
 class MemoryMap:
     def __init__(self, width=0, height=0, precision=0.5):
         self.height = height
@@ -31,7 +32,7 @@ class MemoryMap:
             print(memory_map_str)
 
     def load_memory_map(self, page, format="xml"):
-        if  not hasattr(self, "memory_map"):
+        if not hasattr(self, "memory_map"):
             raise Exception("Memory map not built yet!")
 
         root = ET.fromstring(page)
@@ -51,7 +52,9 @@ class MemoryMap:
             if self.memory_map[cell_y][cell_x] != "":
                 cell_x += 1
             self.memory_map[cell_y][cell_x] = char_c
-            char_instances.append((char_c, {"x": cell_x, "y": cell_y, "x_end": char_x_end}))
+            char_instances.append(
+                (char_c, {"x": cell_x, "y": cell_y, "x_end": char_x_end})
+            )
 
         for char_c, coords in char_instances:
             self.text_trie.insert(char_c, coords)
