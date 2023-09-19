@@ -1,0 +1,128 @@
+variables:
+- group: hotpdf-versioning-variables
+- name: BuildParameters.tags
+  value: >-
+    $(Build.BuildNumber)
+
+    latest
+
+- name: hotpdfVersion
+name: v$(Date:yyyy.MM.dd)-rev$(Rev:r)
+trigger:
+  branches:
+    include:
+    - refs/heads/main
+
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    vmImage: ubuntu-22.04
+  steps:
+  - task: Bash@3
+    inputs:
+      targetType: inline
+  - checkout: self
+    lfs: true
+    displayName: Checkout branch
+  - bash: |
+      if [[ "$(Build.SourceBranch)" != *"main"* ]]; then
+        echo "DEV build" 
+        majorVer=$(major)
+        minorVer=$(minor)
+        patchVer=$(patch)
+        echo "##vso[task.setvariable variable=hotpdfVersion]$(major).$(minor).$(patch)-dev$(Build.BuildId)"
+      elif [[ "$(Build.SourceVersionMessage)" == *"MAJOR"* ]]; then
+        echo "MAJOR build"
+        majorVer=$(major)
+        minorVer=$(minor)
+        patchVer=$(patch)
+        echo "##vso[task.setvariable variable=hotpdfVersion]$(($majorVer+1)).$((0)).$((0))"
+        echo "##vso[task.setvariable variable=major]$(($majorVer+1))"
+        echo "##vso[task.setvariable variable=minor]0"
+        echo "##vso[task.setvariable variable=patch]0"
+      elif [[ "$(Build.SourceVersionMessage)" == *"MINOR"* ]]; then
+        echo "MINOR build"
+        majorVer=$(major)
+        minorVer=$(minor)
+        patchVer=$(patch)
+        echo "##vso[task.setvariable variable=hotpdfVersion]$(major).$(($minorVer+1)).$((0))"
+        echo "##vso[task.setvariable variable=minor]$(($minorVer+1))"
+        echo "##vso[task.setvariable variable=patch]0"
+      else
+        majorVer=$(major)
+        minorVer=$(minor)
+        patchVer=$(patch)
+        echo "PATCH build"
+        echo "##vso[task.setvariable variable=hotpdfVersion]$(major).$(minor).$(patch)"
+        echo "##vso[task.setvariable variable=patch]$(($patchVer+1))"
+      fi     
+    displayName: Determine hotpdf version
+  - bash: |
+      az pipelines variable-group variable update --group-id 325 --name major --value $(major)
+      az pipelines variable-group variable update --group-id 325 --name minor --value $(minor)
+      az pipelines variable-group variable update --group-id 325 --name patch --value $(patch)
+    displayName: Update release vars
+    env: 
+     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+  - task: Bash@3
+    displayName: Set version in VERSION file
+    inputs:
+      targetType: inline
+      script: |
+       set -ex && echo "$(hotpdfVersion)" > VERSION
+  - task: Bash@3
+    displayName: Set commit history in COMMITDETAILS file
+    inputs:
+      targetType: inline
+      script: |
+       set -ex && echo "$(Build.SourceVersionMessage)" > COMMITDETAILS
+  - task: UsePythonVersion@0
+    displayName: Use Python 3.x
+  - task: Bash@3
+    displayName: Bash Script
+    inputs:
+      targetType: inline
+      script: >-
+        Version='"$(hotpdfVersion)",'
+        echo "$(Build.SourcesDirectory)"
+        file="$(Build.SourcesDirectory)/setup.py"
+        sed -i -e "s/\(version=\).*/\1$Version/" $file
+        cat $file
+  - task: CmdLine@2
+    displayName: Install Pip
+    inputs:
+      script: python -m pip install --upgrade pip
+  - task: CmdLine@2
+    displayName: Install dependecies
+    inputs:
+      script: pip install wheel pipenv-setup twine requests chardet pipenv-setup==3.2.0 vistir==0.6.1
+  - task: CmdLine@2
+    displayName: Generate and update release notes
+    env:
+      CONFLUENCE_TOKEN: $(CONFLUENCE_TOKEN)
+      CONFLUENCE_USERNAME: $(CONFLUENCE_USERNAME)
+      RELEASE_NOTES_CONFLUENCE_URL: $(RELEASE_NOTES_CONFLUENCE_URL)
+      RELEASE_NOTES_PAGE_SPACE: $(RELEASE_NOTES_PAGE_SPACE)
+      RELEASE_NOTES_PAGE_TITLE: $(RELEASE_NOTES_PAGE_TITLE)
+    inputs:
+      script: python generate_release_notes.py
+  - task: CmdLine@2
+    displayName: Wheel Package creation
+    inputs:
+      script: python setup.py bdist_wheel
+  - task: PublishPipelineArtifact@1
+    displayName: Publish Pipeline Artifact
+    inputs:
+      path: $(Pipeline.Workspace)/s/dist
+      artifactName: dist
+
+  - task: TwineAuthenticate@1
+    displayName: 'Twine Authenticate '
+    inputs:
+      artifactFeed: 'prestacap'
+  - task: CmdLine@2
+    displayName: Command Line Script
+    inputs:
+      script: python -m twine upload -r prestacap --config-file $(PYPIRC_PATH) $(Pipeline.Workspace)/s/dist/*.whl --skip-existing
+...
