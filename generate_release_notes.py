@@ -11,18 +11,20 @@ page_title = os.getenv("RELEASE_NOTES_PAGE_TITLE")
 page_space = os.getenv("RELEASE_NOTES_PAGE_SPACE")
 page_id = page_url.split("/")[-1]
 
-response = requests.get(f"{page_url}?expand=body.storage,version", auth=(username, token))
+response = requests.get(
+    f"{page_url}?expand=body.storage,version", auth=(username, token)
+)
 page_json = json.loads(response.content)
-old_page_content = page_json['body']['storage']['value']
-old_page_version = page_json['version']['number']
+old_page_content = page_json["body"]["storage"]["value"]
+old_page_version = page_json["version"]["number"]
 new_page_version = old_page_version + 1
 release_date = str(datetime.utcnow().date())
 version = None
 commit_details = None
 
-with open('VERSION', "r") as version_file:
+with open("VERSION", "r") as version_file:
     version = str(version_file.read())
-with open('COMMITDETAILS', "r") as commit_file:
+with open("COMMITDETAILS", "r") as commit_file:
     commit_details = str(commit_file.read())
 
 if (not version) or (not commit_details):
@@ -44,18 +46,17 @@ payload = {
     "title": page_title,
     "version": {"number": new_page_version},
     "space": {"key": page_space},
-    "body": {
-        "storage": {
-            "value": new_content,
-            "representation": "storage"
-        }
-    }
+    "body": {"storage": {"value": new_content, "representation": "storage"}},
 }
-headers = {"Content-Type": "application/json", 
-            "Accept": "application/json", 
-            "User-Agent": "release-notes-pipeline"}
+headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "User-Agent": "release-notes-pipeline",
+}
 
-response = requests.put(url=page_url, data=json.dumps(payload), headers=headers, auth=(username, token))
+response = requests.put(
+    url=page_url, data=json.dumps(payload), headers=headers, auth=(username, token)
+)
 if response.status_code == 200:
     print("Updated release notes successfully")
 else:

@@ -12,9 +12,6 @@ def find_neighbour_coord(anchor_coord, coords_array, max_distance):
 
 def filter_adjacent_coords(text, coords):
     max_len = len(text)
-    # For every initial word coord
-    # look for its corresponding coordinate in the adjacent arrays.
-    # once found, move to the next array and continue
     adjacent_groups = []
     anchor_coords = coords[0]
     for anchor_coord in anchor_coords:
@@ -29,3 +26,11 @@ def filter_adjacent_coords(text, coords):
             adjacent_groups.append(deepcopy(neighbours))
         neighbours = []
     return adjacent_groups
+
+
+def get_element_dimension(elem):
+    x0 = min(elem, key=lambda item: item["x"])["x"]
+    x1 = max(elem, key=lambda item: item["x_end"])["x_end"]
+    y0 = elem[0]["y"]
+    y1 = elem[0]["y"]
+    return dict(x0=x0, x1=x1, y0=y0, y1=y1)
