@@ -1,6 +1,6 @@
 from hotpdf.processor import get_document_xml
 from hotpdf.memory_map import MemoryMap
-from hotpdf.utils import filter_adjacent_coords
+from hotpdf.utils import filter_adjacent_coords, get_element_dimension
 
 
 class HotPdf:
@@ -22,18 +22,33 @@ class HotPdf:
             parsed_page.load_memory_map(xml_page)
             self.pages.append(parsed_page)
 
-    def find_text(self, query: str, pages: list[int] = []):
+    def find_text(self, query: str, pages: list[int] = [], validate: bool = True):
         if len(pages) == 0:
             query_pages = {i: self.pages[i] for i in range(len(self.pages))}
         else:
             query_pages = {i: self.pages[i] for i in pages}
 
         found_page_map = {}
+
         for page_num in query_pages:
             found_page_map[page_num] = filter_adjacent_coords(
                 *query_pages[page_num].find_text(query)
             )
-        return found_page_map
+        if not validate:
+            return found_page_map
+
+        final_found_page_map = {}
+        for page_num in found_page_map.keys():
+            coords = found_page_map[page_num]
+            final_found_page_map[page_num] = []
+            for coord in coords:
+                span = get_element_dimension(coord)
+                text = self.extract_text(
+                    x0=span["x0"], x1=span["x1"], y0=span["y0"], y1=span["y1"]
+                )
+                if query in text:
+                    final_found_page_map[page_num].append(coord)
+        return final_found_page_map
 
     def extract_text(self, x0: int, y0: int, x1: int, y1: int, page: int = 0):
         page_to_search: MemoryMap = self.pages[page]
