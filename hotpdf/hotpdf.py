@@ -5,7 +5,9 @@ import math
 
 
 class HotPdf:
-    def __init__(self, height: int, width: int, precision: int = 1):
+    def __init__(
+        self, height: int, width: int, precision: int = 1, extraction_tolerance: int = 4
+    ):
         """
         Initialize the HotPdf class.
 
@@ -13,11 +15,14 @@ class HotPdf:
             height (int): The height of the PDF pages.
             width (int): The width of the PDF pages.
             precision (int, optional): Precision parameter for loading. Defaults to 1.
+            extraction_tolerance (int, optional): Tolerance value used during text extraction
+                to adjust the bounding box for capturing text. Defaults to 4.
         """
         self.pages = []
         self.height = height
         self.width = width
         self.precision = precision
+        self.extraction_tolerance = extraction_tolerance
 
     def load(self, pdf_file: str):
         """
@@ -94,7 +99,15 @@ class HotPdf:
             str: Extracted text within the bounding box.
         """
         page_to_search: MemoryMap = self.pages[page]
+        x0 = max(0, math.floor(x0 - (1 / self.precision)))
+        x1 = min(
+            self.width + 1 / self.precision - 1,
+            math.ceil(x1 + (1 / self.precision)) + self.extraction_tolerance,
+        )
         extracted_text = page_to_search.extract_text_from_bbox(
-            x0=math.floor(x0 - (1 / self.precision)), x1=math.ceil(x1 + (1 / self.precision)), y0=y0, y1=y1
+            x0=math.floor(x0 - (1 / self.precision)),
+            x1=math.ceil(x1 + (1 / self.precision)),
+            y0=y0,
+            y1=y1,
         )
         return extracted_text
