@@ -68,13 +68,14 @@ class MemoryMap:
             char_y = float(char.attrib["y"])
             char_c = char.attrib["c"]
             quads = char.attrib["quad"].split()
-            char_x_end = float(quads[-2])
+            char_x_end = int(math.ceil(float(quads[-2])))
 
-            cell_x = int(math.ceil(char_x))
+            cell_x = int(math.floor(char_x))
             cell_y = int(math.ceil((self.height - char_y)))
 
             if self.memory_map[cell_y][cell_x] != "":
                 cell_x += 1
+                char_x_end += 1
             self.memory_map[cell_y][cell_x] = char_c
             char_instances.append(
                 (char_c, {"x": cell_x, "y": cell_y, "x_end": char_x_end})

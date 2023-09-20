@@ -1,6 +1,7 @@
 from hotpdf.processor import get_document_xml
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, get_element_dimension
+import math
 
 
 class HotPdf:
@@ -94,6 +95,6 @@ class HotPdf:
         """
         page_to_search: MemoryMap = self.pages[page]
         extracted_text = page_to_search.extract_text_from_bbox(
-            x0=x0, x1=x1, y0=y0, y1=y1
+            x0=math.floor(x0 - (1 / self.precision)), x1=math.ceil(x1 + (1 / self.precision)), y0=y0, y1=y1
         )
         return extracted_text
