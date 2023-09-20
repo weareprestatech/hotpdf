@@ -68,7 +68,7 @@ class MemoryMap:
             char_y = float(char.attrib["y"])
             char_c = char.attrib["c"]
             quads = char.attrib["quad"].split()
-            char_x_end = float(quads[-1])
+            char_x_end = float(quads[-2])
 
             cell_x = int(math.ceil(char_x))
             cell_y = int(math.ceil((self.height - char_y)))
