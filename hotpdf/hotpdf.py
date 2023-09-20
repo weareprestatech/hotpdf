@@ -59,16 +59,24 @@ class HotPdf:
         found_page_map = {}
 
         for page_num in query_pages:
-            extracted = query_pages[page_num].find_text(query)
-            if validate:
-                extracted_text = ''.join(extracted[0])
-                if extracted_text != query:
-                    found_page_map[page_num] = []
-                    continue
             found_page_map[page_num] = filter_adjacent_coords(
-                *extracted
+                *query_pages[page_num].find_text(query)
             )
-        return found_page_map
+        if not validate:
+            return found_page_map
+
+        final_found_page_map = {}
+        for page_num in found_page_map.keys():
+            coords = found_page_map[page_num]
+            final_found_page_map[page_num] = []
+            for coord in coords:
+                span = get_element_dimension(coord)
+                text = self.extract_text(
+                    x0=span["x0"], x1=span["x1"], y0=span["y0"], y1=span["y1"]
+                )
+                if query in text:
+                    final_found_page_map[page_num].append(coord)
+        return final_found_page_map
 
     def extract_text(self, x0: int, y0: int, x1: int, y1: int, page: int = 0):
         """
