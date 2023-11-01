@@ -3,6 +3,7 @@ from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, get_element_dimension
 import math
 import xml.etree.ElementTree as ET
+import os
 
 
 class HotPdf:
@@ -24,6 +25,11 @@ class HotPdf:
         self.width: int = width
         self.precision: float = precision
         self.extraction_tolerance: int = extraction_tolerance
+        self.xml_file_path: str = None
+
+    def __del__(self):
+        if self.xml_file_path:
+            os.remove(self.xml_file_path)
 
     def load(self, pdf_file: str):
         """
@@ -37,8 +43,8 @@ class HotPdf:
         """
         if len(self.pages) > 0:
             raise Exception("A file is already loaded!")
-        xml_file_path = generate_xml_file(pdf_file)
-        xml_object = ET.parse(xml_file_path)
+        self.xml_file_path = generate_xml_file(pdf_file)
+        xml_object = ET.parse(self.xml_file_path)
         for xml_page in xml_object.findall(".//page"):
             parsed_page = MemoryMap(
                 width=self.width + 5, height=self.height + 5, precision=0.75

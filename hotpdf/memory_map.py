@@ -4,7 +4,7 @@ from .trie import Trie
 
 
 class MemoryMap:
-    def __init__(self, width=0, height=0, precision=0.5):
+    def __init__(self, width: float = 0, height: float = 0, precision: float = 0.5):
         """
         Initialize the MemoryMap. 2D Matrix representation of a PDF Page.
 
@@ -18,7 +18,7 @@ class MemoryMap:
         self.precision = precision
         self.text_trie = Trie()
 
-    def build_memory_map(self):
+    def build_memory_map(self) -> None:
         """
         Build the memory map based on width, height, and precision.
         """
@@ -26,7 +26,7 @@ class MemoryMap:
         num_rows = int(self.width / self.precision)
         self.memory_map = [["" for _ in range(num_rows)] for _ in range(num_columns)]
 
-    def text(self):
+    def text(self) -> str:
         """
         Get text of the memory map
         """
@@ -41,7 +41,9 @@ class MemoryMap:
 
         return memory_map_str
 
-    def display_memory_map(self, save=False, filename="memory_map.txt"):
+    def display_memory_map(
+        self, save: bool = False, filename: str = "memory_map.txt"
+    ) -> None:
         """
         Display or save the memory map.
 
@@ -64,13 +66,15 @@ class MemoryMap:
         else:
             print(memory_map_str)
 
-    def load_memory_map(self, page, format="xml"):
+    def load_memory_map(self, page: ET.Element) -> None:
         """
         Load memory map data from an XML page.
 
         Args:
             page (str): The XML page data.
             format (str, optional): The format of the page. Defaults to "xml". (Unused)
+        Returns:
+            None
         """
         if not hasattr(self, "memory_map"):
             raise Exception("Memory map not built yet!")
@@ -98,7 +102,7 @@ class MemoryMap:
         for char_c, coords in char_instances:
             self.text_trie.insert(char_c, coords)
 
-    def extract_text_from_bbox(self, x0, x1, y0, y1):
+    def extract_text_from_bbox(self, x0: float, x1: float, y0: float, y1: float) -> str:
         """
         Extract text within a specified bounding box.
 
