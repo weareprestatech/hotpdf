@@ -26,6 +26,21 @@ class MemoryMap:
         num_rows = int(self.width / self.precision)
         self.memory_map = [["" for _ in range(num_rows)] for _ in range(num_columns)]
 
+    def text(self):
+        """
+        Get text of the memory map
+        """
+        memory_map_str = ""
+        if hasattr(self, "memory_map"):
+            for row in range(len(self.memory_map)):
+                for col in range(len(self.memory_map[row])):
+                    memory_map_str += self.memory_map[row][col]
+                memory_map_str += "\n"
+        else:
+            raise Exception("Memory map not built yet!")
+
+        return memory_map_str
+
     def display_memory_map(self, save=False, filename="memory_map.txt"):
         """
         Display or save the memory map.
@@ -60,25 +75,24 @@ class MemoryMap:
         if not hasattr(self, "memory_map"):
             raise Exception("Memory map not built yet!")
 
-        root = ET.fromstring(page)
         char_instances = []
 
-        for char in root.findall(".//char"):
-            char_x = float(char.attrib["x"])
-            char_y = float(char.attrib["y"])
+        for char in page.findall(".//char"):
+            char_bbox = char.attrib["bbox"]
+            char_x0, char_y0, char_x1, _ = [
+                float(char_coord) for char_coord in char_bbox.split()
+            ]
             char_c = char.attrib["c"]
-            quads = char.attrib["quad"].split()
-            char_x_end = int(math.ceil(float(quads[-2])))
 
-            cell_x = int(math.floor(char_x))
-            cell_y = int(math.ceil((self.height - char_y)))
+            cell_x = int(math.floor(char_x0))
+            cell_y = int(math.ceil((self.height - char_y0)))
 
             if self.memory_map[cell_y][cell_x] != "":
                 cell_x += 1
-                char_x_end += 1
+                char_x1 += 1
             self.memory_map[cell_y][cell_x] = char_c
             char_instances.append(
-                (char_c, {"x": cell_x, "y": cell_y, "x_end": char_x_end})
+                (char_c, {"x": cell_x, "y": cell_y, "x_end": char_x1})
             )
 
         for char_c, coords in char_instances:

@@ -1,7 +1,8 @@
-from hotpdf.processor import get_document_xml
+from hotpdf.processor import generate_xml_file
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, get_element_dimension
 import math
+import xml.etree.ElementTree as ET
 
 
 class HotPdf:
@@ -14,15 +15,15 @@ class HotPdf:
         Args:
             height (int): The height of the PDF pages.
             width (int): The width of the PDF pages.
-            precision (int, optional): Precision parameter for loading. Defaults to 1.
+            precision (float, optional): Precision parameter for loading. Defaults to 1.
             extraction_tolerance (int, optional): Tolerance value used during text extraction
                 to adjust the bounding box for capturing text. Defaults to 4.
         """
-        self.pages = []
-        self.height = height
-        self.width = width
-        self.precision = precision
-        self.extraction_tolerance = extraction_tolerance
+        self.pages: list[MemoryMap] = []
+        self.height: int = height
+        self.width: int = width
+        self.precision: float = precision
+        self.extraction_tolerance: int = extraction_tolerance
 
     def load(self, pdf_file: str):
         """
@@ -36,8 +37,9 @@ class HotPdf:
         """
         if len(self.pages) > 0:
             raise Exception("A file is already loaded!")
-        document_xml = get_document_xml(pdf_file)
-        for xml_page in document_xml:
+        xml_file_path = generate_xml_file(pdf_file)
+        xml_object = ET.parse(xml_file_path)
+        for xml_page in xml_object.findall(".//page"):
             parsed_page = MemoryMap(
                 width=self.width + 5, height=self.height + 5, precision=0.75
             )
