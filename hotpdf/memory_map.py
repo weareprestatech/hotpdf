@@ -1,6 +1,7 @@
 import math
 import xml.etree.ElementTree as ET
 from .trie import Trie
+from functools import lru_cache
 
 
 class MemoryMap:
@@ -89,7 +90,7 @@ class MemoryMap:
             char_c = char.attrib["c"]
 
             cell_x = int(math.floor(char_x0))
-            cell_y = int(math.ceil((self.height - char_y0)))
+            cell_y = int(math.floor(char_y0))
 
             if self.memory_map[cell_y][cell_x] != "":
                 cell_x += 1
@@ -102,6 +103,7 @@ class MemoryMap:
         for char_c, coords in char_instances:
             self.text_trie.insert(char_c, coords)
 
+    @lru_cache
     def extract_text_from_bbox(self, x0: float, x1: float, y0: float, y1: float) -> str:
         """
         Extract text within a specified bounding box.
@@ -132,6 +134,7 @@ class MemoryMap:
 
         return extracted_text
 
+    @lru_cache
     def find_text(self, query):
         """
         Find text within the memory map.
