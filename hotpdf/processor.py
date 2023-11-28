@@ -36,7 +36,7 @@ def generate_xml_file(file_path: str) -> str:
         raw_xml = re.sub(r"(&#x[0-9]+;)", "", raw_xml)
         raw_xml = re.sub(r"(&quot;)", "'", raw_xml)
         raw_xml = html.unescape(raw_xml)
-        raw_xml = html.escape(raw_xml)
+        raw_xml = raw_xml.replace("&", "&amp;")
         raw_xml = '<?xml version="1.0" encoding="UTF-8"?><pages>' + raw_xml + "</pages>"
         f.seek(0)
         f.write(raw_xml)
