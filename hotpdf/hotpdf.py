@@ -47,7 +47,9 @@ class HotPdf:
         xml_object = ET.parse(self.xml_file_path)
         for xml_page in xml_object.findall(".//page"):
             parsed_page = MemoryMap(
-                width=self.width + 5, height=self.height + 5, precision=0.75
+                width=self.width + self.extraction_tolerance + 1,
+                height=self.height + self.extraction_tolerance + 1,
+                precision=self.precision,
             )
             parsed_page.build_memory_map()
             parsed_page.load_memory_map(xml_page)
