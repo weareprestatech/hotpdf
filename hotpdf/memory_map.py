@@ -54,10 +54,7 @@ class MemoryMap:
         """
         memory_map_str = ""
         if hasattr(self, "memory_map"):
-            for row in range(len(self.memory_map)):
-                for col in range(len(self.memory_map[row])):
-                    memory_map_str += self.memory_map[row][col]
-                memory_map_str += "\n"
+            memory_map_str = self.text()
         else:
             raise Exception("Memory map not built yet!")
 
