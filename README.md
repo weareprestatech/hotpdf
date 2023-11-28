@@ -97,4 +97,4 @@ num_pages = len(pages)
 pages[0].text()
 
 # Save the text to a file to debug
-pages[0].text(save=True, filename='test.txt')
+pages[0].display_memory_map(save=True, filename="output.txt")
