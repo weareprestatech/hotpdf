@@ -32,6 +32,9 @@ def filter_adjacent_coords(text, coords):
     Returns:
         list: List of adjacent coordinate groups.
     """
+    if not coords:
+        return []
+
     max_len = len(text)
     adjacent_groups = []
     anchor_coords = coords[0]
