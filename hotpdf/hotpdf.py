@@ -88,7 +88,7 @@ class HotPdf:
             for coord in coords:
                 span = get_element_dimension(coord)
                 text = self.extract_text(
-                    x0=span["x0"], x1=span["x1"], y0=span["y0"], y1=span["y1"]
+                    x0=span["x0"], x1=span["x1"], y0=span["y0"], y1=span["y1"], page=page_num
                 )
                 if query in text:
                     final_found_page_map[page_num].append(coord)
