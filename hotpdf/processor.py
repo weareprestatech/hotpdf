@@ -36,7 +36,9 @@ def generate_xml_file(file_path: str) -> str:
         raw_xml = re.sub(r"(&#x[0-9]+;)", "", raw_xml)
         raw_xml = re.sub(r"(&quot;)", "'", raw_xml)
         raw_xml = html.unescape(raw_xml)
+        raw_xml = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]', '', raw_xml)  # Remove invalid XML chars
         raw_xml = raw_xml.replace("&", "&amp;")
+        raw_xml = re.sub(r'<(?!/?[a-zA-Z])', '&lt;', raw_xml)
         raw_xml = '<?xml version="1.0" encoding="UTF-8"?><pages>' + raw_xml + "</pages>"
         f.seek(0)
         f.write(raw_xml)
