@@ -125,9 +125,13 @@ class MemoryMap:
         extracted_text = ""
         for row in range(cell_y0, cell_y1 + 1):
             if 0 <= row < len(self.memory_map):
+                row_text = ""
                 for col in range(cell_x0, cell_x1 + 1):
                     if 0 <= col < len(self.memory_map[row]):
-                        extracted_text += self.memory_map[row][col]
+                        row_text += self.memory_map[row][col]
+                if row_text:
+                    extracted_text += row_text
+                    extracted_text += "\n"
 
         return extracted_text
 
