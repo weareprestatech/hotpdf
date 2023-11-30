@@ -89,6 +89,9 @@ class MemoryMap:
             cell_x = int(math.floor(char_x0))
             cell_y = int(math.floor(char_y0))
 
+            if not 0 < cell_x < self.width or not 0 < cell_y < self.height:
+                continue
+
             if self.memory_map[cell_y][cell_x] != "":
                 cell_x += 1
                 char_x1 += 1
