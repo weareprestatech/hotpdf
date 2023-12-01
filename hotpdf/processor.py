@@ -24,7 +24,7 @@ def generate_xml_file(file_path: str) -> str:
             "-dBATCH",
             "-dSAFER",
             "-sDEVICE=txtwrite",
-            "-dTextFormat=0",
+            "-dTextFormat=1",
             f'-sOutputFile="{temporary_xml_file.name}"',
             "-f",
             f'"{file_path}"',
