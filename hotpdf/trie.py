@@ -48,21 +48,11 @@ class Trie:
             tuple: A tuple containing a list of found words and a list of coordinates.
         """
         node = self.root
-        found = []
-        current_match = []
-        coords = []
+        found, coords = [], []
         for char in text:
             if char in node.children:
-                current_match.append(char)
-                node = node.children[char]
-                if node.is_end_of_word:
-                    found.append("".join(current_match))
-                    coords.append(node.coords)
-            else:
-                if current_match:
-                    found.extend(char)
-                    coords.append(node.coords)
-                    current_match = []
-                node = self.root
-
+                if node.children[char].is_end_of_word:
+                    found.append(char)
+                    coords.append(node.children[char].coords)
+            node = self.root
         return found, coords
