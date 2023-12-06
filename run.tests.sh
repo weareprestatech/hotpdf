@@ -1,1 +1,1 @@
-python -m pytest tests/
+python -m pipenv run pytest tests/
