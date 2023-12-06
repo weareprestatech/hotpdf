@@ -3,6 +3,9 @@ Hot PDF
 
 A faster alternative to libraries like pdfquery.
 
+## Pre-requisites
+1. hotpdf requires ghostscript to be installed, so please install that beforehand on your system.
+Get it from [here](https://www.ghostscript.com/).
 ## Usage
 
 ```python
