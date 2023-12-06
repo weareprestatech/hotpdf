@@ -1,27 +1,42 @@
 from copy import deepcopy
 
 
-def find_neighbour_coord(pre_neighbour_coord, coords_array, max_distance=6):
+def find_neighbour_coord(
+    reference_coord: dict,
+    coords_array: list,
+    max_distance: int = 5,
+    span_tolerance: int = 5,
+):
     """
     Find a neighbouring coordinate within a specified maximum distance.
 
     Args:
-        pre_neighbour_coord (dict): Previous char coordinate.
+        reference_coord (dict): Previous char coordinate.
         coords_array (list): List of coordinates to search.
+        max_distance (int): Maximum distance between reference coordinate and target coordinate.
+        span_tolerance (int): Additional distance to consider if text lies in the same span.
 
     Returns:
         dict: The neighbouring coordinate if found, else None.
     """
     for coord in coords_array:
+        # Character end must not be > max_distance than the pre-neighbour
+        # But - if it's in the same span: add 5pts to the max_distance
         if (
-            0 <= (coord["x"] - pre_neighbour_coord["x"]) <= max_distance
-            and coord["x"] >= pre_neighbour_coord["x_end"]
-            and pre_neighbour_coord["y"] == coord["y"]
+            0
+            <= (coord["x"] - reference_coord["x_end"])
+            <= (
+                (max_distance + span_tolerance)
+                if coord.get("span_id") == reference_coord.get("span_id")
+                and (coord.get("span_id") and reference_coord.get("span_id"))
+                else max_distance
+            )
+            and reference_coord["y"] == coord["y"]
         ):
             return coord
 
 
-def filter_adjacent_coords(text, coords):
+def filter_adjacent_coords(text: str, coords: list):
     """
     Filter adjacent coordinates based on the given text.
 
@@ -42,9 +57,7 @@ def filter_adjacent_coords(text, coords):
         neighbours = [anchor_coord]
         pre_neighbour_coord = anchor_coord
         for idx, coords_j in enumerate(coords[1:]):
-            neighbour_coord = find_neighbour_coord(
-                pre_neighbour_coord, coords_j
-            )
+            neighbour_coord = find_neighbour_coord(pre_neighbour_coord, coords_j)
             if neighbour_coord:
                 neighbours.append(neighbour_coord)
                 pre_neighbour_coord = neighbour_coord
@@ -54,7 +67,7 @@ def filter_adjacent_coords(text, coords):
     return adjacent_groups
 
 
-def get_element_dimension(elem):
+def get_element_dimension(elem: list):
     """
     Get the dimensions of an element based on its coordinates.
 
