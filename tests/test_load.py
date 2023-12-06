@@ -4,41 +4,49 @@ from hotpdf.utils import get_element_dimension
 
 
 @pytest.fixture
-def file_name():
+def valid_file_name():
     return "tests/resources/PDF.pdf"
 
 
-def test_load(file_name):
+@pytest.fixture
+def blank_file_name():
+    return "tests/resources/blank.pdf"
+
+@pytest.fixture
+def non_existent_file_name():
+    return "non_existent_file.pdf"
+
+def test_load(valid_file_name):
     hot_pdf_object = HotPdf(height=1170, width=827)
-    hot_pdf_object.load(file_name)
+    hot_pdf_object.load(valid_file_name)
 
 
-def test_full_text(file_name):
+def test_full_text(valid_file_name):
     hot_pdf_object = HotPdf(height=1170, width=827)
-    hot_pdf_object.load(file_name)
+    hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
     # Not blank extraction
     assert len(pages[0].text()) > 1000
 
 
-def test_pages_length(file_name):
+def test_pages_length(valid_file_name):
     hot_pdf_object = HotPdf(height=1170, width=827)
-    hot_pdf_object.load(file_name)
+    hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
     assert len(pages) == 1
 
 
-def test_pages_length(file_name):
+def test_pages_length(valid_file_name):
     hot_pdf_object = HotPdf(height=1170, width=827)
-    hot_pdf_object.load(file_name)
+    hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
     assert len(pages) == 1
 
 
-def test_test_extraction(file_name):
+def test_test_extraction(valid_file_name):
     WORD = "DEGREE"
     hot_pdf_object = HotPdf(height=1170, width=827)
-    hot_pdf_object.load(file_name)
+    hot_pdf_object.load(valid_file_name)
     occurences = hot_pdf_object.find_text(WORD)
     assert len(occurences) == 1
     for page_num, _ in occurences.items():
@@ -53,3 +61,45 @@ def test_test_extraction(file_name):
     )
     extracted_text = extracted_text.strip("\n").strip()
     assert extracted_text == WORD
+
+
+def test_invalid_file_path(non_existent_file_name):
+    with pytest.raises(FileNotFoundError):
+        hot_pdf_object = HotPdf(height=1170, width=827)
+        hot_pdf_object.load(non_existent_file_name)
+
+
+def test_double_loading(valid_file_name):
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object.load(valid_file_name)
+    with pytest.raises(Exception, match="A file is already loaded!"):
+        hot_pdf_object.load(valid_file_name)
+
+
+def test_blank_pdf(blank_file_name):
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object.load(blank_file_name)
+    pages = hot_pdf_object.pages
+    assert all([len(page.text().strip("\n").strip()) == 0 for page in pages])
+
+
+# TODO: Implement Exceptions
+@pytest.mark.skip("Not implemented yet")
+def test_invalid_page_number(valid_file_name):
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object.load(valid_file_name)
+
+    with pytest.raises(ValueError, match="Invalid page number"):
+        hot_pdf_object.find_text("Test", pages=[99])
+
+    with pytest.raises(ValueError, match="Invalid page number"):
+        hot_pdf_object.extract_text(x0=0, y0=1, x1=100, y1=5, page=99)
+
+
+@pytest.mark.skip("Not implemented yet")
+def test_extract_invalid_coordinates(valid_file_name):
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object.load(valid_file_name)
+
+    with pytest.raises(ValueError, match="Invalid coordinates"):
+        hot_pdf_object.extract_text(x0=-5, y0=-5, x1=-5, y1=-5)

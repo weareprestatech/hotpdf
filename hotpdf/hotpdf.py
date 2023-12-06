@@ -31,6 +31,18 @@ class HotPdf:
         if self.xml_file_path:
             os.remove(self.xml_file_path)
 
+    def __check_file_exists(self, pdf_file: str) -> bool:
+        if not os.path.exists(pdf_file):
+            raise FileNotFoundError(f"File {pdf_file} not found")
+
+    def __check_file_already_loaded(self):
+        if len(self.pages) > 0:
+            raise Exception("A file is already loaded!")
+
+    def prechecks(self, pdf_file: str):
+        self.__check_file_exists(pdf_file)
+        self.__check_file_already_loaded()
+
     def load(self, pdf_file: str):
         """
         Load a PDF file into memory.
@@ -41,8 +53,7 @@ class HotPdf:
         Raises:
             Exception: If a file is already loaded.
         """
-        if len(self.pages) > 0:
-            raise Exception("A file is already loaded!")
+        self.prechecks(pdf_file)
         self.xml_file_path = generate_xml_file(pdf_file)
         xml_object = ET.parse(self.xml_file_path)
         for xml_page in xml_object.findall(".//page"):
