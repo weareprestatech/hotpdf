@@ -1,6 +1,7 @@
 from hotpdf.processor import generate_xml_file
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, get_element_dimension
+from .data.classes import HotCharacter
 import math
 import xml.etree.ElementTree as ET
 import os
@@ -66,11 +67,29 @@ class HotPdf:
             parsed_page.load_memory_map(xml_page)
             self.pages.append(parsed_page)
 
+    def extract_full_text_span(
+        self,
+        hot_characters: list[HotCharacter],
+        page_num: int,
+    ) -> list[HotCharacter]:
+        """
+        Find text and all text in it's parent span.
+        Args:
+            query (str): The text to search for.
+            pages (list[int], optional): List of page numbers to search. Defaults to [].
+            validate (bool, optional): Double check the extracted bounding boxes with the query string.
+        Returns:
+            dict: A dictionary mapping page numbers to found text coordinates.
+        """
+        full_span = self.pages[page_num].span_map.get_span(hot_characters[0].span_id)
+        return full_span
+
     def find_text(
         self,
         query: str,
         pages: list[int] = [],
         validate: bool = True,
+        take_span: bool = False,
     ):
         """
         Find text within the loaded PDF pages.
@@ -79,6 +98,7 @@ class HotPdf:
             query (str): The text to search for.
             pages (list[int], optional): List of page numbers to search. Defaults to [].
             validate (bool, optional): Double check the extracted bounding boxes with the query string.
+            take_span (bool, optional): Take the full span of the text that it is a part of.
         Returns:
             dict: A dictionary mapping page numbers to found text coordinates.
         """
@@ -93,24 +113,34 @@ class HotPdf:
             found_page_map[page_num] = filter_adjacent_coords(
                 *query_pages[page_num].find_text(query)
             )
-        if not validate:
-            return found_page_map
 
-        final_found_page_map = {}
+        final_found_page_map: dict[list] = {}
         for page_num in found_page_map.keys():
-            coords = found_page_map[page_num]
+            hot_characters: list[HotCharacter] = found_page_map[page_num]
             final_found_page_map[page_num] = []
-            for coord in coords:
-                span = get_element_dimension(coord)
+            for hot_character in hot_characters:
+                element_dimension = get_element_dimension(hot_character)
                 text = self.extract_text(
-                    x0=span["x0"],
-                    x1=span["x1"],
-                    y0=span["y0"],
-                    y1=span["y1"],
+                    x0=element_dimension.x0,
+                    y0=element_dimension.y0,
+                    x1=element_dimension.x1,
+                    y1=element_dimension.y1,
                     page=page_num,
                 )
-                if query in text:
-                    final_found_page_map[page_num].append(coord)
+                if (query in text) or not validate:
+                    if take_span:
+                        full_span_dimension_hot_characters = (
+                            self.extract_full_text_span(
+                                hot_character,
+                                page_num,
+                            )
+                        )
+                    final_found_page_map[page_num].append(
+                        full_span_dimension_hot_characters
+                        if take_span
+                        else hot_character
+                    )
+
         return final_found_page_map
 
     def extract_text(self, x0: int, y0: int, x1: int, y1: int, page: int = 0):
