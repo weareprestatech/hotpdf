@@ -1,6 +1,7 @@
 import math
 import xml.etree.ElementTree as ET
 from .trie import Trie
+from .data.classes import HotCharacter
 from functools import lru_cache
 from uuid import uuid4
 
@@ -78,7 +79,7 @@ class MemoryMap:
         if not hasattr(self, "memory_map"):
             raise Exception("Memory map not built yet!")
 
-        char_instances = []
+        hot_characters = []
         spans = page.findall(".//span")
         chars: list = []
         if spans:
@@ -99,7 +100,13 @@ class MemoryMap:
             char_span_id = char.attrib.get("span_id")
             cell_x = int(math.floor(char_x0))
             cell_y = int(math.floor(char_y0))
-
+            hot_character = HotCharacter(
+                value=char_c,
+                x=cell_x,
+                y=cell_y,
+                x_end=char_x1,
+                span_id=char_span_id,
+            )
             if not 0 < cell_x < self.width or not 0 < cell_y < self.height:
                 continue
 
@@ -107,20 +114,15 @@ class MemoryMap:
                 cell_x += 1
                 char_x1 += 1
             self.memory_map[cell_y][cell_x] = char_c
-            char_instances.append(
+            hot_characters.append(
                 (
                     char_c,
-                    {
-                        "x": cell_x,
-                        "y": cell_y,
-                        "x_end": char_x1,
-                        "span_id": char_span_id,
-                    },
+                    hot_character,
                 )
             )
 
-        for char_c, coords in char_instances:
-            self.text_trie.insert(char_c, coords)
+        for char_c, hot_character in hot_characters:
+            self.text_trie.insert(char_c, hot_character)
 
     @lru_cache
     def extract_text_from_bbox(self, x0: float, x1: float, y0: float, y1: float) -> str:
