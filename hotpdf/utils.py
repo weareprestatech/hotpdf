@@ -1,5 +1,5 @@
 from copy import deepcopy
-from .data.classes import HotCharacter
+from .data.classes import HotCharacter, ElementDimension
 
 
 def find_neighbour_coord(
@@ -72,7 +72,7 @@ def filter_adjacent_coords(text: str, hot_characters: list[HotCharacter]):
     return adjacent_groups
 
 
-def get_element_dimension(elem: list[HotCharacter]):
+def get_element_dimension(elem: list[HotCharacter]) -> ElementDimension:
     """
     Get the dimensions of an element based on its coordinates.
 
@@ -80,10 +80,11 @@ def get_element_dimension(elem: list[HotCharacter]):
         elem (list): List of coordinates representing an element.
 
     Returns:
-        dict: Dictionary containing the dimensions (x0, x1, y0, y1).
+        ElementDimension: ElementDimension object containing the dimensions (x0, x1, y0, y1, span_id).
     """
     x0 = min(elem, key=lambda item: item.x).x
     x1 = max(elem, key=lambda item: item.x_end).x_end
     y0 = elem[0].y
     y1 = elem[0].y
-    return dict(x0=x0, x1=x1, y0=y0, y1=y1)
+    span = elem[0].span_id
+    return ElementDimension(x0=x0, x1=x1, y0=y0, y1=y1, span_id=span)
