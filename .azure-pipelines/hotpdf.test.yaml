@@ -9,6 +9,8 @@ steps:
   inputs:
     targetType: 'inline'
     script: 'sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y ghostscript'
+  displayName: 'Install ubuntu packages'
+
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '3.11'
@@ -18,7 +20,7 @@ steps:
 - script: |
     python -m pip install pipenv
     python -m pipenv install --dev
-  displayName: 'Setup environment'
+  displayName: 'Setup Python environment'
 
 - script: |
     sh run.tests.sh
