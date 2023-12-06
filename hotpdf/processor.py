@@ -31,7 +31,7 @@ def generate_xml_file(file_path: str) -> str:
         ]
     )
     _ = subprocess.check_output(command_line_args, shell=ghostscript == "gs")
-    with open(temporary_xml_file.name, "r+") as f:
+    with open(temporary_xml_file.name, "r+", encoding="utf-8") as f:
         raw_xml = f.read()
         raw_xml = re.sub(r"(&#x[0-9]+;)", "", raw_xml)
         raw_xml = re.sub(r"(&quot;)", "'", raw_xml)
