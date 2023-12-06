@@ -12,9 +12,11 @@ def valid_file_name():
 def blank_file_name():
     return "tests/resources/blank.pdf"
 
+
 @pytest.fixture
 def non_existent_file_name():
     return "non_existent_file.pdf"
+
 
 def test_load(valid_file_name):
     hot_pdf_object = HotPdf(height=1170, width=827)
@@ -63,7 +65,7 @@ def test_test_extraction(valid_file_name):
     assert extracted_text == WORD
 
 
-def test_invalid_file_path(non_existent_file_name):
+def test_non_existent_file_path(non_existent_file_name):
     with pytest.raises(FileNotFoundError):
         hot_pdf_object = HotPdf(height=1170, width=827)
         hot_pdf_object.load(non_existent_file_name)
