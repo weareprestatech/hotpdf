@@ -2,6 +2,7 @@ import math
 import xml.etree.ElementTree as ET
 from .trie import Trie
 from functools import lru_cache
+from uuid import uuid4
 
 
 class MemoryMap:
@@ -78,14 +79,24 @@ class MemoryMap:
             raise Exception("Memory map not built yet!")
 
         char_instances = []
+        spans = page.findall(".//span")
+        chars: list = []
+        if spans:
+            for span in spans:
+                span_id = str(uuid4())
+                for char in span.findall(".//"):
+                    char.set("span_id", span_id)
+                    chars.append(char)
+        else:
+            chars = page.findall(".//char")
 
-        for char in page.findall(".//char"):
+        for char in chars:
             char_bbox = char.attrib["bbox"]
             char_x0, char_y0, char_x1, _ = [
                 float(char_coord) for char_coord in char_bbox.split()
             ]
             char_c = char.attrib["c"]
-
+            char_span_id = char.attrib.get("span_id")
             cell_x = int(math.floor(char_x0))
             cell_y = int(math.floor(char_y0))
 
@@ -97,7 +108,15 @@ class MemoryMap:
                 char_x1 += 1
             self.memory_map[cell_y][cell_x] = char_c
             char_instances.append(
-                (char_c, {"x": cell_x, "y": cell_y, "x_end": char_x1})
+                (
+                    char_c,
+                    {
+                        "x": cell_x,
+                        "y": cell_y,
+                        "x_end": char_x1,
+                        "span_id": char_span_id,
+                    },
+                )
             )
 
         for char_c, coords in char_instances:
