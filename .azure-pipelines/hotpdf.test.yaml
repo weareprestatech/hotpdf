@@ -5,6 +5,10 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: 'apt-get update --allow-releaseinfo-change && apt-get install -y ghostscript libgs10 libgs10-common'
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '3.11'
