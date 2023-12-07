@@ -1,8 +1,9 @@
 import math
-import xml.etree.ElementTree as ET
+import xml.etree.cElementTree as ET
 from .trie import Trie
 from .span_map import SpanMap
 from .data.classes import HotCharacter
+from .sparse_matrix import SparseMatrix
 from functools import lru_cache
 from uuid import uuid4
 
@@ -20,16 +21,17 @@ class MemoryMap:
         self.height = height
         self.width = width
         self.precision = precision
+        self.rows = self.height // self.precision
+        self.columns = self.width // self.precision
         self.text_trie = Trie()
         self.span_map = SpanMap()
 
     def build_memory_map(self) -> None:
         """
-        Build the memory map based on width, height, and precision.
+        Build the memory map based on width and height.
+        The memory map is a SparseMatrix representation of the PDF.
         """
-        num_columns = int(self.height / self.precision)
-        num_rows = int(self.width / self.precision)
-        self.memory_map = [["" for _ in range(num_rows)] for _ in range(num_columns)]
+        self.memory_map = SparseMatrix(rows=self.rows, columns=self.columns)
 
     def text(self) -> str:
         """
@@ -37,9 +39,9 @@ class MemoryMap:
         """
         memory_map_str = ""
         if hasattr(self, "memory_map"):
-            for row in range(len(self.memory_map)):
-                for col in range(len(self.memory_map[row])):
-                    memory_map_str += self.memory_map[row][col]
+            for row in range(self.rows):
+                for col in range(self.columns):
+                    memory_map_str += self.memory_map.get(row_idx=row, column_idx=col)
                 memory_map_str += "\n"
         else:
             raise Exception("Memory map not built yet!")
@@ -112,10 +114,10 @@ class MemoryMap:
             if not 0 < cell_x < self.width or not 0 < cell_y < self.height:
                 continue
 
-            if self.memory_map[cell_y][cell_x] != "":
+            if self.memory_map.get(row_idx=cell_y, column_idx=cell_x) != "":
                 cell_x += 1
                 char_x1 += 1
-            self.memory_map[cell_y][cell_x] = char_c
+            self.memory_map.insert(value=char_c, row_idx=cell_y, column_idx=cell_x)
             char_hot_characters.append(
                 (
                     char_c,
@@ -152,11 +154,11 @@ class MemoryMap:
 
         extracted_text = ""
         for row in range(cell_y0, cell_y1 + 1):
-            if 0 <= row < len(self.memory_map):
+            if 0 <= row < self.rows:
                 row_text = ""
                 for col in range(cell_x0, cell_x1 + 1):
-                    if 0 <= col < len(self.memory_map[row]):
-                        row_text += self.memory_map[row][col]
+                    if 0 <= col < self.rows:
+                        row_text += self.memory_map.get(row_idx=row, column_idx=col)
                 if row_text:
                     extracted_text += row_text
                     extracted_text += "\n"
