@@ -6,11 +6,16 @@ import math
 import xml.etree.ElementTree as ET
 import os
 import gc
+from typing import Optional
 
 
 class HotPdf:
     def __init__(
-        self, height: int, width: int, precision: int = 1, extraction_tolerance: int = 4
+        self,
+        height: int,
+        width: int,
+        precision: float = 0.75,
+        extraction_tolerance: int = 4,
     ):
         """
         Initialize the HotPdf class.
@@ -27,13 +32,13 @@ class HotPdf:
         self.width: int = width
         self.precision: float = precision
         self.extraction_tolerance: int = extraction_tolerance
-        self.xml_file_path: str = None
+        self.xml_file_path: Optional[str] = None
 
     def __del__(self):
         if self.xml_file_path:
             os.remove(self.xml_file_path)
 
-    def __check_file_exists(self, pdf_file: str) -> bool:
+    def __check_file_exists(self, pdf_file: str):
         if not os.path.exists(pdf_file):
             raise FileNotFoundError(f"File {pdf_file} not found")
 
@@ -74,7 +79,7 @@ class HotPdf:
         self,
         hot_characters: list[HotCharacter],
         page_num: int,
-    ) -> list[HotCharacter]:
+    ) -> list[HotCharacter] | None:
         """
         Find text and all text in it's parent span.
         Args:
@@ -117,12 +122,14 @@ class HotPdf:
                 *query_pages[page_num].find_text(query)
             )
 
-        final_found_page_map: dict[list] = {}
+        final_found_page_map: dict = {}
         for page_num in found_page_map.keys():
-            hot_characters: list[HotCharacter] = found_page_map[page_num]
+            hot_character_page_occurences: list[list[HotCharacter]] = found_page_map[
+                page_num
+            ]
             final_found_page_map[page_num] = []
-            for hot_character in hot_characters:
-                element_dimension = get_element_dimension(hot_character)
+            for hot_characters in hot_character_page_occurences:
+                element_dimension = get_element_dimension(hot_characters)
                 text = self.extract_text(
                     x0=element_dimension.x0,
                     y0=element_dimension.y0,
@@ -134,14 +141,14 @@ class HotPdf:
                     if take_span:
                         full_span_dimension_hot_characters = (
                             self.extract_full_text_span(
-                                hot_character,
-                                page_num,
+                                hot_characters=hot_characters,
+                                page_num=page_num,
                             )
                         )
                     final_found_page_map[page_num].append(
                         full_span_dimension_hot_characters
-                        if take_span
-                        else hot_character
+                        if (take_span and full_span_dimension_hot_characters)
+                        else hot_characters
                     )
 
         return final_found_page_map
@@ -163,7 +170,7 @@ class HotPdf:
         page_to_search: MemoryMap = self.pages[page]
         x0 = max(0, math.floor(x0 - (1 / self.precision)))
         x1 = min(
-            self.width + 1 / self.precision - 1,
+            math.ceil(self.width + 1 / self.precision - 1),
             math.ceil(x1 + (1 / self.precision)) + self.extraction_tolerance,
         )
         extracted_text = page_to_search.extract_text_from_bbox(

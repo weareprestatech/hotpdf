@@ -1,5 +1,6 @@
 from copy import deepcopy
 from .data.classes import HotCharacter, ElementDimension
+import math
 
 
 def find_neighbour_coord(
@@ -37,31 +38,34 @@ def find_neighbour_coord(
             return hot_character
 
 
-def filter_adjacent_coords(text: str, hot_characters: list[HotCharacter]):
+def filter_adjacent_coords(
+    text: str, page_hot_character_occurences: list[list[HotCharacter]]
+):
     """
     Filter adjacent coordinates based on the given text.
 
     Args:
         text (str): The text to filter by.
-        coords (list): List of coordinates to filter.
+        page_hot_character_occurences (list): List of coordinates to filter by page
 
     Returns:
         list: List of adjacent coordinate groups.
     """
-    if not hot_characters:
+    if not page_hot_character_occurences:
         return []
 
     max_len = len(text)
     adjacent_groups = []
 
-    anchor_hot_character_instances = hot_characters[0]
+    anchor_hot_character_instances = page_hot_character_occurences[0]
 
     for anchor_hot_character in anchor_hot_character_instances:
         neighbours = [anchor_hot_character]
         reference_hot_character = anchor_hot_character
-        for _, coords_j in enumerate(hot_characters[1:]):
+        for _, coords_j in enumerate(page_hot_character_occurences[1:]):
             neighbour_hot_character = find_neighbour_coord(
-                reference_hot_character, coords_j
+                reference_character=reference_hot_character,
+                hot_characters=coords_j,
             )
             if neighbour_hot_character:
                 neighbours.append(neighbour_hot_character)
@@ -82,9 +86,9 @@ def get_element_dimension(elem: list[HotCharacter]) -> ElementDimension:
     Returns:
         ElementDimension: ElementDimension object containing the dimensions (x0, x1, y0, y1, span_id).
     """
-    x0 = min(elem, key=lambda item: item.x).x
-    x1 = max(elem, key=lambda item: item.x_end).x_end
-    y0 = elem[0].y
-    y1 = elem[0].y
+    x0 = math.floor(min(elem, key=lambda item: item.x).x)
+    x1 = math.ceil(max(elem, key=lambda item: item.x_end).x_end)
+    y0 = math.floor(elem[0].y)
+    y1 = math.ceil(elem[0].y)
     span = elem[0].span_id
     return ElementDimension(x0=x0, x1=x1, y0=y0, y1=y1, span_id=span)

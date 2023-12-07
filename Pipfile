@@ -8,6 +8,7 @@ name = "pypi"
 [dev-packages]
 black = "==23.9.1"
 pytest = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.11"

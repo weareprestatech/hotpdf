@@ -1,4 +1,6 @@
 from .data.classes import HotCharacter
+from typing import List
+from typing import Optional
 
 
 class TrieNode:
@@ -13,7 +15,7 @@ class TrieNode:
         """
         self.children: dict = {}
         self.is_end_of_word: bool = False
-        self.hot_characters: list[HotCharacter] = None
+        self.hot_characters: Optional[List[HotCharacter]] = None
 
 
 class Trie:
@@ -40,7 +42,7 @@ class Trie:
         else:
             node.hot_characters = [hot_character]
 
-    def search_all(self, text):
+    def search_all(self, text: str):
         """
         Search for words in the Trie that match a given text.
 
