@@ -5,6 +5,7 @@ from .data.classes import HotCharacter
 import math
 import xml.etree.ElementTree as ET
 import os
+import gc
 
 
 class HotPdf:
@@ -66,6 +67,8 @@ class HotPdf:
             parsed_page.build_memory_map()
             parsed_page.load_memory_map(xml_page)
             self.pages.append(parsed_page)
+        del xml_object
+        gc.collect()
 
     def extract_full_text_span(
         self,
