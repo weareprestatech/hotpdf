@@ -18,11 +18,11 @@ class MemoryMap:
             height (float, optional): The height of the map. Defaults to 0.
             precision (float, optional): The precision factor. Defaults to 0.5.
         """
-        self.height = height
-        self.width = width
-        self.precision = precision
-        self.rows = self.height // self.precision
-        self.columns = self.width // self.precision
+        self.height: float = height
+        self.width: float = width
+        self.precision: float = precision
+        self.rows: int = math.ceil(self.height / self.precision)
+        self.columns: int = math.ceil(self.width / self.precision)
         self.text_trie = Trie()
         self.span_map = SpanMap()
 
@@ -128,7 +128,8 @@ class MemoryMap:
         _hot_character: HotCharacter
         for char_c, _hot_character in char_hot_characters:
             self.text_trie.insert(char_c, _hot_character)
-            self.span_map.insert(_hot_character.span_id, _hot_character)
+            if _hot_character.span_id:
+                self.span_map.insert(_hot_character.span_id, _hot_character)
 
     @lru_cache
     def extract_text_from_bbox(self, x0: float, x1: float, y0: float, y1: float) -> str:
