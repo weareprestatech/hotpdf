@@ -124,17 +124,17 @@ def test_blank_pdf(blank_file_name):
     assert all([len(page.text().strip("\n").strip()) == 0 for page in pages])
 
 
-def test_row_index_out_of_range_memory_map(blank_file_name):
+def test_row_index_out_of_range_memory_map(valid_file_name):
     hot_pdf_object = HotPdf(height=1170, width=827)
-    hot_pdf_object.load(blank_file_name)
+    hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
     with pytest.raises(IndexError, match="Specified index is out of range"):
         pages[0].memory_map.get(row_idx=9999, column_idx=100)
 
 
-def test_col_index_out_of_range_memory_map(blank_file_name):
+def test_col_index_out_of_range_memory_map(valid_file_name):
     hot_pdf_object = HotPdf(height=1170, width=827, precision=1)
-    hot_pdf_object.load(blank_file_name)
+    hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
     with pytest.raises(IndexError, match="Specified index is out of range"):
         pages[0].memory_map.get(row_idx=100, column_idx=9999)

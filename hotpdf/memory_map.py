@@ -3,9 +3,9 @@ import xml.etree.cElementTree as ET
 from .trie import Trie
 from .span_map import SpanMap
 from .data.classes import HotCharacter
+from .helpers.nanoid import generate_nano_id
 from .sparse_matrix import SparseMatrix
 from functools import lru_cache
-from uuid import uuid4
 
 
 class MemoryMap:
@@ -88,7 +88,7 @@ class MemoryMap:
         chars: list = []
         if spans:
             for span in spans:
-                span_id = str(uuid4())
+                span_id = generate_nano_id(size=10)
                 for char in span.findall(".//"):
                     char.set("span_id", span_id)
                     chars.append(char)
