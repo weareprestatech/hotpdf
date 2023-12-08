@@ -1,0 +1,1 @@
+python -m pipenv run mypy hotpdf/ --check-untyped-defs
