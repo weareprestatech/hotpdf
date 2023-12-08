@@ -7,6 +7,12 @@ A faster alternative to libraries like pdfquery.
 1. hotpdf requires ghostscript to be installed, so please install that beforehand on your system.
 Get it from [here](https://www.ghostscript.com/).
 
+## Contributing
+1. We use mypy to check for types and maintain the code quality. Please run mypy locally as well before pushing to prevent the lint pipeline from failing.
+```bash
+pipenv run mypy hotpdf/ --check-untyped-defs
+```
+
 ## Usage
 
 ```python
