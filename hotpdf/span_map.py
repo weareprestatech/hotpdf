@@ -1,6 +1,6 @@
 from .data.classes import HotCharacter
 from collections import defaultdict
-from typing import Optional
+from typing import Optional, Union
 
 
 class SpanMap:
@@ -16,7 +16,7 @@ class SpanMap:
         if span_id:
             self.map[span_id].append(hot_character)
 
-    def get_span(self, span_id: Optional[str]) -> list[HotCharacter] | None:
+    def get_span(self, span_id: Optional[str]) -> Union[list[HotCharacter], None]:
         if span_id:
             return self.map.get(span_id)
         return None
