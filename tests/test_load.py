@@ -38,13 +38,6 @@ def test_pages_length(valid_file_name):
     assert len(pages) == 1
 
 
-def test_pages_length(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
-    hot_pdf_object.load(valid_file_name)
-    pages = hot_pdf_object.pages
-    assert len(pages) == 1
-
-
 def test_extraction(valid_file_name):
     WORD = "DEGREE"
     hot_pdf_object = HotPdf(height=1170, width=827)
