@@ -6,7 +6,7 @@ import math
 import xml.etree.ElementTree as ET
 import os
 import gc
-from typing import Optional
+from typing import Optional, Union
 
 
 class HotPdf:
@@ -79,7 +79,7 @@ class HotPdf:
         self,
         hot_characters: list[HotCharacter],
         page_num: int,
-    ) -> list[HotCharacter] | None:
+    ) -> Union[list[HotCharacter], None]:
         """
         Find text and all text in it's parent span.
         Args:
