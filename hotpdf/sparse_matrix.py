@@ -10,6 +10,14 @@ class SparseMatrix:
         self.columns = columns
         self.values: dict = {}
 
+    def __iter__(self):
+        for row_idx in range(self.rows):
+            for column_idx in range(self.columns):
+                yield self.get(row_idx, column_idx)
+
+    def __getitem__(self, key):
+        return self.get(key[0], key[1])
+
     def __check_indices(self, row_idx: int, column_idx: int):
         if (
             row_idx < 0

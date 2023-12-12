@@ -153,3 +153,10 @@ def test_extract_invalid_coordinates(valid_file_name):
 
     with pytest.raises(ValueError, match="Invalid coordinates"):
         hot_pdf_object.extract_text(x0=-5, y0=-5, x1=-5, y1=-5)
+
+
+def test_display_memory_map(valid_file_name):
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object.load(valid_file_name)
+    pages = hot_pdf_object.pages
+    pages[0].display_memory_map(save=False, filename="test.txt")
