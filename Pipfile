@@ -10,6 +10,7 @@ black = "==23.9.1"
 pytest = "*"
 mypy = "*"
 flake8 = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.11"
