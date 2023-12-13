@@ -58,12 +58,20 @@ Example
 ```
 To find the total span of the word, take the 'x' & y value of the first character and the 'x_end' & 'y_end' values of the last character 
 
-#### extract_text(x0, y0, x1, y1)
+#### extract_text(x0, y0, x1, y1, page)
 Returns the text in given bbox span (str)
 ```python
 # Extract text from bbox
-hot_pdf.extract_text(x0=513, y0=760, x1=560, y1=766)
+hot_pdf.extract_text(x0=513, y0=760, x1=560, y1=766, page=0)
 ```
+
+#### extract_spans(x0, y0, x1, y1, page)
+Returns the spans that lie within the specified coordinates. Returns a list of spans.
+```python
+# Extract text from bbox
+hot_pdf.extract_spans(x0=513, y0=760, x1=560, y1=766, page=0)
+```
+
 
 ### Anatomy
 

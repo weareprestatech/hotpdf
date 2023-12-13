@@ -3,7 +3,7 @@ from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, get_element_dimension
 from .data.classes import HotCharacter
 import math
-import xml.etree.ElementTree as ET
+import xml.etree.cElementTree as ET
 import os
 import gc
 from typing import Optional, Union
@@ -89,7 +89,9 @@ class HotPdf:
         Returns:
             dict: A dictionary mapping page numbers to found text coordinates.
         """
-        full_span = self.pages[page_num].span_map.get_span(hot_characters[0].span_id)
+        full_span = None
+        if hot_characters[0].span_id:
+            full_span = self.pages[page_num].span_map[hot_characters[0].span_id]
         return full_span
 
     def find_text(
@@ -98,7 +100,7 @@ class HotPdf:
         pages: list[int] = [],
         validate: bool = True,
         take_span: bool = False,
-    ):
+    ) -> dict[int, list[list[HotCharacter]]]:
         """
         Find text within the loaded PDF pages.
 
@@ -153,7 +155,74 @@ class HotPdf:
 
         return final_found_page_map
 
-    def extract_text(self, x0: int, y0: int, x1: int, y1: int, page: int = 0):
+    def extract_spans(
+        self,
+        x0: int,
+        y0: int,
+        x1: int,
+        y1: int,
+        page: int = 0,
+        sort: bool = True,
+    ) -> list[list[HotCharacter]]:
+        """
+        Extract spans that exist within the specified bbox
+            x0 (int): The left x-coordinate of the bounding box.
+            y0 (int): The bottom y-coordinate of the bounding box.
+            x1 (int): The right x-coordinate of the bounding box.
+            y1 (int): The top y-coordinate of the bounding box.
+            page (int): The page number. Defaults to 0.
+
+        Returns:
+            list: List of spans of hotcharacters that exist within the given bboxes
+        """
+        text_in_bbox = self.extract_text(
+            x0=x0,
+            y0=y0,
+            x1=x1,
+            y1=y1,
+            page=page,
+        )
+        if y1 != y0:
+            text_in_bbox = list(map(str.strip, text_in_bbox.split("\n")))
+            text_in_bbox = [_text for _text in text_in_bbox if _text]
+        else:
+            text_in_bbox = text_in_bbox.strip().strip("\n")
+            text_in_bbox = [text_in_bbox]
+        spans: list = []
+        appended_spans: set = set()
+        all_hot_characters_in_page: list[HotCharacter] = []
+
+        for part_text in text_in_bbox:
+            occurences_text_in_bbox = self.find_text(query=part_text, pages=[page])
+
+            for _, page_num in enumerate(occurences_text_in_bbox):
+                for hot_character_list in occurences_text_in_bbox[page_num]:
+                    for hot_character in hot_character_list:
+                        all_hot_characters_in_page.append(hot_character)
+        if sort:
+            all_hot_characters_in_page = sorted(
+                all_hot_characters_in_page,
+                key=lambda hot_character: (hot_character.y, hot_character.x),
+            )
+        for hot_character in all_hot_characters_in_page:
+            if not hot_character.span_id:
+                continue
+            if hot_character.span_id in appended_spans or not (
+                hot_character.y >= y0 and hot_character.y <= y1
+            ):
+                continue
+            spans.append(self.pages[page].span_map[hot_character.span_id])
+            appended_spans.add(hot_character.span_id)
+        return spans
+
+    def extract_text(
+        self,
+        x0: int,
+        y0: int,
+        x1: int,
+        y1: int,
+        page: int = 0,
+    ):
         """
         Extract text from a specified bounding box on a page.
 
@@ -162,7 +231,7 @@ class HotPdf:
             y0 (int): The bottom y-coordinate of the bounding box.
             x1 (int): The right x-coordinate of the bounding box.
             y1 (int): The top y-coordinate of the bounding box.
-            page (int, optional): The page number. Defaults to 0.
+            page (int): The page number. Defaults to 0.
 
         Returns:
             str: Extracted text within the bounding box.

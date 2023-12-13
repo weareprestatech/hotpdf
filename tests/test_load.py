@@ -1,6 +1,7 @@
 import pytest
 from hotpdf import HotPdf
 from hotpdf.utils import get_element_dimension
+from hotpdf.data.classes import ElementDimension
 
 
 @pytest.fixture
@@ -160,3 +161,60 @@ def test_display_memory_map(valid_file_name):
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
     pages[0].display_memory_map(save=False, filename="test.txt")
+
+
+def test_get_spans(valid_file_name):
+    INCOMPLETE_WORD = "EXPERIEN"
+    NON_EXISTENT_WORD = "BLAH"
+    # hotpdf should return the following span values
+    FULL_SPAN_1 = "EXPERIENCE"
+    FULL_SPAN_2 = "VOLUNTEER EXPERIENCE OR LEADERSHIP"
+
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object.load(valid_file_name)
+
+    occurences = hot_pdf_object.find_text(INCOMPLETE_WORD)
+    element_dimensions: list[ElementDimension] = []
+    for _, page_num in enumerate(occurences):
+        occurences_by_page = occurences[page_num]
+        for occurence_by_page in occurences_by_page:
+            element_dimension = get_element_dimension(occurence_by_page)
+            full_spans_in_bbox = hot_pdf_object.extract_spans(
+                x0=element_dimension.x0,
+                y0=element_dimension.y0,
+                x1=element_dimension.x1,
+                y1=element_dimension.y1,
+            )
+            assert len(full_spans_in_bbox) == 1
+            element_dimensions.append(get_element_dimension(full_spans_in_bbox[0]))
+
+    span_1 = element_dimensions[0]
+    span_2 = element_dimensions[1]
+
+    text_1_extracted = hot_pdf_object.extract_text(
+        x0=span_1.x0, y0=span_1.y0, x1=span_1.x1, y1=span_1.y1
+    )
+    text_2_extracted = hot_pdf_object.extract_text(
+        x0=span_2.x0, y0=span_2.y0, x1=span_2.x1, y1=span_2.y1
+    )
+    assert (
+        text_1_extracted.strip("\n").strip() == FULL_SPAN_1
+    ), f"{text_1_extracted}, {FULL_SPAN_1}"
+    assert (
+        text_2_extracted.strip("\n").strip() == FULL_SPAN_2
+    ), f"{text_2_extracted}, {FULL_SPAN_2}"
+
+    # Test Non Existent Word
+    occurences = hot_pdf_object.find_text(NON_EXISTENT_WORD)
+    for _, page_num in enumerate(occurences):
+        occurences_by_page = occurences[page_num]
+        for occurence_by_page in occurences_by_page:
+            element_dimension = get_element_dimension(occurence_by_page)
+            full_spans_in_bbox = hot_pdf_object.extract_spans(
+                x0=element_dimension.x0,
+                y0=element_dimension.y0,
+                x1=element_dimension.x1,
+                y1=element_dimension.y1,
+            )
+            # Assert empty list returned
+            assert full_spans_in_bbox == []

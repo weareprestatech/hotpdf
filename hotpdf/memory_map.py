@@ -142,7 +142,7 @@ class MemoryMap:
         for char_c, _hot_character in char_hot_characters:
             self.text_trie.insert(char_c, _hot_character)
             if _hot_character.span_id:
-                self.span_map.insert(_hot_character.span_id, _hot_character)
+                self.span_map[_hot_character.span_id] = _hot_character
 
     @lru_cache
     def extract_text_from_bbox(self, x0: float, x1: float, y0: float, y1: float) -> str:
