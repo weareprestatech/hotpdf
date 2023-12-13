@@ -185,7 +185,15 @@ def test_get_spans(valid_file_name):
                 x1=element_dimension.x1,
                 y1=element_dimension.y1,
             )
+            __full_spans_in_bbox_unsorted = hot_pdf_object.extract_spans(
+                x0=element_dimension.x0,
+                y0=element_dimension.y0,
+                x1=element_dimension.x1,
+                y1=element_dimension.y1,
+                sort=False,
+            )
             assert len(full_spans_in_bbox) == 1
+            assert len(__full_spans_in_bbox_unsorted) == 1
             element_dimensions.append(get_element_dimension(full_spans_in_bbox[0]))
 
     span_1 = element_dimensions[0]

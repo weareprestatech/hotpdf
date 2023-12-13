@@ -40,14 +40,10 @@ class MemoryMap:
         Get text of the memory map
         """
         memory_map_str = ""
-        if hasattr(self, "memory_map"):
-            for row in range(self.rows):
-                for col in range(self.columns):
-                    memory_map_str += self.memory_map.get(row_idx=row, column_idx=col)
-                memory_map_str += "\n"
-        else:
-            raise Exception("Memory map not built yet!")
-
+        for row in range(self.rows):
+            for col in range(self.columns):
+                memory_map_str += self.memory_map.get(row_idx=row, column_idx=col)
+            memory_map_str += "\n"
         return memory_map_str
 
     def display_memory_map(
@@ -60,12 +56,7 @@ class MemoryMap:
             save (bool, optional): Whether to save to a file. Defaults to False.
             filename (str, optional): The filename to save the map. Defaults to "memory_map.txt".
         """
-        memory_map_str = ""
-        if hasattr(self, "memory_map"):
-            memory_map_str = self.text()
-        else:
-            raise Exception("Memory map not built yet!")
-
+        memory_map_str = self.text()
         if save:
             with open(filename, "w", encoding="utf-8") as file:
                 file.write(memory_map_str)
@@ -84,9 +75,6 @@ class MemoryMap:
         Returns:
             None
         """
-        if not hasattr(self, "memory_map"):
-            raise Exception("Memory map not built yet!")
-
         char_hot_characters: list = []
         seen_span_hashes: set[str] = set()
         spans: list[Element] = page.findall(".//span")
@@ -158,9 +146,6 @@ class MemoryMap:
         Returns:
             str: Extracted text within the bounding box.
         """
-        if not hasattr(self, "memory_map"):
-            raise Exception("Memory map not built!")
-
         cell_x0 = int(math.floor(x0))
         cell_x1 = int(math.ceil(x1))
         cell_y0 = int(math.floor(y0))

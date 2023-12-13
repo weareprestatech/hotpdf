@@ -8,12 +8,21 @@ A faster alternative to libraries like pdfquery.
 Get it from [here](https://www.ghostscript.com/).
 
 ## Contributing
-1. We use mypy to check for types and maintain the code quality. Please run mypy locally as well before pushing to prevent the lint pipeline from failing.
+1. Type & Lint Checks: We use `mypy` to check for types and maintain the code quality. Please run mypy locally as well before pushing to prevent the lint pipeline from failing. We also use `flake8` to do some basic linting.
 ```bash
 pipenv run mypy hotpdf/ --check-untyped-defs
+pipenv run mypy tests/ --check-untyped-defs
+pipenv run flake8 hotpdf/ --ignore=E501,W503
+```
+2. Test Coverage: We also check our test coverage and aim to reach > 90% coverage. We use the `coverage` library for this.
+```
+pipenv run coverage run --omit="*/test*" -m pytest tests/
+pipenv run coverage report -m
 ```
 
-## Usage
+<br>
+
+# Usage
 
 ```python
 # Import
