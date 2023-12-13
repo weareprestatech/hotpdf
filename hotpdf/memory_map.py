@@ -1,11 +1,13 @@
 import math
 import xml.etree.cElementTree as ET
+from xml.etree.cElementTree import Element
 from .trie import Trie
 from .span_map import SpanMap
 from .data.classes import HotCharacter
 from .helpers.nanoid import generate_nano_id
 from .sparse_matrix import SparseMatrix
 from functools import lru_cache
+from hashlib import md5
 
 
 class MemoryMap:
@@ -70,31 +72,42 @@ class MemoryMap:
         else:
             print(memory_map_str)
 
-    def load_memory_map(self, page: ET.Element) -> None:
+    def load_memory_map(
+        self, page: ET.Element, drop_duplicate_spans: bool = True
+    ) -> None:
         """
         Load memory map data from an XML page.
 
         Args:
             page (str): The XML page data.
-            format (str, optional): The format of the page. Defaults to "xml". (Unused)
+            drop_duplicate_spans (bool): Drop spans that are duplicates (example: on top of each other)
         Returns:
             None
         """
         if not hasattr(self, "memory_map"):
             raise Exception("Memory map not built yet!")
 
-        char_hot_characters = []
-        spans = page.findall(".//span")
+        char_hot_characters: list = []
+        seen_span_hashes: set[str] = set()
+        spans: list[Element] = page.findall(".//span")
         chars: list = []
         if spans:
             for span in spans:
-                span_id = generate_nano_id(size=10)
-                for char in span.findall(".//"):
+                span_id: str = generate_nano_id(size=10)
+                span_chars: list[Element] = span.findall(".//")
+                span_hash: str = md5(
+                    f"{str(span.attrib)}|{str([_char.attrib for _char in span_chars])}".encode()
+                ).hexdigest()
+                if drop_duplicate_spans:
+                    if span_hash in seen_span_hashes:
+                        continue
+                    seen_span_hashes.add(span_hash)
+                for char in span_chars:
                     char.set("span_id", span_id)
                     chars.append(char)
         else:
             chars = page.findall(".//char")
-
+        del seen_span_hashes
         for char in chars:
             char_bbox = char.attrib["bbox"]
             char_x0, char_y0, char_x1, _ = [
