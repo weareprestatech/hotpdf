@@ -50,12 +50,13 @@ class HotPdf:
         self.__check_file_exists(pdf_file)
         self.__check_file_already_loaded()
 
-    def load(self, pdf_file: str):
+    def load(self, pdf_file: str, drop_duplicate_spans: bool = True):
         """
         Load a PDF file into memory.
 
         Args:
             pdf_file (str): The path to the PDF file to be loaded.
+            drop_duplicate_spans (bool): Drop duplicate spans when loading
 
         Raises:
             Exception: If a file is already loaded.
@@ -70,7 +71,9 @@ class HotPdf:
                 precision=self.precision,
             )
             parsed_page.build_memory_map()
-            parsed_page.load_memory_map(xml_page)
+            parsed_page.load_memory_map(
+                page=xml_page, drop_duplicate_spans=drop_duplicate_spans
+            )
             self.pages.append(parsed_page)
         del xml_object
         gc.collect()
