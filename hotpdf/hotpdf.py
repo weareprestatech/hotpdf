@@ -46,6 +46,16 @@ class HotPdf:
         if len(self.pages) > 0:
             raise Exception("A file is already loaded!")
 
+    def __check_coordinates(self, x0: int, y0: int, x1: int, y1: int):
+        if x0 < 0 or x1 < 0 or y0 < 0 or y1 < 0:
+            raise ValueError("Invalid coordinates")
+        if x0 > self.width or x1 > self.width or y0 > self.height or y1 > self.height:
+            raise ValueError("Invalid coordinates")
+
+    def __check_page_number(self, page: int):
+        if page < 0 or page >= len(self.pages):
+            raise ValueError("Invalid page number")
+
     def prechecks(self, pdf_file: str):
         self.__check_file_exists(pdf_file)
         self.__check_file_already_loaded()
@@ -115,6 +125,9 @@ class HotPdf:
         Returns:
             dict: A dictionary mapping page numbers to found text coordinates.
         """
+        for page in pages:
+            self.__check_page_number(page)
+
         if len(pages) == 0:
             query_pages = {i: self.pages[i] for i in range(len(self.pages))}
         else:
@@ -239,6 +252,9 @@ class HotPdf:
         Returns:
             str: Extracted text within the bounding box.
         """
+        self.__check_coordinates(x0, y0, x1, y1)
+        self.__check_page_number(page)
+
         page_to_search: MemoryMap = self.pages[page]
         x0 = max(0, math.floor(x0 - (1 / self.precision)))
         x1 = min(
