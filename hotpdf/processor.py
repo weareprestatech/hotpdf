@@ -15,7 +15,7 @@ def generate_xml_file(file_path: str) -> str:
     Returns:
         str: XML File Path
     """
-    ghostscript = "gs" if os.name != "nt" else "gswin64"
+    ghostscript = "gs" if os.name != "nt" else "gswin64c"
     temporary_xml_file = tempfile.NamedTemporaryFile(delete=False)
     command_line_args = " ".join(
         [
