@@ -19,6 +19,21 @@ class SparseMatrix:
         ):
             raise IndexError("Specified index is out of range")
 
+    def __getitem__(self, key):
+        row_idx, column_idx = key
+        self.__check_indices(row_idx, column_idx)
+        return self.values.get((row_idx, column_idx), "")
+
+    def __setitem__(self, key, value):
+        row_idx, column_idx = key
+        self.__check_indices(row_idx, column_idx)
+        if value:
+            self.values[(row_idx, column_idx)] = value
+
+    def __iter__(self):
+        for key, value in self.values.items():
+            yield key, value
+
     def insert(self, value: str, row_idx: int, column_idx: int):
         self.__check_indices(row_idx, column_idx)
         if value:
