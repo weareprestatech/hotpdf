@@ -12,6 +12,9 @@ class SpanMap:
     def __init__(self):
         self.map = defaultdict(list)
 
+    def __len__(self) -> int:
+        return len(self.map)
+
     def __getitem__(self, span_id: str) -> Union[list[HotCharacter], None]:
         return self.get_span(span_id)
 
