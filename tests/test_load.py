@@ -139,26 +139,36 @@ def test_col_index_out_of_range_memory_map(valid_file_name):
         pages[0].memory_map.get(row_idx=100, column_idx=9999)
 
 
-# TODO: Implement Exceptions
-@pytest.mark.skip("Not implemented yet")
-def test_invalid_page_number(valid_file_name):
+@pytest.mark.parametrize("page", [-1, -2, 99])
+def test_invalid_page_number(valid_file_name, page):
     hot_pdf_object = HotPdf(height=1170, width=827)
     hot_pdf_object.load(valid_file_name)
 
     with pytest.raises(ValueError, match="Invalid page number"):
-        hot_pdf_object.find_text("Test", pages=[99])
+        hot_pdf_object.find_text("Test", pages=[page])
 
     with pytest.raises(ValueError, match="Invalid page number"):
-        hot_pdf_object.extract_text(x0=0, y0=1, x1=100, y1=5, page=99)
+        hot_pdf_object.extract_text(x0=0, y0=1, x1=100, y1=5, page=page)
 
 
-@pytest.mark.skip("Not implemented yet")
-def test_extract_invalid_coordinates(valid_file_name):
+@pytest.mark.parametrize(
+    "coordinates",
+    [
+        [-1, 0, 0, 0],
+        [0, -1, 0, 0],
+        [0, 0, -1, 0],
+        [0, 0, 0, -1],
+        [1200, 1200, 1200, 1200],
+    ],
+)
+def test_extract_invalid_coordinates(valid_file_name, coordinates):
     hot_pdf_object = HotPdf(height=1170, width=827)
     hot_pdf_object.load(valid_file_name)
 
     with pytest.raises(ValueError, match="Invalid coordinates"):
-        hot_pdf_object.extract_text(x0=-5, y0=-5, x1=-5, y1=-5)
+        hot_pdf_object.extract_text(
+            x0=coordinates[0], y0=coordinates[1], x1=coordinates[2], y1=coordinates[3]
+        )
 
 
 def test_display_memory_map(valid_file_name):
