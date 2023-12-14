@@ -77,10 +77,13 @@ class HotPdf:
 
         Args:
             pdf_file (str): The path to the PDF file to be loaded.
-            drop_duplicate_spans (bool): Drop duplicate spans when loading
-
+            drop_duplicate_spans (bool, optional): Drop duplicate spans when loading. Defaults to True.
+            first_page (int, optional): The first page to load. Defaults to 0.
+            last_page (int, optional): The last page to load. Defaults to 0.
         Raises:
             Exception: If a file is already loaded.
+            ValueError: If the page range is invalid.
+            FileNotFoundError: If the file is not found.
         """
         self.prechecks(pdf_file, first_page, last_page)
         self.xml_file_path = generate_xml_file(pdf_file, first_page, last_page)
@@ -133,6 +136,8 @@ class HotPdf:
             pages (list[int], optional): List of page numbers to search. Defaults to [].
             validate (bool, optional): Double check the extracted bounding boxes with the query string.
             take_span (bool, optional): Take the full span of the text that it is a part of.
+        Raises:
+            ValueError: If the page number is invalid.
         Returns:
             dict: A dictionary mapping page numbers to found text coordinates.
         """
@@ -197,8 +202,11 @@ class HotPdf:
             y0 (int): The bottom y-coordinate of the bounding box.
             x1 (int): The right x-coordinate of the bounding box.
             y1 (int): The top y-coordinate of the bounding box.
-            page (int): The page number. Defaults to 0.
-
+            page (int, optional): The page number. Defaults to 0.
+            sort (bool, optional): Sort the spans by their coordinates. Defaults to True.
+        Raises:
+            ValueError: If the coordinates are invalid.
+            ValueError: If the page number is invalid.
         Returns:
             list: List of spans of hotcharacters that exist within the given bboxes
         """
@@ -259,7 +267,9 @@ class HotPdf:
             x1 (int): The right x-coordinate of the bounding box.
             y1 (int): The top y-coordinate of the bounding box.
             page (int): The page number. Defaults to 0.
-
+        Raises:
+            ValueError: If the coordinates are invalid.
+            ValueError: If the page number is invalid.
         Returns:
             str: Extracted text within the bounding box.
         """
