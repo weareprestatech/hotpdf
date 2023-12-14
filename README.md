@@ -43,6 +43,14 @@ hot_pdf.load("test.pdf")
 ```
 
 ### Operations
+#### load(str)
+Loads the file in memory.
+Params
+- file_name (str): Path of the file to load
+- drop_duplicate_spans (bool) (Optional): Drop duplicate text spans while loading in memroy (default: True)
+- first_page (int) (Optional): Page to start loading from. (Default: 0) If nothing is specified, whole file is loaded
+- last_page (int) (Optional): Last page to be loaded. (Default: 0) If nothing is specified, whole file is loaded.
+
 #### find_text (string)
 Returns the occurences where the string was found in page wise. (dict[list])
     
