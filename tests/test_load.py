@@ -204,11 +204,12 @@ def test_get_spans(valid_file_name):
                 x0=element_dimension.x0,
                 y0=element_dimension.y0,
                 x1=element_dimension.x1,
-                y1=element_dimension.y1,
+                y1=element_dimension.y1 + 100,  # to simulate multi line extraction
                 sort=False,
             )
             assert len(full_spans_in_bbox) == 1
-            assert len(__full_spans_in_bbox_unsorted) == 1
+            assert len(__full_spans_in_bbox_unsorted) > 1
+            assert full_spans_in_bbox[0] in __full_spans_in_bbox_unsorted
             element_dimensions.append(get_element_dimension(full_spans_in_bbox[0]))
 
     span_1 = element_dimensions[0]

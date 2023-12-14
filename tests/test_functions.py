@@ -11,7 +11,12 @@ def valid_file_name():
     return "tests/resources/PDF.pdf"
 
 
-def test_sparse_matrix(valid_file_name):
+@pytest.fixture
+def luca_mock_file_name():
+    return "tests/resources/luca_mock.pdf"
+
+
+def test_load_file(valid_file_name):
     hot_pdf_object = HotPdf(height=1170, width=827)
     hot_pdf_object.load(valid_file_name)
 
@@ -88,3 +93,15 @@ def test_sparse_matrix_iterator():
     non_empty_values = list(matrix)
     expected_result = [((0, 0), "A"), ((1, 1), "B"), ((2, 2), "C")]
     assert non_empty_values == expected_result
+
+
+def test_duplicate_spans_removed(luca_mock_file_name):
+    hot_pdf_object_with_dup_span = HotPdf(height=1170, width=827)
+    hot_pdf_object_with_dup_span.load(luca_mock_file_name, drop_duplicate_spans=False)
+
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object.load(luca_mock_file_name)
+
+    assert len(hot_pdf_object.pages[0].span_map) < len(
+        hot_pdf_object_with_dup_span.pages[0].span_map
+    )
