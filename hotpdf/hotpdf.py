@@ -46,11 +46,22 @@ class HotPdf:
         if len(self.pages) > 0:
             raise Exception("A file is already loaded!")
 
-    def prechecks(self, pdf_file: str):
+    def __check_page_range(self, first_page: int, last_page: int):
+        if first_page > last_page or first_page < 0 or last_page < 0:
+            raise ValueError("Invalid page range")
+
+    def prechecks(self, pdf_file: str, first_page: int, last_page: int):
         self.__check_file_exists(pdf_file)
         self.__check_file_already_loaded()
+        self.__check_page_range(first_page, last_page)
 
-    def load(self, pdf_file: str, drop_duplicate_spans: bool = True):
+    def load(
+        self,
+        pdf_file: str,
+        drop_duplicate_spans: bool = True,
+        first_page: int = 0,
+        last_page: int = 0,
+    ):
         """
         Load a PDF file into memory.
 
@@ -61,8 +72,8 @@ class HotPdf:
         Raises:
             Exception: If a file is already loaded.
         """
-        self.prechecks(pdf_file)
-        self.xml_file_path = generate_xml_file(pdf_file)
+        self.prechecks(pdf_file, first_page, last_page)
+        self.xml_file_path = generate_xml_file(pdf_file, first_page, last_page)
         xml_object = ET.parse(self.xml_file_path)
         for xml_page in xml_object.findall(".//page"):
             parsed_page = MemoryMap(
