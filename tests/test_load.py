@@ -15,6 +15,11 @@ def blank_file_name():
 
 
 @pytest.fixture
+def multiple_pages_file_name():
+    return "tests/resources/20pages.pdf"
+
+
+@pytest.fixture
 def non_existent_file_name():
     return "non_existent_file.pdf"
 
@@ -236,3 +241,22 @@ def test_get_spans(valid_file_name):
             )
             # Assert empty list returned
             assert full_spans_in_bbox == []
+
+
+@pytest.mark.parametrize("first_page, last_page", [(1, 1), (1, 2)])
+def test_extract_page_range(multiple_pages_file_name, first_page, last_page):
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object.load(
+        multiple_pages_file_name, first_page=first_page, last_page=last_page
+    )
+    pages = hot_pdf_object.pages
+    assert len(pages) == last_page - first_page + 1
+
+
+@pytest.mark.parametrize("first_page, last_page", [(-1, 1), (20, 10)])
+def test_extract_page_range_exception(multiple_pages_file_name, first_page, last_page):
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    with pytest.raises(ValueError, match="Invalid page range"):
+        hot_pdf_object.load(
+            multiple_pages_file_name, first_page=first_page, last_page=last_page
+        )
