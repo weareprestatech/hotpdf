@@ -5,7 +5,7 @@ import html
 import re
 
 
-def generate_xml_file(file_path: str) -> str:
+def generate_xml_file(file_path: str, first_page: int, last_page: int) -> str:
     """
     Generates XML notation of PDF File.
 
@@ -25,6 +25,8 @@ def generate_xml_file(file_path: str) -> str:
             "-dSAFER",
             "-sDEVICE=txtwrite",
             "-dTextFormat=1",
+            f"-dFirstPage={first_page}" if first_page else "",
+            f"-dLastPage={last_page}" if last_page else "",
             f'-sOutputFile="{temporary_xml_file.name}"',
             "-f",
             f'"{file_path}"',
