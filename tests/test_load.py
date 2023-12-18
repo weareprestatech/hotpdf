@@ -2,6 +2,8 @@ import pytest
 from hotpdf import HotPdf
 from hotpdf.utils import get_element_dimension
 from hotpdf.data.classes import ElementDimension
+from unittest.mock import patch
+from hotpdf.memory_map import MemoryMap
 
 
 @pytest.fixture
@@ -261,3 +263,50 @@ def test_extract_page_range_exception(multiple_pages_file_name, first_page, last
         hot_pdf_object.load(
             multiple_pages_file_name, first_page=first_page, last_page=last_page
         )
+
+
+def test_no_spans_in_xml_file_extraction(valid_file_name):
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
+        get_page_spans.return_value = None
+        hot_pdf_object.load(valid_file_name)
+        get_page_spans.assert_called_once()
+        # Test extraction
+        WORD = "DEGREE"
+        occurences = hot_pdf_object.find_text(WORD)
+        assert len(occurences) == 1
+        for page_num, _ in occurences.items():
+            assert page_num == 0
+
+        element = get_element_dimension(occurences[0][0])
+        extracted_text = hot_pdf_object.extract_text(
+            x0=element.x0,
+            y0=element.y0,
+            x1=element.x1,
+            y1=element.y1,
+        )
+        extracted_text = extracted_text.strip("\n").strip()
+        assert extracted_text == WORD
+        # Test Exception raised
+        with pytest.raises(Exception, match="No spans exist on this page"):
+            hot_pdf_object.extract_spans(
+                x0=0,
+                y0=0,
+                x1=100,
+                y1=100,
+            )
+
+
+def test_no_spans_in_xml_file_exception(valid_file_name):
+    hot_pdf_object = HotPdf(height=1170, width=827)
+    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
+        hot_pdf_object.load(valid_file_name)
+        get_page_spans.return_value = None
+        # Test Exception raised
+        with pytest.raises(Exception, match="No spans exist on this page"):
+            hot_pdf_object.extract_spans(
+                x0=0,
+                y0=0,
+                x1=100,
+                y1=100,
+            )

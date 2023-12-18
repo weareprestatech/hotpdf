@@ -63,6 +63,12 @@ class MemoryMap:
         else:
             print(memory_map_str)
 
+    def __get_page_spans(self, page: ET.Element):
+        return page.findall(".//span")
+
+    def __get_page_chars(self, page: ET.Element):
+        return page.findall(".//char")
+
     def load_memory_map(
         self, page: ET.Element, drop_duplicate_spans: bool = True
     ) -> None:
@@ -77,7 +83,7 @@ class MemoryMap:
         """
         char_hot_characters: list = []
         seen_span_hashes: set[str] = set()
-        spans: list[Element] = page.findall(".//span")
+        spans: list[Element] = self.__get_page_spans(page)
         chars: list = []
         if spans:
             for span in spans:
@@ -94,7 +100,7 @@ class MemoryMap:
                     char.set("span_id", span_id)
                     chars.append(char)
         else:
-            chars = page.findall(".//char")
+            chars = self.__get_page_chars(page)
         del seen_span_hashes
         for char in chars:
             char_bbox = char.attrib["bbox"]

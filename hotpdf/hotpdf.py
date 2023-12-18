@@ -210,6 +210,9 @@ class HotPdf:
         Returns:
             list: List of spans of hotcharacters that exist within the given bboxes
         """
+        if len(self.pages[page].span_map) == 0:
+            raise Exception("No spans exist on this page")
+
         text_in_bbox = self.extract_text(
             x0=x0,
             y0=y0,
@@ -223,6 +226,7 @@ class HotPdf:
         else:
             text_in_bbox = text_in_bbox.strip().strip("\n")
             text_in_bbox = [text_in_bbox]
+
         spans: list = []
         appended_spans: set = set()
         all_hot_characters_in_page: list[HotCharacter] = []
