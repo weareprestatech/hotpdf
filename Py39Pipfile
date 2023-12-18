@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+black = "==23.9.1"
+pytest = "*"
+mypy = "*"
+flake8 = "*"
+coverage = "*"
+
+[requires]
+python_version = "3.9"
