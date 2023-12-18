@@ -15,9 +15,12 @@ steps:
     architecture: 'x64'
 
 - script: |
+    rm Pipfile
+    rm Pipfile.lock
+    cp Pipfile.py3.9 Pipfile
     python -m pip install pipenv
     python -m pipenv install --dev
-  displayName: 'Setup Python environment'
+  displayName: 'Setup Python environment (3.9)'
 
 - script: |
     sh run.tests.sh
