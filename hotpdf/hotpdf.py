@@ -7,6 +7,7 @@ import xml.etree.cElementTree as ET
 import os
 import gc
 from typing import Optional, Union
+import warnings
 
 
 class HotPdf:
@@ -211,7 +212,8 @@ class HotPdf:
             list: List of spans of hotcharacters that exist within the given bboxes
         """
         if len(self.pages[page].span_map) == 0:
-            raise Exception("No spans exist on this page")
+            warnings.warn("No spans exist on this page")
+            return []
 
         text_in_bbox = self.extract_text(
             x0=x0,

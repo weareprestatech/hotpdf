@@ -287,26 +287,20 @@ def test_no_spans_in_xml_file_extraction(valid_file_name):
         )
         extracted_text = extracted_text.strip("\n").strip()
         assert extracted_text == WORD
-        # Test Exception raised
-        with pytest.raises(Exception, match="No spans exist on this page"):
-            hot_pdf_object.extract_spans(
-                x0=0,
-                y0=0,
-                x1=100,
-                y1=100,
-            )
 
 
-def test_no_spans_in_xml_file_exception(valid_file_name):
+def test_no_spans_in_xml_file_extract_spans(valid_file_name):
     hot_pdf_object = HotPdf(height=1170, width=827)
     with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
         hot_pdf_object.load(valid_file_name)
         get_page_spans.return_value = None
-        # Test Exception raised
-        with pytest.raises(Exception, match="No spans exist on this page"):
+        # Test No spans
+        assert (
             hot_pdf_object.extract_spans(
                 x0=0,
                 y0=0,
                 x1=100,
                 y1=100,
             )
+            == []
+        )
