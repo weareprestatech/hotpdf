@@ -17,7 +17,7 @@ def luca_mock_file_name():
 
 
 def test_load_file(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
 
 
@@ -26,7 +26,7 @@ def test_element_dimensions_empty():
 
 
 def test_span_map_behaviours(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
 
     with pytest.raises(KeyError, match="Cannot set key as None"):
@@ -44,7 +44,7 @@ def test_span_map_behaviours(valid_file_name):
 
 
 def test_memory_map_behaviour(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     with pytest.raises(Exception, match="list index out of range"):
         hot_pdf_object.pages[0].text()
     hot_pdf_object.load(valid_file_name, drop_duplicate_spans=False)
@@ -80,9 +80,9 @@ def test_sparse_matrix_getitem_and_setitem():
     matrix[1, 1] = "D"
     assert matrix[1, 1] == "D"
     with pytest.raises(IndexError, match="Specified index is out of range"):
-        matrix[-1, 0]
+        matrix[0, -1]
     with pytest.raises(IndexError):
-        matrix[0, -1] = "Y"
+        matrix[-1, 0] = "Y"
 
 
 def test_sparse_matrix_iterator():
@@ -96,10 +96,10 @@ def test_sparse_matrix_iterator():
 
 
 def test_duplicate_spans_removed(luca_mock_file_name):
-    hot_pdf_object_with_dup_span = HotPdf(height=1170, width=827)
+    hot_pdf_object_with_dup_span = HotPdf()
     hot_pdf_object_with_dup_span.load(luca_mock_file_name, drop_duplicate_spans=False)
 
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(luca_mock_file_name)
 
     assert len(hot_pdf_object.pages[0].span_map) < len(

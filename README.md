@@ -45,11 +45,7 @@ from hotpdf import HotPdf
 Initialising a HotPdf object
 
 ```python
-# width = width of PDF
-# height = height of PDF
-# precision = sets the precision of loading data into memory. Set a value within 0 to 1.
-# Less precision amounts to more data extraction but takes up more memory and processing time.
-hotpdf = HotPdf(width=827, height=1170, precision=0.5)
+hotpdf = HotPdf()
 
 # Load the file into memory
 hot_pdf.load("test.pdf")
@@ -118,10 +114,6 @@ hot_pdf.extract_spans(x0=513, y0=760, x1=560, y1=766, page=0)
 #### MemoryMap
 
 A memory map is the internal 2D matrix representation of a PDF page. The x values and y values in the matrix are positioned according to the bbox position.
-
-- ? So now, how does precision affect HotPdf?
-
-    In case there is a clash of character bboxes, precision makes sure that there's extra positions to put the character in. So, lower = better, but more memory and processing power is required for lower precisions.
 
 #### page (MemoryMap)
 

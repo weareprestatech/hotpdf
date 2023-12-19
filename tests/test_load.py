@@ -27,12 +27,12 @@ def non_existent_file_name():
 
 
 def test_load(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
 
 
 def test_full_text(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
     # Not blank extraction
@@ -40,7 +40,7 @@ def test_full_text(valid_file_name):
 
 
 def test_pages_length(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
     assert len(pages) == 1
@@ -48,7 +48,7 @@ def test_pages_length(valid_file_name):
 
 def test_extraction(valid_file_name):
     WORD = "DEGREE"
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     occurences = hot_pdf_object.find_text(WORD)
     assert len(occurences) == 1
@@ -72,7 +72,7 @@ def test_full_span_extraction(valid_file_name):
     FULL_SPAN_1 = "EXPERIENCE"
     FULL_SPAN_2 = "VOLUNTEER EXPERIENCE OR LEADERSHIP"
 
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     occurences = hot_pdf_object.find_text(WORD, take_span=True)
 
@@ -107,43 +107,43 @@ def test_full_span_extraction(valid_file_name):
 
 def test_non_existent_file_path(non_existent_file_name):
     with pytest.raises(FileNotFoundError):
-        hot_pdf_object = HotPdf(height=1170, width=827)
+        hot_pdf_object = HotPdf()
         hot_pdf_object.load(non_existent_file_name)
 
 
 def test_double_loading(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     with pytest.raises(Exception, match="A file is already loaded!"):
         hot_pdf_object.load(valid_file_name)
 
 
 def test_blank_pdf(blank_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(blank_file_name)
     pages = hot_pdf_object.pages
     assert all([len(page.text().strip("\n").strip()) == 0 for page in pages])
 
 
-def test_row_index_out_of_range_memory_map(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+def test_row_index_greater_than_rows_of_memory_map(valid_file_name):
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
-    with pytest.raises(IndexError, match="Specified index is out of range"):
-        pages[0].memory_map.get(row_idx=9999, column_idx=100)
+    pages[0].memory_map.get(row_idx=9999, column_idx=100) is not None
+    assert pages[0].memory_map.get(row_idx=9999, column_idx=100) == ""
 
 
-def test_col_index_out_of_range_memory_map(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827, precision=1)
+def test_col_index_greater_than_columns_of_memory_map(valid_file_name):
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
-    with pytest.raises(IndexError, match="Specified index is out of range"):
-        pages[0].memory_map.get(row_idx=100, column_idx=9999)
+    pages[0].memory_map.get(row_idx=100, column_idx=9999) is not None
+    assert pages[0].memory_map.get(row_idx=100, column_idx=9999) == ""
 
 
 @pytest.mark.parametrize("page", [-1, -2, 99])
 def test_invalid_page_number(valid_file_name, page):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
 
     with pytest.raises(ValueError, match="Invalid page number"):
@@ -160,11 +160,10 @@ def test_invalid_page_number(valid_file_name, page):
         [0, -1, 0, 0],
         [0, 0, -1, 0],
         [0, 0, 0, -1],
-        [1200, 1200, 1200, 1200],
     ],
 )
 def test_extract_invalid_coordinates(valid_file_name, coordinates):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
 
     with pytest.raises(ValueError, match="Invalid coordinates"):
@@ -174,7 +173,7 @@ def test_extract_invalid_coordinates(valid_file_name, coordinates):
 
 
 def test_display_memory_map(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
     pages[0].display_memory_map(save=False, filename="test.txt")
@@ -187,7 +186,7 @@ def test_get_spans(valid_file_name):
     FULL_SPAN_1 = "EXPERIENCE"
     FULL_SPAN_2 = "VOLUNTEER EXPERIENCE OR LEADERSHIP"
 
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
 
     occurences = hot_pdf_object.find_text(INCOMPLETE_WORD)
@@ -248,7 +247,7 @@ def test_get_spans(valid_file_name):
 
 @pytest.mark.parametrize("first_page, last_page", [(1, 1), (1, 2)])
 def test_extract_page_range(multiple_pages_file_name, first_page, last_page):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     hot_pdf_object.load(
         multiple_pages_file_name, first_page=first_page, last_page=last_page
     )
@@ -258,7 +257,7 @@ def test_extract_page_range(multiple_pages_file_name, first_page, last_page):
 
 @pytest.mark.parametrize("first_page, last_page", [(-1, 1), (20, 10)])
 def test_extract_page_range_exception(multiple_pages_file_name, first_page, last_page):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     with pytest.raises(ValueError, match="Invalid page range"):
         hot_pdf_object.load(
             multiple_pages_file_name, first_page=first_page, last_page=last_page
@@ -266,7 +265,7 @@ def test_extract_page_range_exception(multiple_pages_file_name, first_page, last
 
 
 def test_no_spans_in_xml_file_extraction(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
         get_page_spans.return_value = None
         hot_pdf_object.load(valid_file_name)
@@ -290,7 +289,7 @@ def test_no_spans_in_xml_file_extraction(valid_file_name):
 
 
 def test_no_spans_in_xml_file_extract_spans(valid_file_name):
-    hot_pdf_object = HotPdf(height=1170, width=827)
+    hot_pdf_object = HotPdf()
     with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
         hot_pdf_object.load(valid_file_name)
         get_page_spans.return_value = None
