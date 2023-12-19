@@ -122,6 +122,10 @@ You can access a page by accessing the hotpdf.pages object
 ```python
 pages = hot_pdf.pages[0]
 
+# Height and Width
+pages[0].height # number of rows
+pages[0].width # number of columns
+
 # Number of pages
 num_pages = len(pages)
 
