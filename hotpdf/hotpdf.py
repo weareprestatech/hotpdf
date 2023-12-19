@@ -13,25 +13,16 @@ import warnings
 class HotPdf:
     def __init__(
         self,
-        height: int,
-        width: int,
-        precision: float = 0.75,
         extraction_tolerance: int = 4,
     ):
         """
         Initialize the HotPdf class.
 
         Args:
-            height (int): The height of the PDF pages.
-            width (int): The width of the PDF pages.
-            precision (float, optional): Precision parameter for loading. Defaults to 1.
             extraction_tolerance (int, optional): Tolerance value used during text extraction
                 to adjust the bounding box for capturing text. Defaults to 4.
         """
         self.pages: list[MemoryMap] = []
-        self.height: int = height
-        self.width: int = width
-        self.precision: float = precision
         self.extraction_tolerance: int = extraction_tolerance
         self.xml_file_path: Optional[str] = None
 
@@ -49,8 +40,6 @@ class HotPdf:
 
     def __check_coordinates(self, x0: int, y0: int, x1: int, y1: int):
         if x0 < 0 or x1 < 0 or y0 < 0 or y1 < 0:
-            raise ValueError("Invalid coordinates")
-        if x0 > self.width or x1 > self.width or y0 > self.height or y1 > self.height:
             raise ValueError("Invalid coordinates")
 
     def __check_page_number(self, page: int):
@@ -90,11 +79,7 @@ class HotPdf:
         self.xml_file_path = generate_xml_file(pdf_file, first_page, last_page)
         xml_object = ET.parse(self.xml_file_path)
         for xml_page in xml_object.findall(".//page"):
-            parsed_page = MemoryMap(
-                width=self.width + self.extraction_tolerance + 1,
-                height=self.height + self.extraction_tolerance + 1,
-                precision=self.precision,
-            )
+            parsed_page = MemoryMap()
             parsed_page.build_memory_map()
             parsed_page.load_memory_map(
                 page=xml_page, drop_duplicate_spans=drop_duplicate_spans
@@ -283,14 +268,9 @@ class HotPdf:
         self.__check_page_number(page)
 
         page_to_search: MemoryMap = self.pages[page]
-        x0 = max(0, math.floor(x0 - (1 / self.precision)))
-        x1 = min(
-            math.ceil(self.width + 1 / self.precision - 1),
-            math.ceil(x1 + (1 / self.precision)) + self.extraction_tolerance,
-        )
         extracted_text = page_to_search.extract_text_from_bbox(
-            x0=math.floor(x0 - (1 / self.precision)),
-            x1=math.ceil(x1 + (1 / self.precision)),
+            x0=math.floor(x0),
+            x1=math.ceil(x1 + self.extraction_tolerance),
             y0=y0,
             y1=y1,
         )

@@ -11,37 +11,29 @@ from hashlib import md5
 
 
 class MemoryMap:
-    def __init__(self, width: float = 0, height: float = 0, precision: float = 0.5):
+    def __init__(self):
         """
         Initialize the MemoryMap. 2D Matrix representation of a PDF Page.
-
-        Args:
-            width (float, optional): The width of the map. Defaults to 0.
-            height (float, optional): The height of the map. Defaults to 0.
-            precision (float, optional): The precision factor. Defaults to 0.5.
         """
-        self.height: float = height
-        self.width: float = width
-        self.precision: float = precision
-        self.rows: int = math.ceil(self.height / self.precision)
-        self.columns: int = math.ceil(self.width / self.precision)
         self.text_trie = Trie()
         self.span_map = SpanMap()
+        self.width = 0
+        self.height = 0
 
     def build_memory_map(self) -> None:
         """
         Build the memory map based on width and height.
         The memory map is a SparseMatrix representation of the PDF.
         """
-        self.memory_map = SparseMatrix(rows=self.rows, columns=self.columns)
+        self.memory_map = SparseMatrix()
 
     def text(self) -> str:
         """
         Get text of the memory map
         """
         memory_map_str = ""
-        for row in range(self.rows):
-            for col in range(self.columns):
+        for row in range(self.memory_map.rows):
+            for col in range(self.memory_map.columns):
                 memory_map_str += self.memory_map.get(row_idx=row, column_idx=col)
             memory_map_str += "\n"
         return memory_map_str
@@ -118,7 +110,7 @@ class MemoryMap:
                 x_end=char_x1,
                 span_id=char_span_id,
             )
-            if not 0 < cell_x < self.width or not 0 < cell_y < self.height:
+            if not 0 < cell_x or not 0 < cell_y:
                 continue
 
             if self.memory_map.get(row_idx=cell_y, column_idx=cell_x) != "":
@@ -137,6 +129,8 @@ class MemoryMap:
             self.text_trie.insert(char_c, _hot_character)
             if _hot_character.span_id:
                 self.span_map[_hot_character.span_id] = _hot_character
+        self.width = self.memory_map.columns
+        self.height = self.memory_map.rows
 
     @lru_cache
     def extract_text_from_bbox(self, x0: float, x1: float, y0: float, y1: float) -> str:
@@ -159,10 +153,10 @@ class MemoryMap:
 
         extracted_text = ""
         for row in range(cell_y0, cell_y1 + 1):
-            if 0 <= row < self.rows:
+            if 0 <= row < self.memory_map.rows:
                 row_text = ""
                 for col in range(cell_x0, cell_x1 + 1):
-                    if 0 <= col < self.rows:
+                    if 0 <= col < self.memory_map.columns:
                         row_text += self.memory_map.get(row_idx=row, column_idx=col)
                 if row_text:
                     extracted_text += row_text
