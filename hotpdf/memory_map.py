@@ -14,11 +14,15 @@ class MemoryMap:
     def __init__(self):
         """
         Initialize the MemoryMap. 2D Matrix representation of a PDF Page.
+
+        Attributes:
+            width (int): The width (max columns) of a page.
+            height (height) The height (max rows) of a page.
         """
         self.text_trie = Trie()
         self.span_map = SpanMap()
-        self.width = 0
-        self.height = 0
+        self.width: int = 0
+        self.height: int = 0
 
     def build_memory_map(self) -> None:
         """
