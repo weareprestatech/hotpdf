@@ -270,7 +270,12 @@ def test_no_spans_in_xml_file_extraction(valid_file_name):
         get_page_spans.return_value = None
         hot_pdf_object.load(valid_file_name)
         get_page_spans.assert_called_once()
-        # Test extraction
+
+        # No spans should be extracted
+        spans = hot_pdf_object.extract_spans(0, 0, 1000, 1000)
+        assert spans == []
+
+        # Test extraction of word without span
         WORD = "DEGREE"
         occurences = hot_pdf_object.find_text(WORD)
         assert len(occurences) == 1

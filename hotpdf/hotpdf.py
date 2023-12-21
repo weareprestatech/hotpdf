@@ -198,7 +198,6 @@ class HotPdf:
         """
         if len(self.pages[page].span_map) == 0:
             warnings.warn("No spans exist on this page")
-            return []
 
         text_in_bbox = self.extract_text(
             x0=x0,
