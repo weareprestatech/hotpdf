@@ -17,7 +17,7 @@ class MemoryMap:
 
         Attributes:
             width (int): The width (max columns) of a page.
-            height (height) The height (max rows) of a page.
+            height (int) The height (max rows) of a page.
         """
         self.text_trie = Trie()
         self.span_map = SpanMap()
