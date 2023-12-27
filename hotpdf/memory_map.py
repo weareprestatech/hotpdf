@@ -3,7 +3,7 @@ import xml.etree.cElementTree as ET
 from xml.etree.cElementTree import Element
 from .trie import Trie
 from .span_map import SpanMap
-from .data.classes import HotCharacter
+from .data.classes import HotCharacter, PageResult
 from .helpers.nanoid import generate_nano_id
 from .sparse_matrix import SparseMatrix
 from functools import lru_cache
@@ -11,7 +11,7 @@ from hashlib import md5
 
 
 class MemoryMap:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the MemoryMap. 2D Matrix representation of a PDF Page.
 
@@ -59,10 +59,10 @@ class MemoryMap:
         else:
             print(memory_map_str)
 
-    def __get_page_spans(self, page: ET.Element):
+    def __get_page_spans(self, page: ET.Element) -> list[ET.Element]:
         return page.findall(".//span")
 
-    def __get_page_chars(self, page: ET.Element):
+    def __get_page_chars(self, page: ET.Element) -> list[ET.Element]:
         return page.findall(".//char")
 
     def load_memory_map(
@@ -77,10 +77,10 @@ class MemoryMap:
         Returns:
             None
         """
-        char_hot_characters: list = []
+        char_hot_characters: list[tuple[str, HotCharacter]] = []
         seen_span_hashes: set[str] = set()
         spans: list[Element] = self.__get_page_spans(page)
-        chars: list = []
+        chars: list[Element] = []
         if spans:
             for span in spans:
                 span_id: str = generate_nano_id(size=10)
@@ -169,7 +169,7 @@ class MemoryMap:
         return extracted_text
 
     @lru_cache
-    def find_text(self, query):
+    def find_text(self, query: str) -> tuple[list[str], PageResult]:
         """
         Find text within the memory map.
 

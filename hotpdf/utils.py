@@ -1,6 +1,7 @@
 from copy import deepcopy
-from .data.classes import HotCharacter, ElementDimension
+from .data.classes import HotCharacter, ElementDimension, PageResult
 import math
+from typing import Union
 
 
 def find_neighbour_coord(
@@ -8,7 +9,7 @@ def find_neighbour_coord(
     hot_characters: list[HotCharacter],
     max_distance: int = 5,
     span_tolerance: int = 5,
-):
+) -> Union[HotCharacter, None]:
     """
     Find a neighbouring coordinate within a specified maximum distance.
 
@@ -19,11 +20,9 @@ def find_neighbour_coord(
         span_tolerance (int): Additional distance to consider if text lies in the same span.
 
     Returns:
-        dict: The neighbouring coordinate if found, else None.
+        HotCharacter: The neighbouring HotCharacter if found, else None.
     """
     for hot_character in hot_characters:
-        # Character end must not be > max_distance than the pre-neighbour
-        # But - if it's in the same span: add 5pts to the max_distance
         if (
             0
             <= (hot_character.x - reference_character.x_end)
@@ -36,11 +35,12 @@ def find_neighbour_coord(
             and reference_character.y == hot_character.y
         ):
             return hot_character
+    return None
 
 
 def filter_adjacent_coords(
-    text: str, page_hot_character_occurences: list[list[HotCharacter]]
-):
+    text: list[str], page_hot_character_occurences: PageResult
+) -> PageResult:
     """
     Filter adjacent coordinates based on the given text.
 
@@ -49,7 +49,7 @@ def filter_adjacent_coords(
         page_hot_character_occurences (list): List of coordinates to filter by page
 
     Returns:
-        list: List of adjacent coordinate groups.
+        PageResult: List of adjacent groups of HotCharacters on a page.
     """
     if not page_hot_character_occurences:
         return []

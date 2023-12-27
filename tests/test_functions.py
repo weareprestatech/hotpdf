@@ -22,7 +22,7 @@ def test_load_file(valid_file_name):
 
 
 def test_element_dimensions_empty():
-    assert filter_adjacent_coords("dummy", []) == []
+    assert filter_adjacent_coords(["d", "u", "m", "m", "y"], []) == []
 
 
 def test_span_map_behaviours(valid_file_name):

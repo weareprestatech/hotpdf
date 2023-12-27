@@ -1,11 +1,9 @@
-from .data.classes import HotCharacter
-from typing import List
-from typing import Optional
+from .data.classes import HotCharacter, PageResult
 from collections import defaultdict
 
 
 class TrieNode:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize a TrieNode.
 
@@ -16,15 +14,15 @@ class TrieNode:
         """
         self.children: defaultdict[str, TrieNode] = defaultdict(TrieNode)
         self.is_end_of_word: bool = False
-        self.hot_characters: Optional[List[HotCharacter]] = None
+        self.hot_characters: list[HotCharacter] = []
 
 
 class Trie:
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize a Trie."""
         self.root = TrieNode()
 
-    def insert(self, word, hot_character: HotCharacter):
+    def insert(self, word: str, hot_character: HotCharacter) -> None:
         """
         Insert a word into the Trie.
 
@@ -36,12 +34,9 @@ class Trie:
         for char in word:
             node = node.children[char]
         node.is_end_of_word = True
-        if node.hot_characters is not None:
-            node.hot_characters = node.hot_characters + [hot_character]
-        else:
-            node.hot_characters = [hot_character]
+        node.hot_characters = node.hot_characters + [hot_character]
 
-    def search_all(self, text: str):
+    def search_all(self, text: str) -> tuple[list[str], PageResult]:
         """
         Search for words in the Trie that match a given text.
 
@@ -49,14 +44,16 @@ class Trie:
             text (str): The text to search for.
 
         Returns:
-            tuple: A tuple containing a list of found words and a list of coordinates.
+            tuple: A tuple containing a list of the target characters found and corresponding PageResult.
         """
         node: TrieNode = self.root
-        found, hot_characters = [], []
+        found: list[str] = []
+        hot_characters: PageResult = []
         for char in text:
             if char in node.children:
                 if node.children[char].is_end_of_word:
                     found.append(char)
-                    hot_characters.append(node.children[char].hot_characters)
+                    if node.children[char].hot_characters:
+                        hot_characters.append(node.children[char].hot_characters)
             node = self.root
         return found, hot_characters
