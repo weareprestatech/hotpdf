@@ -9,8 +9,8 @@ class SpanMap:
     and character grouping.
     """
 
-    def __init__(self):
-        self.map: defaultdict[str, list] = defaultdict(list)
+    def __init__(self) -> None:
+        self.map: defaultdict[str, list[HotCharacter]] = defaultdict(list)
 
     def __len__(self) -> int:
         return len(self.map)
@@ -18,12 +18,14 @@ class SpanMap:
     def __getitem__(self, span_id: str) -> Union[list[HotCharacter], None]:
         return self.get_span(span_id)
 
-    def __setitem__(self, span_id: Union[str, None], hot_character: HotCharacter):
+    def __setitem__(
+        self, span_id: Union[str, None], hot_character: HotCharacter
+    ) -> None:
         if not span_id:
             raise KeyError("Cannot set key as None")
         self.insert(span_id, hot_character)
 
-    def insert(self, span_id: str, hot_character: HotCharacter):
+    def insert(self, span_id: str, hot_character: HotCharacter) -> None:
         if span_id:
             self.map[span_id].append(hot_character)
 

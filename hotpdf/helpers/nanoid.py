@@ -3,13 +3,14 @@ Implementation from: https://github.com/puyuan/py-nanoid
 """
 from os import urandom
 from math import ceil, log
+from typing import Callable
 
 
-def algorithm_generate(random_bytes):
+def algorithm_generate(random_bytes: int) -> bytearray:
     return bytearray(urandom(random_bytes))
 
 
-def method(algorithm, alphabet, size):
+def method(algorithm: Callable[[int], bytearray], alphabet: str, size: int) -> str:
     alphabet_len = len(alphabet)
 
     mask = 1
@@ -32,6 +33,7 @@ def method(algorithm, alphabet, size):
 
 
 def generate_nano_id(
-    alphabet="_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", size=21
+    alphabet: str = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    size: int = 21,
 ) -> str:
     return method(algorithm_generate, alphabet, size)

@@ -1,20 +1,22 @@
 from hotpdf.processor import generate_xml_file
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, get_element_dimension
-from .data.classes import HotCharacter
+from .data.classes import HotCharacter, PageResult, SearchResult
 import math
 import xml.etree.cElementTree as ET
 import os
 import gc
-from typing import Optional, Union
+from typing import Union
 import warnings
+from collections import defaultdict
+import logging
 
 
 class HotPdf:
     def __init__(
         self,
         extraction_tolerance: int = 4,
-    ):
+    ) -> None:
         """
         Initialize the HotPdf class.
 
@@ -24,33 +26,37 @@ class HotPdf:
         """
         self.pages: list[MemoryMap] = []
         self.extraction_tolerance: int = extraction_tolerance
-        self.xml_file_path: Optional[str] = None
+        self.xml_file_path: str
 
-    def __del__(self):
-        if self.xml_file_path:
+    def __del__(self) -> None:
+        try:
             os.remove(self.xml_file_path)
+            logging.info("[hotpdf] Deleted")
+        except Exception as e:
+            logging.error("[hotpdf] Unable to delete xml_file")
+            logging.error(str(e))
 
-    def __check_file_exists(self, pdf_file: str):
+    def __check_file_exists(self, pdf_file: str) -> None:
         if not os.path.exists(pdf_file):
             raise FileNotFoundError(f"File {pdf_file} not found")
 
-    def __check_file_already_loaded(self):
+    def __check_file_already_loaded(self) -> None:
         if len(self.pages) > 0:
             raise Exception("A file is already loaded!")
 
-    def __check_coordinates(self, x0: int, y0: int, x1: int, y1: int):
+    def __check_coordinates(self, x0: int, y0: int, x1: int, y1: int) -> None:
         if x0 < 0 or x1 < 0 or y0 < 0 or y1 < 0:
             raise ValueError("Invalid coordinates")
 
-    def __check_page_number(self, page: int):
+    def __check_page_number(self, page: int) -> None:
         if page < 0 or page >= len(self.pages):
             raise ValueError("Invalid page number")
 
-    def __check_page_range(self, first_page: int, last_page: int):
+    def __check_page_range(self, first_page: int, last_page: int) -> None:
         if first_page > last_page or first_page < 0 or last_page < 0:
             raise ValueError("Invalid page range")
 
-    def prechecks(self, pdf_file: str, first_page: int, last_page: int):
+    def prechecks(self, pdf_file: str, first_page: int, last_page: int) -> None:
         self.__check_file_exists(pdf_file)
         self.__check_file_already_loaded()
         self.__check_page_range(first_page, last_page)
@@ -61,7 +67,7 @@ class HotPdf:
         drop_duplicate_spans: bool = True,
         first_page: int = 0,
         last_page: int = 0,
-    ):
+    ) -> None:
         """
         Load a PDF file into memory.
 
@@ -79,7 +85,7 @@ class HotPdf:
         self.xml_file_path = generate_xml_file(pdf_file, first_page, last_page)
         xml_object = ET.parse(self.xml_file_path)
         for xml_page in xml_object.findall(".//page"):
-            parsed_page = MemoryMap()
+            parsed_page: MemoryMap = MemoryMap()
             parsed_page.build_memory_map()
             parsed_page.load_memory_map(
                 page=xml_page, drop_duplicate_spans=drop_duplicate_spans
@@ -100,7 +106,7 @@ class HotPdf:
             pages (list[int], optional): List of page numbers to search. Defaults to [].
             validate (bool, optional): Double check the extracted bounding boxes with the query string.
         Returns:
-            dict: A dictionary mapping page numbers to found text coordinates.
+            dict: A dictionary mapping page numbers to found text coordinates or None if not found.
         """
         full_span = None
         if hot_characters[0].span_id:
@@ -113,7 +119,7 @@ class HotPdf:
         pages: list[int] = [],
         validate: bool = True,
         take_span: bool = False,
-    ) -> dict[int, list[list[HotCharacter]]]:
+    ) -> SearchResult:
         """
         Find text within the loaded PDF pages.
 
@@ -125,7 +131,7 @@ class HotPdf:
         Raises:
             ValueError: If the page number is invalid.
         Returns:
-            dict: A dictionary mapping page numbers to found text coordinates.
+            SearchResult: A dictionary mapping page numbers to found text coordinates.
         """
         for page in pages:
             self.__check_page_number(page)
@@ -142,11 +148,10 @@ class HotPdf:
                 *query_pages[page_num].find_text(query)
             )
 
-        final_found_page_map: dict = {}
+        final_found_page_map: SearchResult = defaultdict(PageResult)
+
         for page_num in found_page_map.keys():
-            hot_character_page_occurences: list[list[HotCharacter]] = found_page_map[
-                page_num
-            ]
+            hot_character_page_occurences: PageResult = found_page_map[page_num]
             final_found_page_map[page_num] = []
             for hot_characters in hot_character_page_occurences:
                 element_dimension = get_element_dimension(hot_characters)
@@ -181,7 +186,7 @@ class HotPdf:
         y1: int,
         page: int = 0,
         sort: bool = True,
-    ) -> list[list[HotCharacter]]:
+    ) -> PageResult:
         """
         Extract spans that exist within the specified bbox
             x0 (int): The left x-coordinate of the bounding box.
@@ -199,25 +204,30 @@ class HotPdf:
         if len(self.pages[page].span_map) == 0:
             warnings.warn("No spans exist on this page")
 
-        text_in_bbox = self.extract_text(
+        text_in_bbox: str = self.extract_text(
             x0=x0,
             y0=y0,
             x1=x1,
             y1=y1,
             page=page,
         )
-        if y1 != y0:
-            text_in_bbox = list(map(str.strip, text_in_bbox.split("\n")))
-            text_in_bbox = [_text for _text in text_in_bbox if _text]
-        else:
-            text_in_bbox = text_in_bbox.strip().strip("\n")
-            text_in_bbox = [text_in_bbox]
 
-        spans: list = []
-        appended_spans: set = set()
+        _text_list_in_bbox: list[str] = []
+        if y1 != y0:
+            _text_in_multiline_bbox: list[str] = list(
+                map(str.strip, text_in_bbox.split("\n"))
+            )
+            _text_in_multiline_bbox = [
+                _text for _text in _text_in_multiline_bbox if _text
+            ]
+            _text_list_in_bbox = _text_in_multiline_bbox
+        else:
+            _text_list_in_bbox = [text_in_bbox.strip().strip("\n")]
+        spans: PageResult = []
+        appended_spans: set[str] = set()
         all_hot_characters_in_page: list[HotCharacter] = []
 
-        for part_text in text_in_bbox:
+        for part_text in _text_list_in_bbox:
             occurences_text_in_bbox = self.find_text(query=part_text, pages=[page])
 
             for _, page_num in enumerate(occurences_text_in_bbox):
@@ -236,8 +246,10 @@ class HotPdf:
                 hot_character.y >= y0 and hot_character.y <= y1
             ):
                 continue
-            spans.append(self.pages[page].span_map[hot_character.span_id])
-            appended_spans.add(hot_character.span_id)
+            _full_span = self.pages[page].span_map[hot_character.span_id]
+            if _full_span:
+                spans.append(_full_span)
+                appended_spans.add(hot_character.span_id)
         return spans
 
     def extract_text(
@@ -247,7 +259,7 @@ class HotPdf:
         x1: int,
         y1: int,
         page: int = 0,
-    ):
+    ) -> str:
         """
         Extract text from a specified bounding box on a page.
 
