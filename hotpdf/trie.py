@@ -1,6 +1,7 @@
 from .data.classes import HotCharacter
 from typing import List
 from typing import Optional
+from collections import defaultdict
 
 
 class TrieNode:
@@ -13,7 +14,7 @@ class TrieNode:
             is_end_of_word (bool): Flag indicating the end of a word.
             hot_characters (list[HotCharacter]): List of HotCharacter instances associated with the word.
         """
-        self.children: dict = {}
+        self.children: defaultdict[str, TrieNode] = defaultdict(TrieNode)
         self.is_end_of_word: bool = False
         self.hot_characters: Optional[List[HotCharacter]] = None
 
@@ -33,8 +34,6 @@ class Trie:
         """
         node: TrieNode = self.root
         for char in word:
-            if char not in node.children:
-                node.children[char] = TrieNode()
             node = node.children[char]
         node.is_end_of_word = True
         if node.hot_characters is not None:
