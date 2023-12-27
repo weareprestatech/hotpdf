@@ -10,7 +10,7 @@ class SpanMap:
     """
 
     def __init__(self):
-        self.map = defaultdict(list)
+        self.map: defaultdict[str, list] = defaultdict(list)
 
     def __len__(self) -> int:
         return len(self.map)
