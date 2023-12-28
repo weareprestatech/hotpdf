@@ -83,15 +83,21 @@ class HotPdf:
         """
         self.prechecks(pdf_file, first_page, last_page)
         self.xml_file_path = generate_xml_file(pdf_file, first_page, last_page)
-        xml_object = ET.parse(self.xml_file_path)
-        for xml_page in xml_object.findall(".//page"):
-            parsed_page: MemoryMap = MemoryMap()
-            parsed_page.build_memory_map()
-            parsed_page.load_memory_map(
-                page=xml_page, drop_duplicate_spans=drop_duplicate_spans
-            )
-            self.pages.append(parsed_page)
-        del xml_object
+        tree_iterator = ET.iterparse(self.xml_file_path, events=("start", "end"))
+        event: str
+        root: ET.Element
+        event, root = next(tree_iterator)
+
+        element: ET.Element
+        for event, element in tree_iterator:
+            if event == "end" and element.tag == "page":
+                parsed_page: MemoryMap = MemoryMap()
+                parsed_page.build_memory_map()
+                parsed_page.load_memory_map(
+                    page=element, drop_duplicate_spans=drop_duplicate_spans
+                )
+                self.pages.append(parsed_page)
+            root.clear()
         gc.collect()
 
     def extract_full_text_span(

@@ -1,6 +1,5 @@
 import math
 import xml.etree.cElementTree as ET
-from xml.etree.cElementTree import Element
 from .trie import Trie
 from .span_map import SpanMap
 from .data.classes import HotCharacter, PageResult
@@ -8,6 +7,7 @@ from .helpers.nanoid import generate_nano_id
 from .sparse_matrix import SparseMatrix
 from functools import lru_cache
 from hashlib import md5
+from typing import Generator
 
 
 class MemoryMap:
@@ -59,8 +59,8 @@ class MemoryMap:
         else:
             print(memory_map_str)
 
-    def __get_page_spans(self, page: ET.Element) -> list[ET.Element]:
-        return page.findall(".//span")
+    def __get_page_spans(self, page: ET.Element) -> Generator[ET.Element, None, None]:
+        return page.iterfind(".//span")
 
     def __get_page_chars(self, page: ET.Element) -> list[ET.Element]:
         return page.findall(".//char")
@@ -79,12 +79,12 @@ class MemoryMap:
         """
         char_hot_characters: list[tuple[str, HotCharacter]] = []
         seen_span_hashes: set[str] = set()
-        spans: list[Element] = self.__get_page_spans(page)
-        chars: list[Element] = []
+        spans: Generator[ET.Element, None, None] = self.__get_page_spans(page)
+        chars: list[ET.Element] = []
         if spans:
             for span in spans:
                 span_id: str = generate_nano_id(size=10)
-                span_chars: list[Element] = span.findall(".//")
+                span_chars: list[ET.Element] = span.findall(".//")
                 span_hash: str = md5(
                     f"{str(span.attrib)}|{str([_char.attrib for _char in span_chars])}".encode()
                 ).hexdigest()
