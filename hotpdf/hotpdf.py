@@ -56,7 +56,7 @@ class HotPdf:
         if first_page > last_page or first_page < 0 or last_page < 0:
             raise ValueError("Invalid page range")
 
-    def prechecks(self, pdf_file: str, first_page: int, last_page: int) -> None:
+    def __prechecks(self, pdf_file: str, first_page: int, last_page: int) -> None:
         self.__check_file_exists(pdf_file)
         self.__check_file_already_loaded()
         self.__check_page_range(first_page, last_page)
@@ -81,7 +81,7 @@ class HotPdf:
             ValueError: If the page range is invalid.
             FileNotFoundError: If the file is not found.
         """
-        self.prechecks(pdf_file, first_page, last_page)
+        self.__prechecks(pdf_file, first_page, last_page)
         self.xml_file_path = generate_xml_file(pdf_file, first_page, last_page)
         tree_iterator = ET.iterparse(self.xml_file_path, events=("start", "end"))
         event: str
@@ -106,7 +106,8 @@ class HotPdf:
         page_num: int,
     ) -> Union[list[HotCharacter], None]:
         """
-        Find text and all text in it's parent span.
+        Find text and all text in its parent span.
+
         Args:
             query (str): The text to search for.
             pages (list[int], optional): List of page numbers to search. Defaults to [].
@@ -195,6 +196,8 @@ class HotPdf:
     ) -> PageResult:
         """
         Extract spans that exist within the specified bbox
+
+        Args:
             x0 (int): The left x-coordinate of the bounding box.
             y0 (int): The bottom y-coordinate of the bounding box.
             x1 (int): The right x-coordinate of the bounding box.

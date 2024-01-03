@@ -11,6 +11,7 @@ pytest = "*"
 mypy = "*"
 flake8 = "*"
 coverage = "*"
+pdoc3 = "==0.10.0"
 
 [requires]
 python_version = "3.11"
