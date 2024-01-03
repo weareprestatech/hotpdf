@@ -37,17 +37,23 @@ A faster alternative to libraries like pdfquery.
 
 ## Comprehensive Documentation
 `hotpdf` is comprehensively documented within code for easy understanding. You can use any tool to view the documentation. 
-You can use an inbuild tool like `pydoc` to view the documentation.
-```bash
-pipenv run python -m pydoc -p 8999 hotpdf/
-```
-This will start a documentation server on port 8999 in localhost.
-To view hotpdf documentation you can simply go to `http://localhost:8999/hotpdf` to view it.
+You can use an inbuilt tool like `pydoc` to view the documentation.
 
-You can see under `Package Contents` to view the different modules in hotpdf.
+However we can also generate a better looking documentation using tools like [pdoc3](https://pypi.org/project/pdoc3/).
+
+### View documentation
+```
+pipenv run python -m pdoc --http localhost:8081 hotpdf/
+```
+This will start the documentation server on `localhost:8081`
+
+[View documentation](http://localhost:8081/hotpdf/)
 
 ---
+
+
 ## Usage
+(Please refer to aforementioned docs for more granular documentation)
 
 First, import the library
 

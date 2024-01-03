@@ -15,7 +15,7 @@ class MemoryMap:
         """
         Initialize the MemoryMap. 2D Matrix representation of a PDF Page.
 
-        Attributes:
+        Args:
             width (int): The width (max columns) of a page.
             height (int) The height (max rows) of a page.
         """
@@ -34,6 +34,8 @@ class MemoryMap:
     def text(self) -> str:
         """
         Get text of the memory map
+        Returns:
+            str: Text in the page of the pdf preserving the order of occurence.
         """
         memory_map_str = ""
         for row in range(self.memory_map.rows):

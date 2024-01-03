@@ -7,7 +7,7 @@ class TrieNode:
         """
         Initialize a TrieNode.
 
-        Attributes:
+        Args:
             children (dict): Mapping of characters to TrieNode objects.
             is_end_of_word (bool): Flag indicating the end of a word.
             hot_characters (list[HotCharacter]): List of HotCharacter instances associated with the word.
