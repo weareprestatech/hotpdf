@@ -3,6 +3,7 @@
 ## Hot PDF
 
 A faster alternative to libraries like pdfquery.
+[Read the docs](https://stdocs.z6.web.core.windows.net/hotpdf/index.html)
 
 ### Pre-requisites
 
@@ -47,7 +48,7 @@ pipenv run python -m pdoc --http localhost:8081 hotpdf/
 ```
 This will start the documentation server on `localhost:8081`
 
-[View documentation](http://localhost:8081/hotpdf/)
+[View documentation](https://stdocs.z6.web.core.windows.net/hotpdf/index.html)
 
 ---
 
