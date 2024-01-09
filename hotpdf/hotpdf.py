@@ -1,12 +1,12 @@
 from hotpdf.processor import generate_xml_file
 from hotpdf.memory_map import MemoryMap
-from hotpdf.utils import filter_adjacent_coords, get_element_dimension
-from .data.classes import HotCharacter, PageResult, SearchResult
+from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect
+from .data.classes import HotCharacter, PageResult, SearchResult, Span
 import math
 import xml.etree.cElementTree as ET
 import os
 import gc
-from typing import Union
+from typing import Union, Optional
 import warnings
 from collections import defaultdict
 import logging
@@ -115,10 +115,10 @@ class HotPdf:
         Returns:
             Union[list[HotCharacter], None]: the full span of text that the hot characters are a part of.
         """
-        full_span = None
+        _span: Optional[Span] = None
         if hot_characters[0].span_id:
-            full_span = self.pages[page_num].span_map[hot_characters[0].span_id]
-        return full_span
+            _span = self.pages[page_num].span_map[hot_characters[0].span_id]
+        return _span.characters if _span else None
 
     def find_text(
         self,
@@ -192,10 +192,10 @@ class HotPdf:
         x1: int,
         y1: int,
         page: int = 0,
-        sort: bool = True,
+        sort: bool = True,  # TODO: Remove this after the deprecation
     ) -> PageResult:
         """
-        Extract spans that exist within the specified bbox
+        Extract spans that intersect with the given bounding box.
 
         Args:
             x0 (int): The left x-coordinate of the bounding box.
@@ -210,56 +210,30 @@ class HotPdf:
         Returns:
             list: List of spans of hotcharacters that exist within the given bboxes
         """
+        # TODO: Make this function return spans instead of hotcharacters
+        warnings.warn("This function will be deprecated in the next release")
+
+        spans: list[Span] = []
+
+        # TODO: Remove this after the deprecation
+        hotcharacters_in_spans: list[list[HotCharacter]] = []
+
+        self.__check_coordinates(x0, y0, x1, y1)
+        self.__check_page_number(page)
+
         if len(self.pages[page].span_map) == 0:
             warnings.warn("No spans exist on this page")
+            return hotcharacters_in_spans
 
-        text_in_bbox: str = self.extract_text(
-            x0=x0,
-            y0=y0,
-            x1=x1,
-            y1=y1,
-            page=page,
-        )
+        for _, span in self.pages[page].span_map.items():
+            if intersect((x0, y0, x1, y1), (span.x0, span.y0, span.x_end, span.y0)):
+                spans.append(span)
 
-        _text_list_in_bbox: list[str] = []
-        if y1 != y0:
-            _text_in_multiline_bbox: list[str] = list(
-                map(str.strip, text_in_bbox.split("\n"))
-            )
-            _text_in_multiline_bbox = [
-                _text for _text in _text_in_multiline_bbox if _text
-            ]
-            _text_list_in_bbox = _text_in_multiline_bbox
-        else:
-            _text_list_in_bbox = [text_in_bbox.strip().strip("\n")]
-        spans: PageResult = []
-        appended_spans: set[str] = set()
-        all_hot_characters_in_page: list[HotCharacter] = []
+        # TODO: Remove this after the deprecation
+        for span in spans:
+            hotcharacters_in_spans.append(span.characters)
 
-        for part_text in _text_list_in_bbox:
-            occurences_text_in_bbox = self.find_text(query=part_text, pages=[page])
-
-            for _, page_num in enumerate(occurences_text_in_bbox):
-                for hot_character_list in occurences_text_in_bbox[page_num]:
-                    for hot_character in hot_character_list:
-                        all_hot_characters_in_page.append(hot_character)
-        if sort:
-            all_hot_characters_in_page = sorted(
-                all_hot_characters_in_page,
-                key=lambda hot_character: (hot_character.y, hot_character.x),
-            )
-        for hot_character in all_hot_characters_in_page:
-            if not hot_character.span_id:
-                continue
-            if hot_character.span_id in appended_spans or not (
-                hot_character.y >= y0 and hot_character.y <= y1
-            ):
-                continue
-            _full_span = self.pages[page].span_map[hot_character.span_id]
-            if _full_span:
-                spans.append(_full_span)
-                appended_spans.add(hot_character.span_id)
-        return spans
+        return hotcharacters_in_spans  # TODO: Make this return spans instead of hotcharacters
 
     def extract_text(
         self,
