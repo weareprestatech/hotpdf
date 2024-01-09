@@ -18,8 +18,27 @@ class HotCharacter:
     value: str
     x: int
     y: int
-    x_end: float
+    x_end: int
     span_id: Optional[str] = None
+
+
+@dataclass(init=True)
+class Span:
+    """
+    A span is a group of characters that are close to each other.
+    Attributes:
+        characters (list[HotCharacter]): list of characters in the span.
+        x0 (int): starting x position of the span (column).
+        y0 (int): starting y position of the span (row).
+        x_end (int): end x position of the span (column). x_end - x0 = width.
+        span_id (str, Optional): hash of the span.
+    """
+
+    characters: list[HotCharacter]
+    x0: int
+    y0: int
+    x_end: int
+    span_id: Optional[str]
 
 
 @dataclass
