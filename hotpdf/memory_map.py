@@ -109,11 +109,12 @@ class MemoryMap:
             char_span_id = char.attrib.get("span_id")
             cell_x = int(math.floor(char_x0))
             cell_y = int(math.floor(char_y0))
+            cell_x_end = int(math.ceil(char_x1))
             hot_character = HotCharacter(
                 value=char_c,
                 x=cell_x,
                 y=cell_y,
-                x_end=char_x1,
+                x_end=cell_x_end,
                 span_id=char_span_id,
             )
             if not 0 < cell_x or not 0 < cell_y:

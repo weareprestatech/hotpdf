@@ -1,6 +1,6 @@
 import pytest
 from hotpdf import HotPdf
-from hotpdf.utils import filter_adjacent_coords
+from hotpdf.utils import filter_adjacent_coords, intersect
 from hotpdf.data.classes import HotCharacter
 from hotpdf.sparse_matrix import SparseMatrix
 import os
@@ -105,3 +105,23 @@ def test_duplicate_spans_removed(luca_mock_file_name):
     assert len(hot_pdf_object.pages[0].span_map) < len(
         hot_pdf_object_with_dup_span.pages[0].span_map
     )
+
+
+@pytest.mark.parametrize(
+    "bbox1, bbox2, expected",
+    [
+        ((0, 0, 2, 2), (3, 3, 5, 5), False),
+        ((0, 0, 2, 2), (3, 3, 4, 4), False),
+        ((0, 0, 2, 2), (3, 3, 5, 5), False),
+        ((1, 1, 4, 4), (3, 2, 6, 5), True),
+        ((1, 1, 6, 6), (2, 2, 5, 5), True),
+        ((0, 0, 4, 4), (4, 0, 8, 4), True),
+        ((0, 0, 3, 3), (3, 3, 6, 6), True),
+        ((2, 1, 5, 4), (4, 0, 7, 3), True),
+        ((1, 2, 4, 5), (0, 4, 3, 7), True),
+        ((0, 0, 3, 3), (0, 0, 3, 3), True),
+        ((2, 0, 6, 4), (4, 2, 8, 6), True),
+    ],
+)
+def test_intersect(bbox1, bbox2, expected):
+    assert intersect(bbox1, bbox2) == expected

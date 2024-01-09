@@ -92,3 +92,24 @@ def get_element_dimension(elem: list[HotCharacter]) -> ElementDimension:
     y1 = math.ceil(elem[0].y)
     span = elem[0].span_id
     return ElementDimension(x0=x0, x1=x1, y0=y0, y1=y1, span_id=span)
+
+
+def intersect(
+    bbox1: tuple[int, int, int, int], bbox2: tuple[int, int, int, int]
+) -> bool:
+    """
+    Check if two bounding boxes intersect.
+
+    Args:
+        bbox1 (tuple): Bounding box 1. (x0, y0, x1, y1)
+        bbox2 (tuple): Bounding box 2. (x0, y0, x1, y1)
+
+    Returns:
+        bool: True if the bounding boxes intersect, else False.
+    """
+    return not (
+        bbox2[0] > bbox1[2]
+        or bbox2[2] < bbox1[0]
+        or bbox2[1] > bbox1[3]
+        or bbox2[3] < bbox1[1]
+    )
