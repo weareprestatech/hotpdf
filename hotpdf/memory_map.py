@@ -99,6 +99,7 @@ class MemoryMap:
                     chars.append(char)
         else:
             chars = self.__get_page_chars(page)
+        del seen_span_hashes
         for char in chars:
             char_bbox = char.attrib["bbox"]
             char_x0, char_y0, char_x1, _ = [
