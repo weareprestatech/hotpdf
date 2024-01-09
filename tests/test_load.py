@@ -308,3 +308,12 @@ def test_no_spans_in_xml_file_extract_spans(valid_file_name):
             )
             == []
         )
+
+
+def test_find_text_multiple_pages(multiple_pages_file_name):
+    hot_pdf_object = HotPdf()
+    hot_pdf_object.load(multiple_pages_file_name)
+    occurences = hot_pdf_object.find_text(
+        query="God", pages=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    )
+    assert len(occurences) == 11
