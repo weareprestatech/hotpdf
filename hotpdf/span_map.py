@@ -18,26 +18,20 @@ class SpanMap:
     def __getitem__(self, span_id: str) -> Union[Span, None]:
         return self.get_span(span_id)
 
+    def __setitem__(self, span_id: str, hot_character: HotCharacter) -> None:
+        self.insert(span_id, hot_character)
+
     def items(self) -> Iterable[tuple[str, Span]]:
         return self.map.items()
-
-    def __setitem__(
-        self, span_id: Union[str, None], hot_character: HotCharacter
-    ) -> None:
-        if not span_id:
-            raise KeyError("Cannot set key as None")
-        self.insert(span_id, hot_character)
 
     def insert(self, span_id: str, hot_character: HotCharacter) -> None:
         if not span_id:
             raise KeyError("Cannot set key as None")
         if span_id in self.map:
             span = self.map[span_id]
+            assert span.x0 <= hot_character.x
+            assert span.y0 == hot_character.y
             span.characters.append(hot_character)
-            if hot_character.x < span.x0:
-                span.x0 = hot_character.x
-            if hot_character.y < span.y0:
-                span.y0 = hot_character.y
             if hot_character.x_end > span.x_end:
                 span.x_end = hot_character.x_end
         else:
