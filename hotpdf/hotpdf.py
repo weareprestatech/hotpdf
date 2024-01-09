@@ -106,14 +106,14 @@ class HotPdf:
         page_num: int,
     ) -> Union[list[HotCharacter], None]:
         """
-        Find text and all text in its parent span.
+        Extract the full span of text that the given hot characters are a part of.
 
         Args:
-            query (str): The text to search for.
-            pages (list[int], optional): List of page numbers to search. Defaults to [].
-            validate (bool, optional): Double check the extracted bounding boxes with the query string.
+            hot_characters (list[HotCharacter]): the list of hot characters to extract the span for.
+            page_num (int): the page number of the hot characters.
+
         Returns:
-            dict: A dictionary mapping page numbers to found text coordinates or None if not found.
+            Union[list[HotCharacter], None]: the full span of text that the hot characters are a part of.
         """
         full_span = None
         if hot_characters[0].span_id:
