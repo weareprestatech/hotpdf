@@ -10,7 +10,7 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       - name: Install Ghostscript
-        run:
+        run: |
           sudo apt-get update
           sudo apt-get install ghostscript
       - name: Check linting
