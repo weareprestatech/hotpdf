@@ -1,6 +1,6 @@
-# hotpdf
+[![Test CI](https://github.com/weareprestatech/hotpdf/actions/workflows/python-app.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/python-app.yml)
 
-## Hot PDF
+# Hot PDF
 
 A faster alternative to libraries like pdfquery.
 [Read the docs](https://stdocs.z6.web.core.windows.net/hotpdf/index.html)
