@@ -23,8 +23,8 @@ jobs:
 
       - name: Install pipenv and dependencies
         run: |
-          python -m pip install pipenv
-          pipenv install --dev
+          curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+          pipenv install
 
       - name: Check linting
         run: |
