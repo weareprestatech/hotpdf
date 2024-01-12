@@ -38,7 +38,10 @@ for commit_detail in commit_details:
     commit_details_list += f"<li>{commit_detail}</li>"
 commit_details_list += "</ul>"
 commit_details = commit_details_list
-new_content = f"""<p><strong>Version {version}</strong></p><span>Release Date: {release_date}</span>{commit_details}<hr/>{old_page_content}"""
+new_content = (
+    f"""<p><strong>Version {version}</strong></p><span>"""
+    + """Release Date: {release_date}</span>{commit_details}<hr/>{old_page_content}"""
+)
 
 payload = {
     "id": page_id,

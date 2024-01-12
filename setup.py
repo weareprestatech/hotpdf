@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
 from setuptools import setup, find_packages
 from pathlib import Path
 from pipenv_setup import pipfile_parser as parser
