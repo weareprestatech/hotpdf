@@ -9,7 +9,7 @@ A faster alternative to libraries like pdfquery.
 
 1. **Ghostscript Installation:**
    hotpdf requires Ghostscript to be installed. Please install it on your system.
-   
+
    [Download Ghostscript](https://www.ghostscript.com/).
 
 ### Contributing
@@ -35,25 +35,27 @@ A faster alternative to libraries like pdfquery.
     pipenv run coverage report -m --fail-under=100 -m
     ```
 
-
 ## Comprehensive Documentation
-`hotpdf` is comprehensively documented within code for easy understanding. You can use any tool to view the documentation. 
+
+`hotpdf` is comprehensively documented within code for easy understanding. You can use any tool to view the documentation.
 You can use an inbuilt tool like `pydoc` to view the documentation.
 
 However we can also generate a better looking documentation using tools like [pdoc3](https://pypi.org/project/pdoc3/).
 
 ### View documentation
-```
+
+``` bash
 pipenv run python -m pdoc --http localhost:8081 hotpdf/
 ```
+
 This will start the documentation server on `localhost:8081`
 
 [View documentation](https://stdocs.z6.web.core.windows.net/hotpdf/index.html)
 
 ---
 
-
 ## Usage
+
 (Please refer to aforementioned docs for more granular documentation)
 
 First, import the library
