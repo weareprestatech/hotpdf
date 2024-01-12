@@ -36,4 +36,4 @@ jobs:
         python -m pipenv run mypy tests/ --check-untyped-defs
     - name: Test with pytest
       run: |
-        pytest
+        python -m pipenv run pytest
