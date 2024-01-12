@@ -15,13 +15,13 @@ jobs:
           sudo apt-get install ghostscript
       - name: Check linting
         run:
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
+          python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          python -m flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
       - name: Check type hints
         run:
-          mypy hotpdf/ --strict
-          mypy tests/ --check-untyped-defs
+          python -m mypy hotpdf/ --strict
+          python -m mypy tests/ --check-untyped-defs
       - name: Run tests with coverage
         run:
-          coverage run --omit="*/test*" -m pytest tests/
-          coverage report --fail-under=100
+          python -m coverage run --omit="*/test*" -m pytest tests/
+          python -m coverage report --fail-under=100
