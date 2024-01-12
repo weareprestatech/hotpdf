@@ -1,43 +1,30 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Python application
-
-on: [push]
-
-permissions:
-  contents: read
+on: push
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     steps:
-    - name: Install Ghostscript
-      run: |
-        sudo apt-get update
-        sudo apt-get install ghostscript
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
-        cache: "pip"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install pipenv
-        python -m pipenv install --dev
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        python -m pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        python -m pipenv run flake8 .--count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Check type annotations with mypy
-      run: |
-        python -m pipenv run mypy hotpdf/ --strict
-        python -m pipenv run mypy tests/ --check-untyped-defs
-    - name: Test with pytest
-      run: |
-        python -m pipenv run pytest
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install Ghostscript
+        run:
+          sudo apt-get update
+          sudo apt-get install ghostscript
+      - name: Install Python dependencies
+        run:
+          pip install -r requirements.txt
+      - name: Check linting
+        run:
+          pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          pipenv run flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
+      - name: Check type hints
+        run:
+          pipenv run mypy hotpdf/ --strict
+          pipenv run mypy tests/ --check-untyped-defs
+      - name: Run tests with coverage
+        run:
+          pipenv run coverage run --omit="*/test*" -m pytest tests/
+          pipenv run coverage report --fail-under=100 -m
