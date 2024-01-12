@@ -1,5 +1,7 @@
-name: Test CI
-on: push
+name: Pull Requests CI
+on:
+  pull_request:
+    branches: main
 
 jobs:
   test:
