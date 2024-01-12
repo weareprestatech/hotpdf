@@ -10,15 +10,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache ghostscript
-        id: cache-ghostscript
-        uses: actions/cache@v3
-        with:
-          path: /usr/lib/gs
-          key: ghostscript
-
       - name: Install Ghostscript
-        if: ${{steps.cache-ghostscript.outputs.cache-hit != 'true'}}
         run: |
           sudo apt-get update
           sudo apt-get install ghostscript
@@ -27,24 +19,24 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pipenv'
+          cache: 'pip'
 
-      - name: Install pipenv and dependencies
+      - name: Install dependencies
         run: |
-          curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-          pipenv install --verbose
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
       - name: Check linting
         run: |
-          pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          pipenv run flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
+          python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          python -m flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
 
       - name: Check type hinting with mypy
         run: |
-          pipenv run mypy hotpdf/ --strict
-          pipenv run mypy tests/ --check-untyped-defs
+          python -m mypy hotpdf/ --strict
+          python -m mypy tests/ --check-untyped-defs
 
       - name: Run tests with coverage
         run: |
-          pipenv run coverage run --omit="*/test*" -m pytest tests/
-          pipenv run coverage report --fail-under=100
+          python -m coverage run --omit="*/test*" -m pytest tests/
+          python -m coverage report --fail-under=100
