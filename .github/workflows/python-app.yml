@@ -10,7 +10,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache ghostscript
+        id: cache-ghostscript
+        uses: actions/cache@v3
+        with:
+          path: /usr/bin/gs
+          key: ghostscript
+
       - name: Install Ghostscript
+        if: ${{steps.cache-ghostscript.outputs.cache-hit != 'true'}}
         run: |
           sudo apt-get update
           sudo apt-get install ghostscript
