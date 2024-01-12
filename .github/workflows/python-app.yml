@@ -10,21 +10,21 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       - name: Install Ghostscript
-        run:
+        run: |
           sudo apt-get update
           sudo apt-get install ghostscript
       - name: Install Python dependencies
         run:
           pip install -r requirements.txt
       - name: Check linting
-        run:
+        run: |
           pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           pipenv run flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
       - name: Check type hints
-        run:
+        run: |
           pipenv run mypy hotpdf/ --strict
           pipenv run mypy tests/ --check-untyped-defs
       - name: Run tests with coverage
-        run:
+        run: |
           pipenv run coverage run --omit="*/test*" -m pytest tests/
           pipenv run coverage report --fail-under=100 -m
