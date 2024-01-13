@@ -1,8 +1,11 @@
 [![Test CI](https://github.com/weareprestatech/hotpdf/actions/workflows/python-app.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/python-app.yml)
 
-# Hot PDF
+# hotpdf
 
-A faster alternative to libraries like pdfquery.
+This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery).
+
+hotpdf can be used to find and extract text from PDFs.
+
 [Read the docs](https://stdocs.z6.web.core.windows.net/hotpdf/index.html)
 
 ### Pre-requisites
@@ -34,6 +37,46 @@ A faster alternative to libraries like pdfquery.
     pipenv run coverage run --omit="*/test*" -m pytest tests/
     pipenv run coverage report -m --fail-under=100 -m
     ```
+
+## Usage
+Basic usage is as follows:
+```python
+from hotpdf import HotPdf
+
+pdf_file_path = "test.pdf"
+
+# Load pdf file into memory
+hotpdf_document = HotPdf()
+hotpdf_document.load(pdf_file_path)
+
+# Get number of pages
+print(len(hotpdf_document.pages))
+
+# Find text
+text_occurences = hotpdf_document.find_text("word")
+
+# Find text and its full span
+text_occurences_full_span = hotpdf_document.find_text("word", take_span=True)
+
+# Extract text in region
+text_in_bbox = hotpdf_document.extract_text(
+   x0=0,
+   y0=0,
+   x1=100,
+   y1=10,
+   page=0,
+)
+
+# Extract text spans in region
+spans_in_bbox = hotpdf_document.extract_spans(
+   x0=0,
+   y0=0,
+   x1=100,
+   y1=10,
+   page=0,
+)
+```
+For more granular function level documentation please check the docs.
 
 ## Comprehensive Documentation
 
