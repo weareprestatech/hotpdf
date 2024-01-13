@@ -100,7 +100,7 @@ class HotPdf:
             root.clear()
         gc.collect()
 
-    def extract_full_text_span(
+    def __extract_full_text_span(
         self,
         hot_characters: list[HotCharacter],
         page_num: int,
@@ -172,7 +172,7 @@ class HotPdf:
                 if (query in text) or not validate:
                     if take_span:
                         full_span_dimension_hot_characters = (
-                            self.extract_full_text_span(
+                            self.__extract_full_text_span(
                                 hot_characters=hot_characters,
                                 page_num=page_num,
                             )
