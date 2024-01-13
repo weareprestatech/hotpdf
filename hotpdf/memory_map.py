@@ -67,6 +67,27 @@ class MemoryMap:
     def __get_page_chars(self, page: ET.Element) -> list[ET.Element]:
         return page.findall(".//char")
 
+    def __get_span_chars(
+        self, spans: Generator[ET.Element, None, None], drop_duplicate_spans: bool
+    ) -> list[ET.Element]:
+        chars: list[ET.Element] = []
+        seen_span_hashes: set[str] = set()
+        for span in spans:
+            span_id: str = generate_nano_id(size=10)
+            span_chars: list[ET.Element] = span.findall(".//")
+            span_hash: str = md5(
+                f"{str(span.attrib)}|{str([_char.attrib for _char in span_chars])}".encode()
+            ).hexdigest()
+            if drop_duplicate_spans:
+                if span_hash in seen_span_hashes:
+                    continue
+                seen_span_hashes.add(span_hash)
+            for char in span_chars:
+                char.set("span_id", span_id)
+                chars.append(char)
+        del seen_span_hashes
+        return chars
+
     def load_memory_map(
         self, page: ET.Element, drop_duplicate_spans: bool = True
     ) -> None:
@@ -80,26 +101,15 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[tuple[str, HotCharacter]] = []
-        seen_span_hashes: set[str] = set()
         spans: Generator[ET.Element, None, None] = self.__get_page_spans(page)
         chars: list[ET.Element] = []
         if spans:
-            for span in spans:
-                span_id: str = generate_nano_id(size=10)
-                span_chars: list[ET.Element] = span.findall(".//")
-                span_hash: str = md5(
-                    f"{str(span.attrib)}|{str([_char.attrib for _char in span_chars])}".encode()
-                ).hexdigest()
-                if drop_duplicate_spans:
-                    if span_hash in seen_span_hashes:
-                        continue
-                    seen_span_hashes.add(span_hash)
-                for char in span_chars:
-                    char.set("span_id", span_id)
-                    chars.append(char)
+            chars = self.__get_span_chars(
+                spans=spans,
+                drop_duplicate_spans=drop_duplicate_spans,
+            )
         else:
             chars = self.__get_page_chars(page)
-        del seen_span_hashes
         for char in chars:
             char_bbox = char.attrib["bbox"]
             char_x0, char_y0, char_x1, _ = [
