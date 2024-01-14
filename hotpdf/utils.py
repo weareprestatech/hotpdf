@@ -1,7 +1,8 @@
-from copy import deepcopy
-from .data.classes import HotCharacter, ElementDimension, PageResult
 import math
+from copy import deepcopy
 from typing import Union
+
+from .data.classes import ElementDimension, HotCharacter, PageResult
 
 
 def find_neighbour_coord(

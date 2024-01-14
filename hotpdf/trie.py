@@ -1,5 +1,6 @@
-from .data.classes import HotCharacter, PageResult
 from collections import defaultdict
+
+from .data.classes import HotCharacter, PageResult
 
 
 class TrieNode:

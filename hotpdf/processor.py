@@ -1,8 +1,8 @@
-import os
-import tempfile
-import subprocess
 import html
+import os
 import re
+import subprocess
+import tempfile
 
 
 def generate_xml_file(file_path: str, first_page: int, last_page: int) -> str:

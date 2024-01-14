@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+
 from setuptools import setup
 
 directory = Path(__file__).resolve().parent
