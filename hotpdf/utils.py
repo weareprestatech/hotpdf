@@ -28,8 +28,7 @@ def find_neighbour_coord(
             <= (hot_character.x - reference_character.x_end)
             <= (
                 (max_distance + span_tolerance)
-                if hot_character.span_id == reference_character.span_id
-                and (hot_character.span_id and reference_character.span_id)
+                if hot_character.span_id == reference_character.span_id and (hot_character.span_id and reference_character.span_id)
                 else max_distance
             )
             and reference_character.y == hot_character.y
@@ -38,9 +37,7 @@ def find_neighbour_coord(
     return None
 
 
-def filter_adjacent_coords(
-    text: list[str], page_hot_character_occurences: PageResult
-) -> PageResult:
+def filter_adjacent_coords(text: list[str], page_hot_character_occurences: PageResult) -> PageResult:
     """
     Filter adjacent coordinates based on the given text.
 
@@ -94,9 +91,7 @@ def get_element_dimension(elem: list[HotCharacter]) -> ElementDimension:
     return ElementDimension(x0=x0, x1=x1, y0=y0, y1=y1, span_id=span)
 
 
-def intersect(
-    bbox1: tuple[int, int, int, int], bbox2: tuple[int, int, int, int]
-) -> bool:
+def intersect(bbox1: tuple[int, int, int, int], bbox2: tuple[int, int, int, int]) -> bool:
     """
     Check if two bounding boxes intersect.
 
@@ -107,9 +102,4 @@ def intersect(
     Returns:
         bool: True if the bounding boxes intersect, else False.
     """
-    return not (
-        bbox2[0] > bbox1[2]
-        or bbox2[2] < bbox1[0]
-        or bbox2[1] > bbox1[3]
-        or bbox2[3] < bbox1[1]
-    )
+    return not (bbox2[0] > bbox1[2] or bbox2[2] < bbox1[0] or bbox2[1] > bbox1[3] or bbox2[3] < bbox1[1])

@@ -93,9 +93,7 @@ class HotPdf:
             if event == "end" and element.tag == "page":
                 parsed_page: MemoryMap = MemoryMap()
                 parsed_page.build_memory_map()
-                parsed_page.load_memory_map(
-                    page=element, drop_duplicate_spans=drop_duplicate_spans
-                )
+                parsed_page.load_memory_map(page=element, drop_duplicate_spans=drop_duplicate_spans)
                 self.pages.append(parsed_page)
             root.clear()
         gc.collect()
@@ -151,9 +149,7 @@ class HotPdf:
         found_page_map = {}
 
         for page_num in query_pages:
-            found_page_map[page_num] = filter_adjacent_coords(
-                *query_pages[page_num].find_text(query)
-            )
+            found_page_map[page_num] = filter_adjacent_coords(*query_pages[page_num].find_text(query))
 
         final_found_page_map: SearchResult = defaultdict(PageResult)
 
@@ -171,16 +167,12 @@ class HotPdf:
                 )
                 if (query in text) or not validate:
                     if take_span:
-                        full_span_dimension_hot_characters = (
-                            self.__extract_full_text_span(
-                                hot_characters=hot_characters,
-                                page_num=page_num,
-                            )
+                        full_span_dimension_hot_characters = self.__extract_full_text_span(
+                            hot_characters=hot_characters,
+                            page_num=page_num,
                         )
                     final_found_page_map[page_num].append(
-                        full_span_dimension_hot_characters
-                        if (take_span and full_span_dimension_hot_characters)
-                        else hot_characters
+                        full_span_dimension_hot_characters if (take_span and full_span_dimension_hot_characters) else hot_characters
                     )
 
         return final_found_page_map

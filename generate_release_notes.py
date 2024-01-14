@@ -11,9 +11,7 @@ page_title = os.getenv("RELEASE_NOTES_PAGE_TITLE")
 page_space = os.getenv("RELEASE_NOTES_PAGE_SPACE")
 page_id = page_url.split("/")[-1]
 
-response = requests.get(
-    f"{page_url}?expand=body.storage,version", auth=(username, token)
-)
+response = requests.get(f"{page_url}?expand=body.storage,version", auth=(username, token))
 page_json = json.loads(response.content)
 old_page_content = page_json["body"]["storage"]["value"]
 old_page_version = page_json["version"]["number"]
@@ -39,8 +37,7 @@ for commit_detail in commit_details:
 commit_details_list += "</ul>"
 commit_details = commit_details_list
 new_content = (
-    f"""<p><strong>Version {version}</strong></p><span>"""
-    + """Release Date: {release_date}</span>{commit_details}<hr/>{old_page_content}"""
+    f"""<p><strong>Version {version}</strong></p><span>""" + """Release Date: {release_date}</span>{commit_details}<hr/>{old_page_content}"""
 )
 
 payload = {
@@ -57,9 +54,7 @@ headers = {
     "User-Agent": "release-notes-pipeline",
 }
 
-response = requests.put(
-    url=page_url, data=json.dumps(payload), headers=headers, auth=(username, token)
-)
+response = requests.put(url=page_url, data=json.dumps(payload), headers=headers, auth=(username, token))
 if response.status_code == 200:
     print("Updated release notes successfully")
 else:

@@ -1,28 +1,22 @@
 repos:
-  - repo: local
-    hooks:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.5.0
+      hooks:
+        - id: check-yaml
+        - id: end-of-file-fixer
+        - id: trailing-whitespace
+        - id: no-commit-to-branch
+    - repo: local
+      hooks:
       - id: ruff
-        name: ruff
-        entry: ruff . --preview
+        name: ruff format
+        entry: ruff format . --preview
         language: system
         always_run: true
         pass_filenames: false
-      - id: mypy
-        name: mypy
-        entry: mypy hotpdf/
+      - id: ruff-lint
+        name: ruff lint
+        entry: ruff check . --preview
         language: system
         always_run: true
         pass_filenames: false
-      - id: tests
-        name: tests
-        entry: env PYTHONPATH="." python3 -m pytest -n=4
-        language: system
-        always_run: true
-        pass_filenames: false
-      # TODO: MAKE PYLINT PASS
-      # - id: pylint
-      #   name: pylint
-      #   entry: env PYTHONPATH="." python3 -m pylint hotpdf/
-      #   language: system
-      #   always_run: true
-      #   pass_filenames: false

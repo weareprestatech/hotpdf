@@ -167,9 +167,7 @@ def test_extract_invalid_coordinates(valid_file_name, coordinates):
     hot_pdf_object.load(valid_file_name)
 
     with pytest.raises(ValueError, match="Invalid coordinates"):
-        hot_pdf_object.extract_text(
-            x0=coordinates[0], y0=coordinates[1], x1=coordinates[2], y1=coordinates[3]
-        )
+        hot_pdf_object.extract_text(x0=coordinates[0], y0=coordinates[1], x1=coordinates[2], y1=coordinates[3])
 
 
 def test_display_memory_map(valid_file_name):
@@ -216,18 +214,10 @@ def test_get_spans(valid_file_name):
     span_1 = element_dimensions[0]
     span_2 = element_dimensions[1]
 
-    text_1_extracted = hot_pdf_object.extract_text(
-        x0=span_1.x0, y0=span_1.y0, x1=span_1.x1, y1=span_1.y1
-    )
-    text_2_extracted = hot_pdf_object.extract_text(
-        x0=span_2.x0, y0=span_2.y0, x1=span_2.x1, y1=span_2.y1
-    )
-    assert (
-        text_1_extracted.strip("\n").strip() == FULL_SPAN_1
-    ), f"{text_1_extracted}, {FULL_SPAN_1}"
-    assert (
-        text_2_extracted.strip("\n").strip() == FULL_SPAN_2
-    ), f"{text_2_extracted}, {FULL_SPAN_2}"
+    text_1_extracted = hot_pdf_object.extract_text(x0=span_1.x0, y0=span_1.y0, x1=span_1.x1, y1=span_1.y1)
+    text_2_extracted = hot_pdf_object.extract_text(x0=span_2.x0, y0=span_2.y0, x1=span_2.x1, y1=span_2.y1)
+    assert text_1_extracted.strip("\n").strip() == FULL_SPAN_1, f"{text_1_extracted}, {FULL_SPAN_1}"
+    assert text_2_extracted.strip("\n").strip() == FULL_SPAN_2, f"{text_2_extracted}, {FULL_SPAN_2}"
 
     # Test Non Existent Word
     occurences = hot_pdf_object.find_text(NON_EXISTENT_WORD)
@@ -248,9 +238,7 @@ def test_get_spans(valid_file_name):
 @pytest.mark.parametrize("first_page, last_page", [(1, 1), (1, 2)])
 def test_extract_page_range(multiple_pages_file_name, first_page, last_page):
     hot_pdf_object = HotPdf()
-    hot_pdf_object.load(
-        multiple_pages_file_name, first_page=first_page, last_page=last_page
-    )
+    hot_pdf_object.load(multiple_pages_file_name, first_page=first_page, last_page=last_page)
     pages = hot_pdf_object.pages
     assert len(pages) == last_page - first_page + 1
 
@@ -259,9 +247,7 @@ def test_extract_page_range(multiple_pages_file_name, first_page, last_page):
 def test_extract_page_range_exception(multiple_pages_file_name, first_page, last_page):
     hot_pdf_object = HotPdf()
     with pytest.raises(ValueError, match="Invalid page range"):
-        hot_pdf_object.load(
-            multiple_pages_file_name, first_page=first_page, last_page=last_page
-        )
+        hot_pdf_object.load(multiple_pages_file_name, first_page=first_page, last_page=last_page)
 
 
 def test_no_spans_in_xml_file_extraction(valid_file_name):
@@ -313,7 +299,5 @@ def test_no_spans_in_xml_file_extract_spans(valid_file_name):
 def test_find_text_multiple_pages(multiple_pages_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(multiple_pages_file_name)
-    occurences = hot_pdf_object.find_text(
-        query="God", pages=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-    )
+    occurences = hot_pdf_object.find_text(query="God", pages=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     assert len(occurences) == 11

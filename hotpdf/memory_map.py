@@ -44,9 +44,7 @@ class MemoryMap:
             memory_map_str += "\n"
         return memory_map_str
 
-    def display_memory_map(
-        self, save: bool = False, filename: str = "memory_map.txt"
-    ) -> None:
+    def display_memory_map(self, save: bool = False, filename: str = "memory_map.txt") -> None:
         """
         Display or save the memory map.
 
@@ -67,17 +65,13 @@ class MemoryMap:
     def __get_page_chars(self, page: ET.Element) -> list[ET.Element]:
         return page.findall(".//char")
 
-    def __get_span_chars(
-        self, spans: Generator[ET.Element, None, None], drop_duplicate_spans: bool
-    ) -> list[ET.Element]:
+    def __get_span_chars(self, spans: Generator[ET.Element, None, None], drop_duplicate_spans: bool) -> list[ET.Element]:
         chars: list[ET.Element] = []
         seen_span_hashes: set[str] = set()
         for span in spans:
             span_id: str = generate_nano_id(size=10)
             span_chars: list[ET.Element] = span.findall(".//")
-            span_hash: str = md5(
-                f"{str(span.attrib)}|{str([_char.attrib for _char in span_chars])}".encode()
-            ).hexdigest()
+            span_hash: str = md5(f"{str(span.attrib)}|{str([_char.attrib for _char in span_chars])}".encode()).hexdigest()
             if drop_duplicate_spans:
                 if span_hash in seen_span_hashes:
                     continue
@@ -88,9 +82,7 @@ class MemoryMap:
         del seen_span_hashes
         return chars
 
-    def load_memory_map(
-        self, page: ET.Element, drop_duplicate_spans: bool = True
-    ) -> None:
+    def load_memory_map(self, page: ET.Element, drop_duplicate_spans: bool = True) -> None:
         """
         Load memory map data from an XML page.
 
@@ -112,9 +104,7 @@ class MemoryMap:
             chars = self.__get_page_chars(page)
         for char in chars:
             char_bbox = char.attrib["bbox"]
-            char_x0, char_y0, char_x1, _ = [
-                float(char_coord) for char_coord in char_bbox.split()
-            ]
+            char_x0, char_y0, char_x1, _ = [float(char_coord) for char_coord in char_bbox.split()]
             char_c = char.attrib["c"]
             char_span_id = char.attrib.get("span_id")
             cell_x = int(math.floor(char_x0))
@@ -134,12 +124,10 @@ class MemoryMap:
                 cell_x += 1
                 char_x1 += 1
             self.memory_map.insert(value=char_c, row_idx=cell_y, column_idx=cell_x)
-            char_hot_characters.append(
-                (
-                    char_c,
-                    hot_character,
-                )
-            )
+            char_hot_characters.append((
+                char_c,
+                hot_character,
+            ))
         # Insert into Trie and Span Maps
         _hot_character: HotCharacter
         for char_c, _hot_character in char_hot_characters:
