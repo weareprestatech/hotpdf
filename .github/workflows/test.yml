@@ -16,10 +16,10 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
-    - name: Setup Python 3.8
+    - name: Setup Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: 3.9
     - name: Cache python packages
       uses: actions/cache@v3
       with:
