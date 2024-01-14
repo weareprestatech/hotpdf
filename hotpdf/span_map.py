@@ -18,9 +18,7 @@ class SpanMap:
     def __getitem__(self, span_id: str) -> Union[Span, None]:
         return self.get_span(span_id)
 
-    def __setitem__(
-        self, span_id: Union[str, None], hot_character: HotCharacter
-    ) -> None:
+    def __setitem__(self, span_id: Union[str, None], hot_character: HotCharacter) -> None:
         self.insert(span_id, hot_character)
 
     def items(self) -> Iterable[tuple[str, Span]]:
