@@ -2,8 +2,8 @@
 Implementation from: https://github.com/puyuan/py-nanoid
 """
 
-from os import urandom
 from math import ceil, log
+from os import urandom
 from typing import Callable
 
 
