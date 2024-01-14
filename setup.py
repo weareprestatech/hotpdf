@@ -1,33 +1,39 @@
-# -*- coding: utf-8 -*-
-from setuptools import setup, find_packages
+#!/usr/bin/env python3
+
 from pathlib import Path
-from pipenv_setup import pipfile_parser as parser
+from setuptools import setup
 
-# Setup Pipfile parsing
-project_dir = Path(__file__).parent
-pipfile_path = project_dir.joinpath("Pipfile")
-_, remote_packages = parser.get_default_packages(pipfile_path)
-install_requires = [
-    parser.format_remote_package(k, v)[1] for k, v in remote_packages.items()
-]
-
-version = "x.x"
-with open("VERSION", "r") as version_file:
-    version = str(version_file.read())
+directory = Path(__file__).resolve().parent
+with open(directory / "README.md", encoding="utf-8") as f:
+    long_description = f.read()
 
 setup(
     name="hotpdf",
-    version=version,
+    version="0.3.0",
     author="Krishnasis Mandal",
     author_email="krishnasis.mandal@prestatech.com",
-    packages=find_packages(exclude=("tests",)),
-    url="https://dev.azure.com/prestacap/Prestatech-General/_git/hotpdf",
     license="MIT",
     description="Fast PDF Data Extraction library",
-    keywords="",
-    long_description=open("README.md").read(),
-    install_requires=install_requires,
+    long_description=long_description,
     classifiers=[
-        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
     ],
+    python_requires=">=3.8",
+    extras_require={
+        "linting": [
+            "pylint",
+            "mypy",
+            "typing-extensions",
+            "pre-commit",
+            "ruff",
+        ],
+        "testing": [
+            "pytest",
+            "pytest-xdist",
+            "pytest-cov",
+        ],
+        "profiling": ["memray"],
+    },
+    include_package_data=True,
 )
