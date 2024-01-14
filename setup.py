@@ -31,7 +31,7 @@ setup(
         "testing": [
             "pytest",
             "pytest-xdist",
-            "coverage",
+            "pytest-cov",
         ],
         "profiling": ["memray"],
     },
