@@ -1,9 +1,11 @@
-import pytest
-from hotpdf import HotPdf
-from hotpdf.utils import get_element_dimension
-from hotpdf.data.classes import ElementDimension
 from unittest.mock import patch
+
+import pytest
+
+from hotpdf import HotPdf
+from hotpdf.data.classes import ElementDimension
 from hotpdf.memory_map import MemoryMap
+from hotpdf.utils import get_element_dimension
 
 
 @pytest.fixture

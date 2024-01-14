@@ -1,15 +1,17 @@
-from hotpdf.processor import generate_xml_file
-from hotpdf.memory_map import MemoryMap
-from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect
-from .data.classes import HotCharacter, PageResult, SearchResult, Span
-import math
-import xml.etree.cElementTree as ET
-import os
 import gc
-from typing import Union, Optional
-import warnings
-from collections import defaultdict
 import logging
+import math
+import os
+import warnings
+import xml.etree.cElementTree as ET
+from collections import defaultdict
+from typing import Optional, Union
+
+from hotpdf.memory_map import MemoryMap
+from hotpdf.processor import generate_xml_file
+from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect
+
+from .data.classes import HotCharacter, PageResult, SearchResult, Span
 
 
 class HotPdf:

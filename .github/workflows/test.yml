@@ -30,7 +30,7 @@ jobs:
     - name: Lint with ruff
       run: |
         pip3 install --upgrade --force-reinstall ruff
-        python3 -m ruff . --preview
+        python3 -m ruff .
     - name: Run mypy
       run: python -m mypy
     # - name: Use as an external package

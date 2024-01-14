@@ -19,4 +19,5 @@ select = [
   "UP039",  # unnecessary-class-parentheses
 ]
 
+preview = true
 line-length = 150

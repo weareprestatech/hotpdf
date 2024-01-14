@@ -1,5 +1,6 @@
+from typing import Iterable, Union
+
 from .data.classes import HotCharacter, Span
-from typing import Union, Iterable
 
 
 class SpanMap:

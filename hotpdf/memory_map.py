@@ -1,13 +1,14 @@
 import math
 import xml.etree.cElementTree as ET
-from .trie import Trie
-from .span_map import SpanMap
-from .data.classes import HotCharacter, PageResult
-from .helpers.nanoid import generate_nano_id
-from .sparse_matrix import SparseMatrix
 from functools import lru_cache
 from hashlib import md5
 from typing import Generator
+
+from .data.classes import HotCharacter, PageResult
+from .helpers.nanoid import generate_nano_id
+from .span_map import SpanMap
+from .sparse_matrix import SparseMatrix
+from .trie import Trie
 
 
 class MemoryMap:

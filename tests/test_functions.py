@@ -1,9 +1,11 @@
+import os
+
 import pytest
+
 from hotpdf import HotPdf
-from hotpdf.utils import filter_adjacent_coords, intersect
 from hotpdf.data.classes import HotCharacter
 from hotpdf.sparse_matrix import SparseMatrix
-import os
+from hotpdf.utils import filter_adjacent_coords, intersect
 
 
 @pytest.fixture
