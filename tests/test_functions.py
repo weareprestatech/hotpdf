@@ -102,9 +102,7 @@ def test_duplicate_spans_removed(luca_mock_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(luca_mock_file_name)
 
-    assert len(hot_pdf_object.pages[0].span_map) < len(
-        hot_pdf_object_with_dup_span.pages[0].span_map
-    )
+    assert len(hot_pdf_object.pages[0].span_map) < len(hot_pdf_object_with_dup_span.pages[0].span_map)
 
 
 @pytest.mark.parametrize(
