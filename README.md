@@ -1,5 +1,5 @@
 [![Documentation Status](https://readthedocs.org/projects/hotpdf/badge/?version=latest)](https://hotpdf.readthedocs.io/en/latest/?badge=latest)
-
+[![Release](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml/badge.svg?branch=main)](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml)
 
 # hotpdf
 
