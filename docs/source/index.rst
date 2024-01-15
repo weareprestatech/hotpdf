@@ -10,10 +10,22 @@ This project was started as an internal project @ `Prestatech <http://prestatech
 
 hotpdf can be used to find and extract text from PDFs.
 
+Installation
+------------
+
+The latest version of `hotpdf` can be installed directly from `PYPI`_ with pip.
+
+.. code-block:: bash
+
+   pip install hotpdf
+
+.. _PYPI: https://pypi.org/project/hotpdf/
+
+
 Pre-requisites
 --------------
 
-1. **Ghostscript Installation:**
+1. **Ghostscript:**
    hotpdf requires Ghostscript to be installed. Please install it on your system.
 
    `Download Ghostscript <https://www.ghostscript.com/>`_.
