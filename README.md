@@ -43,10 +43,10 @@ hotpdf_document.load(pdf_file_path)
 print(len(hotpdf_document.pages))
 
 # Find text
-text_occurences = hotpdf_document.find_text("word")
+text_occurences = hotpdf_document.find_text("foo")
 
 # Find text and its full span
-text_occurences_full_span = hotpdf_document.find_text("word", take_span=True)
+text_occurences_full_span = hotpdf_document.find_text("foo", take_span=True)
 
 # Extract text in region
 text_in_bbox = hotpdf_document.extract_text(
