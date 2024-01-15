@@ -1,3 +1,6 @@
+[![Documentation Status](https://readthedocs.org/projects/hotpdf/badge/?version=latest)](https://hotpdf.readthedocs.io/en/latest/?badge=latest)
+
+
 # hotpdf
 
 This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery).
