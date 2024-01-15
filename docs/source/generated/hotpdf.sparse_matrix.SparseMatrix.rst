@@ -5,14 +5,20 @@
 
 .. autoclass:: SparseMatrix
 
-
+   
    .. automethod:: __init__
 
-
+   
    .. rubric:: Methods
 
    .. autosummary::
-
+   
       ~SparseMatrix.__init__
       ~SparseMatrix.get
       ~SparseMatrix.insert
+   
+   
+
+   
+   
+   
