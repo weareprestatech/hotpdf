@@ -60,7 +60,7 @@ select = [
   "UP039",  # unnecessary-class-parentheses
 ]
 
-
+exclude = ["docs"]
 preview = true
 line-length = 150
 
