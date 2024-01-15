@@ -1,5 +1,3 @@
-[![Test CI](https://github.com/weareprestatech/hotpdf/actions/workflows/python-app.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/python-app.yml)
-
 # hotpdf
 
 This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery).
@@ -17,26 +15,18 @@ hotpdf can be used to find and extract text from PDFs.
 
 ### Contributing
 
-1. **Type & Lint Checks:**
-   - Use `mypy` to check for types and maintain code quality.
-   - Run mypy locally before pushing to prevent lint pipeline failures.
-   - hotpdf/ folder should have **strict** mypy type checking
-   - Use `flake8` for basic linting.
+You should install the [pre-commit](https://github.com/weareprestatech/hotpdf/blob/main/.pre-commit-config.yaml) hooks with `pre-commit install`. This will run the linter, mypy, and a subset of the tests on every commit.
 
-    ```bash
-    pipenv run mypy hotpdf/ --check-untyped-defs --strict
-    pipenv run mypy tests/ --check-untyped-defs
-    pipenv run flake8 hotpdf/ --ignore=E501,W503
-    ```
+For more examples of how to run the full test suite please refer to the [CI workflow](https://github.com/weareprestatech/hotpdf/blob/main/.github/workflows/test.yml).
 
-2. **Test Coverage:**
-   - Check test coverage with the `coverage` library.
-   - Aim for 100% test coverage.
+We strive to keep the test coverage at 100%: if you want your contributions accepted please write tests for them :D
 
-    ```bash
-    pipenv run coverage run --omit="*/test*" -m pytest tests/
-    pipenv run coverage report -m --fail-under=100 -m
-    ```
+Some examples of running tests locally:
+
+```bash
+python3 -m pip install -e '.[testing]'               # install extra deps for testing
+python3 -m pytest -n=auto test/                      # run the test suite
+```
 
 ## Usage
 Basic usage is as follows:
