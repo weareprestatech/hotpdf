@@ -7,6 +7,7 @@ from typing import Optional
 class HotCharacter:
     """
     A hot character is a character on a page with certain attributes.
+
     Attributes:
         value (str): value value of the character.
         x (int): x position of the character - column number.
@@ -26,6 +27,7 @@ class HotCharacter:
 class Span:
     """
     A span is a group of characters that are close to each other.
+
     Attributes:
         characters (list[HotCharacter]): list of characters in the span.
         x0 (int): starting x position of the span (column).
@@ -45,6 +47,7 @@ class Span:
 class ElementDimension:
     """
     ElementDimension is the dimension of an element in hotpdf.
+
     Attributes:
         x0 (int): starting x position of the element (column).
         y0 (int): starting y position of the element (row).
