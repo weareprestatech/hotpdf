@@ -1,10 +1,12 @@
+[![Documentation Status](https://readthedocs.org/projects/hotpdf/badge/?version=latest)](https://hotpdf.readthedocs.io/en/latest/?badge=latest)
+
+
 # hotpdf
 
 This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery).
 
 hotpdf can be used to find and extract text from PDFs.
-
-[Read the docs](https://stdocs.z6.web.core.windows.net/hotpdf/index.html)
+Please [read the docs](https://hotpdf.readthedocs.io/en/latest/) to understand how the library can help you!
 
 ### Pre-requisites
 
@@ -29,6 +31,10 @@ python3 -m pytest -n=auto test/                      # run the test suite
 ```
 
 ## Usage
+
+#### To view more detailed usage information, please [read the docs](https://hotpdf.readthedocs.io/en/latest/)
+
+
 Basic usage is as follows:
 ```python
 from hotpdf import HotPdf
@@ -67,24 +73,6 @@ spans_in_bbox = hotpdf_document.extract_spans(
 )
 ```
 For more granular function level documentation please check the docs.
-
-## Comprehensive Documentation
-
-`hotpdf` is comprehensively documented within code for easy understanding. You can use any tool to view the documentation.
-You can use an inbuilt tool like `pydoc` to view the documentation.
-
-However we can also generate a better looking documentation using tools like [pdoc3](https://pypi.org/project/pdoc3/).
-
-### View documentation
-
-``` bash
-pipenv run python -m pdoc --http localhost:8081 hotpdf/
-```
-
-This will start the documentation server on `localhost:8081`
-
-[View documentation](https://stdocs.z6.web.core.windows.net/hotpdf/index.html)
-
 
 ## License
 This project is licensed under the terms of the MIT license.
