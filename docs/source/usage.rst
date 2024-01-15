@@ -1,14 +1,17 @@
 Usage
------
+=====
 
 Basic usage is as follows:
 
-Loading a file
----------------------
+HotPdf Class
+------------------------------------------
 
 .. autoclass:: hotpdf.HotPdf
 
 The HotPdf class is the wrapper around your PDF that allows for searching text and extracting text on your PDFs.
+
+Loading a file
+------------------------------------------
 
 Before you can perform operations on your PDFs, you will need to load it first.
 
@@ -23,6 +26,9 @@ Before you can perform operations on your PDFs, you will need to load it first.
 
 File Operations
 ------------------------------------------
+
+Length
+^^^^^^^
 
 The number of pages in the PDF file can be determined by checking the `len` of `pages` property of the hotpdf object.
 
