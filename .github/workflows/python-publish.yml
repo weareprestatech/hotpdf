@@ -23,8 +23,8 @@ jobs:
         python3 -m pip install --upgrade setuptools wheel twine build
     - name: Build and publish
       env:
-        TWINE_USERNAME: ${{ secrets.deploy.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.deploy.PYPI_PASSWORD }}
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         python -m build
         twine upload dist/*
