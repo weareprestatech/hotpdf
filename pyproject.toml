@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+
+[project]
+name="hotpdf"
+version="0.3.0"
+authors = [
+  {name = "Krishnasis Mandal", email = "krishnasis.mandal@prestatech.com"}]
+maintainers = [
+  {name = "Mattia Callegari" , email = "callegari.mattia@protonmail.com"},
+  {name = "Alex Ptakhin" , email = "alex.ptakhin@prestatech.com"}]
+description = "Fast PDF Data Extraction library"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.11",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Text Processing :: General",
+  "Topic :: Text Processing :: Indexing",
+  "Topic :: Text Processing :: Linguistic",
+  "Topic :: Utilities",
+  "Operating System :: OS Independent",
+]
+keywords = [
+  "pdf",
+  "data extraction",
+  "text extraction",
+  "hotpdf",
+  "pdfminer",
+  "pdfquery"
+]
+
+[project.optional-dependencies]
+testing = ["pytest", "pytest-cov", "pytest-xdist"]
+linting = ["pylint", "mypy", "typing-extensions", "pre-commit", "ruff"]
+
+[tool.ruff]
+indent-width = 4
+
+select = [
+  "F",
+  "W6",
+  "E71",
+  "E72",
+  "E112",
+  "E113",
+  "E203",
+  "E272",
+  "E501",
+  "E702",
+  "E703",
+  "E731",
+  "W191",
+  "W291",
+  "W293",
+  "UP039",  # unnecessary-class-parentheses
+]
+
+
+preview = true
+line-length = 150
+
+[tool.mypy]
+warn_unused_configs = true
+files = "hotpdf"
+ignore_missing_imports = true
+check_untyped_defs = true
+explicit_package_bases = true
+warn_unreachable = true
+warn_redundant_casts = true
