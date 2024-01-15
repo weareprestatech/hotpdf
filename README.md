@@ -8,9 +8,16 @@ This project was started as an internal project @ [Prestatech](http://prestatech
 hotpdf can be used to find and extract text from PDFs.
 Please [read the docs](https://hotpdf.readthedocs.io/en/latest/) to understand how the library can help you!
 
+## Installation
+The latest version of hotpdf can be installed directly from [PYPI](https://pypi.org/project/hotpdf/) with pip.
+
+```bash
+pip install hotpdf
+```
+
 ### Pre-requisites
 
-1. **Ghostscript Installation:**
+1. **Ghostscript:**
    hotpdf requires Ghostscript to be installed. Please install it on your system.
 
    [Download Ghostscript](https://www.ghostscript.com/).
@@ -32,7 +39,7 @@ python3 -m pytest -n=auto test/                      # run the test suite
 
 ## Usage
 
-#### To view more detailed usage information, please [read the docs](https://hotpdf.readthedocs.io/en/latest/)
+**To view more detailed usage information, please [read the docs](https://hotpdf.readthedocs.io/en/latest/)**
 
 
 Basic usage is as follows:
@@ -72,7 +79,7 @@ spans_in_bbox = hotpdf_document.extract_spans(
    page=0,
 )
 ```
-For more granular function level documentation please check the docs.
+For more granular function level documentation please check the [docs](https://hotpdf.readthedocs.io/en/latest/).
 
 ## License
 This project is licensed under the terms of the MIT license.

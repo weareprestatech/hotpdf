@@ -5,14 +5,14 @@
 
 .. autoclass:: MemoryMap
 
-
+   
    .. automethod:: __init__
 
-
+   
    .. rubric:: Methods
 
    .. autosummary::
-
+   
       ~MemoryMap.__init__
       ~MemoryMap.build_memory_map
       ~MemoryMap.display_memory_map
@@ -20,3 +20,9 @@
       ~MemoryMap.find_text
       ~MemoryMap.load_memory_map
       ~MemoryMap.text
+   
+   
+
+   
+   
+   
