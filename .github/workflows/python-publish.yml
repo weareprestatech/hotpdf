@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python3 -m pip install --upgrade setuptools wheel twine
+        python3 -m pip install --upgrade setuptools wheel twine build
     - name: Build and publish
       env:
         TWINE_USERNAME: ${{ secrets.deploy.PYPI_USERNAME }}
