@@ -1,4 +1,3 @@
-import gc
 import logging
 import math
 import os
@@ -97,8 +96,8 @@ class HotPdf:
                 parsed_page.build_memory_map()
                 parsed_page.load_memory_map(page=element, drop_duplicate_spans=drop_duplicate_spans)
                 self.pages.append(parsed_page)
+                element.clear()
             root.clear()
-        gc.collect()
 
     def __extract_full_text_span(
         self,

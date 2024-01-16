@@ -63,25 +63,22 @@ class MemoryMap:
     def __get_page_spans(self, page: ET.Element) -> Generator[ET.Element, None, None]:
         return page.iterfind(".//span")
 
-    def __get_page_chars(self, page: ET.Element) -> list[ET.Element]:
-        return page.findall(".//char")
+    def __get_page_chars(self, page: ET.Element) -> Generator[ET.Element, None, None]:
+        return page.iterfind(".//char")
 
-    def __get_span_chars(self, spans: Generator[ET.Element, None, None], drop_duplicate_spans: bool) -> list[ET.Element]:
-        chars: list[ET.Element] = []
+    def __get_span_chars(self, spans: Generator[ET.Element, None, None], drop_duplicate_spans: bool) -> Generator[ET.Element, None, None]:
         seen_span_hashes: set[str] = set()
         for span in spans:
             span_id: str = generate_nano_id(size=10)
-            span_chars: list[ET.Element] = span.findall(".//")
-            span_hash: str = md5(f"{str(span.attrib)}|{str([_char.attrib for _char in span_chars])}".encode()).hexdigest()
+            span_hash: str = md5(f"{str(span.attrib)}|{str(_char.attrib for _char in span.iterfind('.//'))}".encode()).hexdigest()
             if drop_duplicate_spans:
                 if span_hash in seen_span_hashes:
                     continue
                 seen_span_hashes.add(span_hash)
-            for char in span_chars:
+            for char in span.iterfind(".//"):
                 char.set("span_id", span_id)
-                chars.append(char)
+                yield char
         del seen_span_hashes
-        return chars
 
     def load_memory_map(self, page: ET.Element, drop_duplicate_spans: bool = True) -> None:
         """
@@ -95,7 +92,7 @@ class MemoryMap:
         """
         char_hot_characters: list[tuple[str, HotCharacter]] = []
         spans: Generator[ET.Element, None, None] = self.__get_page_spans(page)
-        chars: list[ET.Element] = []
+        chars: Generator[ET.Element, None, None]
         if spans:
             chars = self.__get_span_chars(
                 spans=spans,
@@ -105,12 +102,12 @@ class MemoryMap:
             chars = self.__get_page_chars(page)
         for char in chars:
             char_bbox = char.attrib["bbox"]
-            char_x0, char_y0, char_x1, _ = [float(char_coord) for char_coord in char_bbox.split()]
+            char_x0, char_y0, char_x1, _ = map(float, char_bbox.split())
             char_c = char.attrib["c"]
             char_span_id = char.attrib.get("span_id")
-            cell_x = int(math.floor(char_x0))
-            cell_y = int(math.floor(char_y0))
-            cell_x_end = int(math.ceil(char_x1))
+            cell_x = math.floor(char_x0)
+            cell_y = math.floor(char_y0)
+            cell_x_end = math.ceil(char_x1)
             hot_character = HotCharacter(
                 value=char_c,
                 x=cell_x,
@@ -121,9 +118,6 @@ class MemoryMap:
             if not 0 < cell_x or not 0 < cell_y:
                 continue
 
-            if self.memory_map.get(row_idx=cell_y, column_idx=cell_x) != "":
-                cell_x += 1
-                char_x1 += 1
             self.memory_map.insert(value=char_c, row_idx=cell_y, column_idx=cell_x)
             char_hot_characters.append((
                 char_c,
@@ -152,10 +146,10 @@ class MemoryMap:
         Returns:
             str: Extracted text within the bounding box.
         """
-        cell_x0 = int(math.floor(x0))
-        cell_x1 = int(math.ceil(x1))
-        cell_y0 = int(math.floor(y0))
-        cell_y1 = int(math.ceil(y1))
+        cell_x0 = math.floor(x0)
+        cell_x1 = math.ceil(x1)
+        cell_y0 = math.floor(y0)
+        cell_y1 = math.ceil(y1)
 
         extracted_text = ""
         for row in range(cell_y0, cell_y1 + 1):
