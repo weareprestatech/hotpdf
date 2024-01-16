@@ -35,8 +35,7 @@ keywords = [
 ]
 
 [project.optional-dependencies]
-testing = ["pytest", "pytest-cov", "pytest-xdist"]
-linting = ["pylint", "mypy", "typing-extensions", "pre-commit", "ruff"]
+dev = ["pytest", "pytest-cov", "pytest-xdist", "pylint", "mypy", "typing-extensions", "pre-commit", "ruff"]
 
 [tool.ruff]
 indent-width = 4
@@ -60,6 +59,8 @@ select = [
   "UP039",  # unnecessary-class-parentheses
 ]
 
+fix = true
+fixable = ["ALL"]
 exclude = ["docs"]
 preview = true
 line-length = 150

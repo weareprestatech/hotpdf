@@ -1,7 +1,7 @@
+# hotpdf
+
 [![Documentation Status](https://readthedocs.org/projects/hotpdf/badge/?version=latest)](https://hotpdf.readthedocs.io/en/latest/?badge=latest)
 [![Release](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml/badge.svg?branch=main)](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml)
-
-# hotpdf
 
 This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery).
 
@@ -9,7 +9,8 @@ hotpdf can be used to find and extract text from PDFs.
 Please [read the docs](https://hotpdf.readthedocs.io/en/latest/) to understand how the library can help you!
 
 ## Installation
-The latest version of hotpdf can be installed directly from [PYPI](https://pypi.org/project/hotpdf/) with pip.
+
+The latest version of hotpdf can be installed directly from [PyPI](https://pypi.org/project/hotpdf/) with pip.
 
 ```bash
 pip install hotpdf
@@ -24,7 +25,9 @@ pip install hotpdf
 
 ### Contributing
 
-You should install the [pre-commit](https://github.com/weareprestatech/hotpdf/blob/main/.pre-commit-config.yaml) hooks with `pre-commit install`. This will run the linter, mypy, and a subset of the tests on every commit.
+You should install the [pre-commit](https://github.com/weareprestatech/hotpdf/blob/main/.pre-commit-config.yaml) hooks with `pre-commit install`. This will run the linter, mypy, and ruff formatting before each commit.
+
+Rembember to run `pip install -e '.[dev]'` to install the extra dependencies for development.
 
 For more examples of how to run the full test suite please refer to the [CI workflow](https://github.com/weareprestatech/hotpdf/blob/main/.github/workflows/test.yml).
 
@@ -33,7 +36,7 @@ We strive to keep the test coverage at 100%: if you want your contributions acce
 Some examples of running tests locally:
 
 ```bash
-python3 -m pip install -e '.[testing]'               # install extra deps for testing
+python3 -m pip install -e '.[dev]'               # install extra deps for testing
 python3 -m pytest -n=auto test/                      # run the test suite
 ```
 
@@ -41,9 +44,10 @@ python3 -m pytest -n=auto test/                      # run the test suite
 
 **To view more detailed usage information, please [read the docs](https://hotpdf.readthedocs.io/en/latest/)**
 
-
 Basic usage is as follows:
+
 ```python
+
 from hotpdf import HotPdf
 
 pdf_file_path = "test.pdf"
@@ -79,9 +83,11 @@ spans_in_bbox = hotpdf_document.extract_spans(
    page=0,
 )
 ```
+
 For more granular function level documentation please check the [docs](https://hotpdf.readthedocs.io/en/latest/).
 
 ## License
+
 This project is licensed under the terms of the MIT license.
 
 ---
