@@ -17,8 +17,8 @@ def multiple_pages_file_name():
 
 
 @pytest.fixture
-def luca_mock_file_name():
-    return "tests/resources/luca_mock.pdf"
+def mock_real_file_name():
+    return "tests/resources/hotpdf_bank.pdf"
 
 
 def perform_speed_test(file_name, expected_processing_seconds):
@@ -46,14 +46,12 @@ def test_memory_benchmark_multiple_pages(multiple_pages_file_name):
     perform_memory_test(multiple_pages_file_name, 15.5)
 
 
-@pytest.mark.skip(reason="Luca mock file is not available in the repository")
-def test_speed_luca_mock(luca_mock_file_name):
-    perform_speed_test(luca_mock_file_name, 3)
+def test_speed_luca_mock(mock_real_file_name):
+    perform_speed_test(mock_real_file_name, 3)
 
 
-@pytest.mark.skip(reason="Luca mock file is not available in the repository")
-def test_memory_luca_mock(luca_mock_file_name):
-    perform_memory_test(luca_mock_file_name, 12.5)
+def test_memory_luca_mock(mock_real_file_name):
+    perform_memory_test(mock_real_file_name, 12.5)
 
 
 def test_speed_default_file(default_file_name):
