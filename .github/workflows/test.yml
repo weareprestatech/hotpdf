@@ -33,17 +33,9 @@ jobs:
         python3 -m ruff check
     - name: Run mypy
       run: python -m mypy
-    # - name: Use as an external package
-    #   run: |
-    #     mkdir $HOME/test_external_dir
-    #     cd $HOME/test_external_dir
-    #     python -m venv venv
-    #     source venv/bin/activate
-    #     pip install $GITHUB_WORKSPACE
-    #     python -c "from hotpdf import Hotpdf; print(Hotpdf())"
 
   tests:
-    name: Unit tests
+    name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
@@ -65,3 +57,12 @@ jobs:
       - name: Run tests with coverage
         run:
           python -m pytest --cov=hotpdf -n=auto tests/ --cov-fail-under=100
+      - name : Use as external package and run a test
+        run: |
+          mkdir $HOME/test_external_dir
+          cd $HOME/test_external_dir
+          cp $GITHUB_WORKSPACE/tests/ . -r
+          python -m venv venv
+          source venv/bin/activate
+          pip install hotpdf pytest
+          python -m pytest -k "test_full_text"
