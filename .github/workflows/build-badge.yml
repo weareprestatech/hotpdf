@@ -1,0 +1,28 @@
+name: build
+on:
+  schedule:
+    - cron: '5 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install ghostscript
+        run: |
+          sudo apt-get update
+          sudo apt-get install ghostscript
+      - name : Build and run tests
+        run: |
+          mkdir $HOME/test_external_dir
+          cd $HOME/test_external_dir
+          python -m venv venv
+          source venv/bin/activate
+          pip install $GITHUB_WORKSPACE pytest pytest-xdist
+          python -m pytest $GITHUB_WORKSPACE/tests -n=auto
