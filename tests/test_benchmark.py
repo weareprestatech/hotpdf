@@ -17,7 +17,7 @@ def multiple_pages_file_name():
 
 
 @pytest.fixture
-def mock_real_file_name():
+def mock_hotpdf_bank_file_name():
     return "tests/resources/hotpdf_bank.pdf"
 
 
@@ -46,12 +46,12 @@ def test_memory_benchmark_multiple_pages(multiple_pages_file_name):
     perform_memory_test(multiple_pages_file_name, 15.5)
 
 
-def test_speed_luca_mock(mock_real_file_name):
-    perform_speed_test(mock_real_file_name, 3)
+def test_speed_luca_mock(mock_hotpdf_bank_file_name):
+    perform_speed_test(mock_hotpdf_bank_file_name, 3)
 
 
-def test_memory_luca_mock(mock_real_file_name):
-    perform_memory_test(mock_real_file_name, 12.5)
+def test_memory_luca_mock(mock_hotpdf_bank_file_name):
+    perform_memory_test(mock_hotpdf_bank_file_name, 12.5)
 
 
 def test_speed_default_file(default_file_name):

@@ -14,7 +14,7 @@ def valid_file_name():
 
 
 @pytest.fixture
-def mock_real_file_name():
+def mock_hotpdf_bank_file_name():
     return "tests/resources/hotpdf_bank.pdf"
 
 
@@ -98,12 +98,12 @@ def test_sparse_matrix_iterator():
 
 
 @pytest.mark.skip(reason="This scenario needs to be recreated or mocked")
-def test_duplicate_spans_removed(mock_real_file_name):
+def test_duplicate_spans_removed(mock_hotpdf_bank_file_name):
     hot_pdf_object_with_dup_span = HotPdf()
-    hot_pdf_object_with_dup_span.load(mock_real_file_name, drop_duplicate_spans=False)
+    hot_pdf_object_with_dup_span.load(mock_hotpdf_bank_file_name, drop_duplicate_spans=False)
 
     hot_pdf_object = HotPdf()
-    hot_pdf_object.load(mock_real_file_name)
+    hot_pdf_object.load(mock_hotpdf_bank_file_name)
 
     assert len(hot_pdf_object.pages[0].span_map) < len(hot_pdf_object_with_dup_span.pages[0].span_map)
 
