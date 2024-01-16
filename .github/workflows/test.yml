@@ -24,13 +24,12 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.Python3_ROOT_DIR }}/lib/python3.11/site-packages
-        key: linting-packages-${{ hashFiles('**/pyproject.toml') }}-3.11
+        key: dev-${{ hashFiles('**/pyproject.toml') }}-3.11
     - name: Install dependencies
-      run: pip install -e '.[linting,testing]'
+      run: pip install -e '.[dev]'
     - name: Lint with ruff
       run: |
-        pip3 install --upgrade --force-reinstall ruff
-        python3 -m ruff .
+        python3 -m ruff
     - name: Run mypy
       run: python -m mypy
     # - name: Use as an external package
@@ -59,9 +58,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.Python3_ROOT_DIR }}/lib/python3.11/site-packages
-          key: testing-packages-${{ hashFiles('**/pyproject.toml') }}-3.11
+          key: dev-${{ hashFiles('**/pyproject.toml') }}-3.11
       - name: Install dependencies
-        run: pip install -e '.[testing]'
+        run: pip install -e '.[dev]'
       - name: Run tests with coverage
         run:
           python -m pytest --cov=hotpdf -n=auto tests/ --cov-fail-under=100
