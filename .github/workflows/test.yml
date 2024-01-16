@@ -29,7 +29,7 @@ jobs:
       run: pip install -e '.[dev]'
     - name: Lint with ruff
       run: |
-        python3 -m ruff
+        python3 -m ruff check
     - name: Run mypy
       run: python -m mypy
     # - name: Use as an external package
