@@ -22,7 +22,8 @@ jobs:
         run: |
           mkdir $HOME/test_external_dir
           cd $HOME/test_external_dir
+          cp $GITHUB_WORKSPACE/tests .
           python -m venv venv
           source venv/bin/activate
           pip install $GITHUB_WORKSPACE pytest pytest-xdist
-          python -m pytest $GITHUB_WORKSPACE/tests -n=auto
+          python -m pytest -n=auto
