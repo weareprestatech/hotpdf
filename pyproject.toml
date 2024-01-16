@@ -34,6 +34,13 @@ keywords = [
   "pdfquery"
 ]
 
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+include = ["hotpdf*"]
+exclude = ["docs*", "tests*"]
+
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov", "pytest-xdist", "pylint", "mypy", "typing-extensions", "pre-commit", "ruff"]
 
