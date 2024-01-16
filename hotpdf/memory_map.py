@@ -70,7 +70,7 @@ class MemoryMap:
         seen_span_hashes: set[str] = set()
         for span in spans:
             span_id: str = generate_nano_id(size=10)
-            span_hash: str = md5(f"{str(span.attrib)}|{str(_char.attrib for _char in span.iterfind('.//'))}".encode()).hexdigest()
+            span_hash: str = md5(f"{str(span.attrib)}|{str([_char.attrib for _char in span.iterfind('.//')])}".encode()).hexdigest()
             if drop_duplicate_spans:
                 if span_hash in seen_span_hashes:
                     continue
