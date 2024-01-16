@@ -1,7 +1,8 @@
 # hotpdf
 
 [![Documentation Status](https://readthedocs.org/projects/hotpdf/badge/?version=latest)](https://hotpdf.readthedocs.io/en/latest/?badge=latest)
-[![Release](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml/badge.svg?branch=main)](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml)
+[![latest](https://github.com/weareprestatech/hotpdf/actions/workflows/release-badge.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/release-badge.yml)
+[![build](https://github.com/weareprestatech/hotpdf/actions/workflows/build-badge.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/build-badge.yml)
 
 This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery).
 
