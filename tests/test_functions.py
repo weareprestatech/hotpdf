@@ -108,6 +108,19 @@ def test_duplicate_spans_not_removed(_, mock_hotpdf_bank_file_name):
     assert len(hot_pdf_object.pages[0].span_map) < len(hot_pdf_object_with_dup_span.pages[0].span_map)
 
 
+def test_load_negative_coordinates(mock_hotpdf_bank_file_name):
+    QUERY = "HOTPDF BANK"
+    with patch("hotpdf.processor.generate_xml_file", return_value="tests/resources/xml/hotpdf_bank_negative_coords.xml"):
+        hot_pdf_object = HotPdf()
+        hot_pdf_object.load(mock_hotpdf_bank_file_name)
+        assert not hot_pdf_object.find_text(QUERY)[0], "Expected string to be empty"
+    # For sanity: The following file is same as above, except the coords are normal
+    with patch("hotpdf.processor.generate_xml_file", return_value="tests/resources/xml/hotpdf_bank_normal_coords.xml"):
+        hot_pdf_object_normal = HotPdf()
+        hot_pdf_object_normal.load(mock_hotpdf_bank_file_name)
+        assert hot_pdf_object_normal.find_text(QUERY)[0], "Expected string to be not empty"
+
+
 @pytest.mark.parametrize(
     "bbox1, bbox2, expected",
     [
