@@ -97,6 +97,7 @@ def test_sparse_matrix_iterator():
     assert non_empty_values == expected_result
 
 
+@pytest.mark.skip(reason="Luca mock file is not available in the repository")
 def test_duplicate_spans_removed(luca_mock_file_name):
     hot_pdf_object_with_dup_span = HotPdf()
     hot_pdf_object_with_dup_span.load(luca_mock_file_name, drop_duplicate_spans=False)
