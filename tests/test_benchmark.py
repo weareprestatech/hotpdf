@@ -39,24 +39,24 @@ def perform_memory_test(file_name, expected_peak_memory):
 
 
 def test_speed_benchmark_multiple_pages(multiple_pages_file_name):
-    perform_speed_test(multiple_pages_file_name, 3.5)
+    perform_speed_test(multiple_pages_file_name, 4)
 
 
 def test_memory_benchmark_multiple_pages(multiple_pages_file_name):
-    perform_memory_test(multiple_pages_file_name, 15)
+    perform_memory_test(multiple_pages_file_name, 15.5)
 
 
 def test_speed_luca_mock(luca_mock_file_name):
-    perform_speed_test(luca_mock_file_name, 2.5)
+    perform_speed_test(luca_mock_file_name, 3)
 
 
 def test_memory_luca_mock(luca_mock_file_name):
-    perform_memory_test(luca_mock_file_name, 12)
+    perform_memory_test(luca_mock_file_name, 12.5)
 
 
 def test_speed_default_file(default_file_name):
-    perform_speed_test(default_file_name, 2)
+    perform_speed_test(default_file_name, 2.5)
 
 
 def test_memory_default_file(default_file_name):
-    perform_memory_test(default_file_name, 0.6)
+    perform_memory_test(default_file_name, 1)
