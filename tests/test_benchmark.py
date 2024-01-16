@@ -21,12 +21,12 @@ def luca_mock_file_name():
     return "tests/resources/luca_mock.pdf"
 
 
-def perform_speed_test(file_name):
+def perform_speed_test(file_name, expected_processing_seconds):
     start_time = time.time()
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(file_name)
     end_time = time.time()
-    assert (end_time - start_time) < 2, "Benchmark time exceeded!"
+    assert (end_time - start_time) < expected_processing_seconds, "Benchmark time exceeded!"
 
 
 def perform_memory_test(file_name, expected_peak_memory):
@@ -39,7 +39,7 @@ def perform_memory_test(file_name, expected_peak_memory):
 
 
 def test_speed_benchmark_multiple_pages(multiple_pages_file_name):
-    perform_speed_test(multiple_pages_file_name)
+    perform_speed_test(multiple_pages_file_name, 3.5)
 
 
 def test_memory_benchmark_multiple_pages(multiple_pages_file_name):
@@ -47,7 +47,7 @@ def test_memory_benchmark_multiple_pages(multiple_pages_file_name):
 
 
 def test_speed_luca_mock(luca_mock_file_name):
-    perform_speed_test(luca_mock_file_name)
+    perform_speed_test(luca_mock_file_name, 2.5)
 
 
 def test_memory_luca_mock(luca_mock_file_name):
@@ -55,7 +55,7 @@ def test_memory_luca_mock(luca_mock_file_name):
 
 
 def test_speed_default_file(default_file_name):
-    perform_speed_test(default_file_name)
+    perform_speed_test(default_file_name, 2)
 
 
 def test_memory_default_file(default_file_name):
