@@ -25,11 +25,11 @@ class Trie:
 
     def insert(self, word: str, hot_character: HotCharacter) -> None:
         """
-        Insert a word into the Trie.
+        Insert a word and a HotCharacter into the Trie.
 
         Args:
             word (str): The word to insert.
-            coords: Coordinates associated with the word.
+            hot_character (HotCharacter): The HotCharacter to insert.
         """
         node: TrieNode = self.root
         for char in word:

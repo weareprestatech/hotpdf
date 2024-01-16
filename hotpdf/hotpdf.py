@@ -6,8 +6,8 @@ import xml.etree.cElementTree as ET
 from collections import defaultdict
 from typing import Optional, Union
 
+from hotpdf import processor
 from hotpdf.memory_map import MemoryMap
-from hotpdf.processor import generate_xml_file
 from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect
 
 from .data.classes import HotCharacter, PageResult, SearchResult, Span
@@ -31,8 +31,9 @@ class HotPdf:
 
     def __del__(self) -> None:
         try:
-            os.remove(self.xml_file_path)
-            logging.info("[hotpdf] Deleted")
+            if "tests/resources/xml" not in self.xml_file_path:
+                os.remove(self.xml_file_path)
+                logging.info("[hotpdf] Deleted")
         except Exception as e:
             logging.error("[hotpdf] Unable to delete xml_file")
             logging.error(str(e))
@@ -83,7 +84,7 @@ class HotPdf:
             FileNotFoundError: If the file is not found.
         """
         self.__prechecks(pdf_file, first_page, last_page)
-        self.xml_file_path = generate_xml_file(pdf_file, first_page, last_page)
+        self.xml_file_path = processor.generate_xml_file(pdf_file, first_page, last_page)
         tree_iterator = ET.iterparse(self.xml_file_path, events=("start", "end"))
         event: str
         root: ET.Element

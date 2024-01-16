@@ -1,4 +1,5 @@
 import os
+from unittest.mock import patch
 
 import pytest
 
@@ -97,12 +98,11 @@ def test_sparse_matrix_iterator():
     assert non_empty_values == expected_result
 
 
-@pytest.mark.skip(reason="This scenario needs to be recreated or mocked")
-def test_duplicate_spans_removed(mock_hotpdf_bank_file_name):
+@patch("hotpdf.processor.generate_xml_file", return_value="tests/resources/xml/hotpdf_bank_dup_span.xml", autospec=True)
+def test_duplicate_spans_not_removed(_, mock_hotpdf_bank_file_name):
+    hot_pdf_object = HotPdf()
     hot_pdf_object_with_dup_span = HotPdf()
     hot_pdf_object_with_dup_span.load(mock_hotpdf_bank_file_name, drop_duplicate_spans=False)
-
-    hot_pdf_object = HotPdf()
     hot_pdf_object.load(mock_hotpdf_bank_file_name)
 
     assert len(hot_pdf_object.pages[0].span_map) < len(hot_pdf_object_with_dup_span.pages[0].span_map)
