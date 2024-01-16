@@ -1,4 +1,5 @@
 import time
+import tracemalloc
 
 import pytest
 
@@ -17,13 +18,23 @@ def luca_mock_file_name():
 
 def test_benchmark_multiple_pages(multiple_pages_file_name):
     start_time = time.time()
+    tracemalloc.start()
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(multiple_pages_file_name)
-    assert (time.time() - start_time) < 2, "Benchmark time exceeded!"
+    end_time = time.time()
+    peak_memory = tracemalloc.get_traced_memory()[1] / (1024 * 1024)
+    tracemalloc.stop()
+    assert (end_time - start_time) < 2, "Benchmark time exceeded!"
+    assert peak_memory < 15, "Benchmark memory usage exceeded!"
 
 
 def test_luca_mock(luca_mock_file_name):
     start_time = time.time()
+    tracemalloc.start()
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(luca_mock_file_name)
-    assert (time.time() - start_time) < 3, "Benchmark time exceeded!"
+    end_time = time.time()
+    peak_memory = tracemalloc.get_traced_memory()[1] / (1024 * 1024)
+    tracemalloc.stop()
+    assert (end_time - start_time) < 2, "Benchmark time exceeded!"
+    assert peak_memory < 12, "Benchmark memory usage exceeded!"
