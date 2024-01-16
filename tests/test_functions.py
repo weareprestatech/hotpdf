@@ -104,8 +104,6 @@ def test_duplicate_spans_not_removed(_, mock_hotpdf_bank_file_name):
     hot_pdf_object_with_dup_span = HotPdf()
     hot_pdf_object_with_dup_span.load(mock_hotpdf_bank_file_name, drop_duplicate_spans=False)
     hot_pdf_object.load(mock_hotpdf_bank_file_name)
-    print(hot_pdf_object_with_dup_span.xml_file_path)
-    print(hot_pdf_object.xml_file_path)
 
     assert len(hot_pdf_object.pages[0].span_map) < len(hot_pdf_object_with_dup_span.pages[0].span_map)
 
