@@ -9,6 +9,9 @@ on:
 
 jobs:
   linter:
+    strategy:
+      matrix:
+        python-version: [3.11, 3.10, 3.9]
     name: Linters
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -16,15 +19,15 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
-    - name: Setup Python 3.11
+    - name: Setup Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: ${{ matrix.python-version }}
     - name: Cache python packages
       uses: actions/cache@v3
       with:
-        path: ${{ env.Python3_ROOT_DIR }}/lib/python3.11/site-packages
-        key: dev-${{ hashFiles('**/pyproject.toml') }}-3.11
+        path: ${{ env.Python3_ROOT_DIR }}/lib/python${{ matrix.python-version  }}/site-packages
+        key: dev-${{ hashFiles('**/pyproject.toml') }}-${{ matrix.python-version }}
     - name: Install dependencies
       run: pip install -e '.[dev]'
     - name: Lint with ruff
@@ -35,23 +38,26 @@ jobs:
       run: python -m mypy
 
   tests:
+    strategy:
+      matrix:
+        python-version: [3.11, 3.10, 3.9]
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Set up Python 3.11
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: ${{ matrix.python-version }}
       - name: Install ghostscript
         run: sudo apt-get install ghostscript
       - name: Cache python packages
         uses: actions/cache@v3
         with:
-          path: ${{ env.Python3_ROOT_DIR }}/lib/python3.11/site-packages
-          key: dev-${{ hashFiles('**/pyproject.toml') }}-3.11
+          path: ${{ env.Python3_ROOT_DIR }}/lib/python${{ matrix.python-version }}/site-packages
+          key: dev-${{ hashFiles('**/pyproject.toml') }}-${{ matrix.python-version }}
       - name: Install dependencies
         run: pip install -e '.[dev]'
       - name: Run tests with coverage
