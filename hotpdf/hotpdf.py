@@ -1,4 +1,3 @@
-import logging
 import math
 import os
 import warnings
@@ -27,16 +26,11 @@ class HotPdf:
         """
         self.pages: list[MemoryMap] = []
         self.extraction_tolerance: int = extraction_tolerance
-        self.xml_file_path: str
+        self.xml_file_path: Optional[str] = None
 
-    def __del__(self) -> None:
-        try:
-            if "tests/resources/xml" not in self.xml_file_path:
-                os.remove(self.xml_file_path)
-                logging.info("[hotpdf] Deleted")
-        except Exception as e:
-            logging.error("[hotpdf] Unable to delete xml_file")
-            logging.error(str(e))
+    def __delete_xml_file(self) -> None:
+        if self.xml_file_path and os.path.exists(self.xml_file_path):
+            os.remove(self.xml_file_path)
 
     def __check_file_exists(self, pdf_file: str) -> None:
         if not os.path.exists(pdf_file):
@@ -99,6 +93,7 @@ class HotPdf:
                 self.pages.append(parsed_page)
                 element.clear()
             root.clear()
+        self.__delete_xml_file()
 
     def __extract_full_text_span(
         self,
