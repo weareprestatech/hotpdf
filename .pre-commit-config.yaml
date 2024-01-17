@@ -2,32 +2,23 @@ repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v4.5.0
       hooks:
-        - id: check-yaml
-        - id: end-of-file-fixer
-        - id: trailing-whitespace
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
     - repo: local
       hooks:
       - id: ruff-format
         name: ruff format
-        entry: ruff format .
+        entry: ruff format
         language: system
-        always_run: true
-        pass_filenames: false
-      - id: ruff-format-imports
-        name: ruff format imports
-        entry: ruff check --select I --fix .
-        language: system
-        always_run: true
         pass_filenames: false
       - id: ruff-lint
         name: ruff lint
-        entry: ruff check .
+        entry: ruff check
         language: system
-        always_run: true
         pass_filenames: false
       - id: mypy
         name: mypy
         entry: mypy
         language: system
-        always_run: true
         pass_filenames: false
