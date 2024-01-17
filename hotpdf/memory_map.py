@@ -133,34 +133,27 @@ class MemoryMap:
         self.height = self.memory_map.rows
 
     @lru_cache
-    def extract_text_from_bbox(self, x0: float, x1: float, y0: float, y1: float) -> str:
+    def extract_text_from_bbox(self, x0: int, x1: int, y0: int, y1: int) -> str:
         """
         Extract text within a specified bounding box.
 
         Args:
-            x0 (float): Left x-coordinate of the bounding box.
-            x1 (float): Right x-coordinate of the bounding box.
-            y0 (float): Bottom y-coordinate of the bounding box.
-            y1 (float): Top y-coordinate of the bounding box.
+            x0 (int): Left x-coordinate of the bounding box.
+            x1 (int): Right x-coordinate of the bounding box.
+            y0 (int): Bottom y-coordinate of the bounding box.
+            y1 (int): Top y-coordinate of the bounding box.
 
         Returns:
             str: Extracted text within the bounding box.
         """
-        cell_x0 = math.floor(x0)
-        cell_x1 = math.ceil(x1)
-        cell_y0 = math.floor(y0)
-        cell_y1 = math.ceil(y1)
-
-        extracted_text = ""
-        for row in range(cell_y0, cell_y1 + 1):
-            if 0 <= row < self.memory_map.rows:
-                row_text = ""
-                for col in range(cell_x0, cell_x1 + 1):
-                    if 0 <= col < self.memory_map.columns:
-                        row_text += self.memory_map.get(row_idx=row, column_idx=col)
-                if row_text:
-                    extracted_text += row_text
-                    extracted_text += "\n"
+        extracted_text: str = ""
+        for row in range(max(y0, 0), min(y1, self.memory_map.rows - 1) + 1):
+            row_text: str = ""
+            row_text = "".join([
+                self.memory_map.get(row_idx=row, column_idx=col) for col in range(max(x0, 0), min(x1, self.memory_map.columns - 1) + 1)
+            ])
+            if row_text:
+                extracted_text += row_text + "\n"
 
         return extracted_text
 

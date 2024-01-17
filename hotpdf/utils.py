@@ -1,5 +1,4 @@
 import math
-from copy import deepcopy
 from typing import Union
 
 from .data.classes import ElementDimension, HotCharacter, PageResult
@@ -60,7 +59,7 @@ def filter_adjacent_coords(text: list[str], page_hot_character_occurences: PageR
     for anchor_hot_character in anchor_hot_character_instances:
         neighbours = [anchor_hot_character]
         reference_hot_character = anchor_hot_character
-        for _, coords_j in enumerate(page_hot_character_occurences[1:]):
+        for coords_j in page_hot_character_occurences[1:]:
             neighbour_hot_character = find_neighbour_coord(
                 reference_character=reference_hot_character,
                 hot_characters=coords_j,
@@ -69,7 +68,8 @@ def filter_adjacent_coords(text: list[str], page_hot_character_occurences: PageR
                 neighbours.append(neighbour_hot_character)
                 reference_hot_character = neighbour_hot_character
         if len(neighbours) == max_len:
-            adjacent_groups.append(deepcopy(neighbours))
+            adjacent_groups.append(neighbours[:])
+            neighbours.clear()
         neighbours = []
     return adjacent_groups
 
