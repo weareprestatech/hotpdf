@@ -195,19 +195,20 @@ def test_get_spans(valid_file_name):
         occurences_by_page = occurences[page_num]
         for occurence_by_page in occurences_by_page:
             element_dimension = get_element_dimension(occurence_by_page)
-            full_spans_in_bbox = hot_pdf_object.extract_spans(
-                x0=element_dimension.x0,
-                y0=element_dimension.y0,
-                x1=element_dimension.x1,
-                y1=element_dimension.y1,
-            )
-            __full_spans_in_bbox_unsorted = hot_pdf_object.extract_spans(
-                x0=element_dimension.x0,
-                y0=element_dimension.y0,
-                x1=element_dimension.x1,
-                y1=element_dimension.y1 + 100,  # to simulate multi line extraction
-                sort=False,
-            )
+            with pytest.warns(UserWarning, match="This function will be deprecated in the next release"):
+                full_spans_in_bbox = hot_pdf_object.extract_spans(
+                    x0=element_dimension.x0,
+                    y0=element_dimension.y0,
+                    x1=element_dimension.x1,
+                    y1=element_dimension.y1,
+                )
+                __full_spans_in_bbox_unsorted = hot_pdf_object.extract_spans(
+                    x0=element_dimension.x0,
+                    y0=element_dimension.y0,
+                    x1=element_dimension.x1,
+                    y1=element_dimension.y1 + 100,  # to simulate multi line extraction
+                    sort=False,
+                )
             assert len(full_spans_in_bbox) == 1
             assert len(__full_spans_in_bbox_unsorted) > 1
             assert full_spans_in_bbox[0] in __full_spans_in_bbox_unsorted
@@ -254,7 +255,7 @@ def test_extract_page_range_exception(multiple_pages_file_name, first_page, last
 
 def test_no_spans_in_xml_file_extraction(valid_file_name):
     hot_pdf_object = HotPdf()
-    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
+    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans, pytest.warns(UserWarning, match="No spans exist on this page"):
         get_page_spans.return_value = None
         hot_pdf_object.load(valid_file_name)
         get_page_spans.assert_called_once()
@@ -283,7 +284,7 @@ def test_no_spans_in_xml_file_extraction(valid_file_name):
 
 def test_no_spans_in_xml_file_extract_spans(valid_file_name):
     hot_pdf_object = HotPdf()
-    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
+    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans, pytest.warns(UserWarning, match="No spans exist on this page"):
         hot_pdf_object.load(valid_file_name)
         get_page_spans.return_value = None
         # Test No spans
