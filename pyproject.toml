@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 
 [project]
 name="hotpdf"
-version="0.3.2"
+version="0.3.3"
 authors = [
   {name = "Krishnasis Mandal", email = "krishnasis.mandal@prestatech.com"}]
 maintainers = [
