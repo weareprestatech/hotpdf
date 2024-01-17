@@ -65,4 +65,5 @@ jobs:
         run:
           python -m pytest --cov -n=auto tests/ --cov-fail-under=98 --cov-report=
       - name: Upload coverage to coveralls
+        if: github.event_name == 'push'
         uses: coverallsapp/github-action@v2.2.3
