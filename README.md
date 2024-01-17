@@ -1,7 +1,7 @@
 # hotpdf
 
 [![Documentation Status](https://readthedocs.org/projects/hotpdf/badge/?version=latest)](https://hotpdf.readthedocs.io/en/latest/?badge=latest)
-[![latest](https://github.com/weareprestatech/hotpdf/actions/workflows/release-badge.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/release-badge.yml)
+[![latest](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml)
 [![build](https://github.com/weareprestatech/hotpdf/actions/workflows/build-badge.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/build-badge.yml)
 [![Coverage Status](https://coveralls.io/repos/github/weareprestatech/hotpdf/badge.svg?branch=main)](https://coveralls.io/github/weareprestatech/hotpdf?branch=main)
 

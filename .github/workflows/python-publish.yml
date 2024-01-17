@@ -27,3 +27,29 @@ jobs:
       run: |
         python -m build
         twine upload dist/*
+  badge:
+    needs: deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.10", "3.9"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install ghostscript
+        run: |
+          sudo apt-get update
+          sudo apt-get install ghostscript
+      - name : Install from PyPI and run tests
+        run: |
+          mkdir $HOME/test_external_dir
+          cd $HOME/test_external_dir
+          cp $GITHUB_WORKSPACE/tests/ . -r
+          python -m venv venv
+          source venv/bin/activate
+          pip install hotpdf pytest pytest-xdist
+          python -m pytest tests -n=auto
