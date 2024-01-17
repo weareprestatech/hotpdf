@@ -102,7 +102,9 @@ class MemoryMap:
             chars = self.__get_page_chars(page)
         for char in chars:
             char_bbox = char.attrib["bbox"]
-            char_x0, char_y0, char_x1, _ = map(float, char_bbox.split())
+            char_x0, char_y0, char_x1, char_y1 = map(float, char_bbox.split())
+            if any([char_x0 < 0, char_y0 < 0, char_x1 < 0, char_y1 < 0]):
+                continue
             char_c = char.attrib["c"]
             char_span_id = char.attrib.get("span_id")
             cell_x = math.floor(char_x0)
@@ -115,9 +117,6 @@ class MemoryMap:
                 x_end=cell_x_end,
                 span_id=char_span_id,
             )
-            if not 0 < cell_x or not 0 < cell_y:
-                continue
-
             self.memory_map.insert(value=char_c, row_idx=cell_y, column_idx=cell_x)
             char_hot_characters.append((
                 char_c,
