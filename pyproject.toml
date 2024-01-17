@@ -74,6 +74,7 @@ fixable = ["ALL"]
 exclude = ["docs"]
 preview = true
 line-length = 150
+extend-select = ["I"]
 
 [tool.mypy]
 warn_unused_configs = true
