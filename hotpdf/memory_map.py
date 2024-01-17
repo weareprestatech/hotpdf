@@ -103,7 +103,7 @@ class MemoryMap:
         for char in chars:
             char_bbox = char.attrib["bbox"]
             char_x0, char_y0, char_x1, char_y1 = map(float, char_bbox.split())
-            if any([char_x0 < 0, char_y0 < 0, char_x1 < 0, char_y1 < 0]):
+            if char_x0 < 0 or char_y0 < 0 or char_x1 < 0 or char_y1 < 0:
                 continue
             char_c = char.attrib["c"]
             char_span_id = char.attrib.get("span_id")
