@@ -11,7 +11,7 @@ jobs:
   linter:
     strategy:
       matrix:
-        python-version: [3.11, 3.10, 3.9]
+        python-version: ["3.11", '3.10', "3.9"]
     name: Linters
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -22,7 +22,7 @@ jobs:
     - name: Setup Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: '${{ matrix.python-version }}'
+        python-version: ${{ matrix.python-version }}
     - name: Cache python packages
       uses: actions/cache@v3
       with:
@@ -40,7 +40,7 @@ jobs:
   tests:
     strategy:
       matrix:
-        python-version: [3.11, 3.10, 3.9]
+        python-version: ["3.11", "3.10", "3.9"]
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 2
