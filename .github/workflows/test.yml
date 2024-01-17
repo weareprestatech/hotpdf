@@ -38,6 +38,7 @@ jobs:
       run: python -m mypy
 
   tests:
+    needs: linter
     strategy:
       matrix:
         python-version: ["3.11", "3.10", "3.9"]
