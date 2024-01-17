@@ -78,7 +78,6 @@ class MemoryMap:
             for char in span.iterfind(".//"):
                 char.set("span_id", span_id)
                 yield char
-        del seen_span_hashes
 
     def load_memory_map(self, page: ET.Element, drop_duplicate_spans: bool = True) -> None:
         """
