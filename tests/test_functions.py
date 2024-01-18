@@ -1,4 +1,5 @@
 import os
+import shutil
 from unittest.mock import patch
 
 import pytest
@@ -17,6 +18,11 @@ def valid_file_name():
 @pytest.fixture
 def mock_hotpdf_bank_file_name():
     return "tests/resources/hotpdf_bank.pdf"
+
+
+def xml_copy_file_name(xml_file_name: str):
+    shutil.copy(xml_file_name, f"{xml_file_name}_copy.xml")
+    return f"{xml_file_name}_copy.xml"
 
 
 def test_load_file(valid_file_name):
@@ -98,24 +104,25 @@ def test_sparse_matrix_iterator():
     assert non_empty_values == expected_result
 
 
-@patch("hotpdf.processor.generate_xml_file", return_value="tests/resources/xml/hotpdf_bank_dup_span.xml", autospec=True)
-def test_duplicate_spans_not_removed(_, mock_hotpdf_bank_file_name):
+def test_duplicate_spans_not_removed(mock_hotpdf_bank_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object_with_dup_span = HotPdf()
-    hot_pdf_object_with_dup_span.load(mock_hotpdf_bank_file_name, drop_duplicate_spans=False)
-    hot_pdf_object.load(mock_hotpdf_bank_file_name)
+    with patch("hotpdf.processor.generate_xml_file", return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_dup_span.xml")):
+        hot_pdf_object_with_dup_span.load(mock_hotpdf_bank_file_name, drop_duplicate_spans=False)
+    with patch("hotpdf.processor.generate_xml_file", return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_dup_span.xml")):
+        hot_pdf_object.load(mock_hotpdf_bank_file_name)
 
     assert len(hot_pdf_object.pages[0].span_map) < len(hot_pdf_object_with_dup_span.pages[0].span_map)
 
 
 def test_load_negative_coordinates(mock_hotpdf_bank_file_name):
     QUERY = "HOTPDF BANK"
-    with patch("hotpdf.processor.generate_xml_file", return_value="tests/resources/xml/hotpdf_bank_negative_coords.xml"):
+    with patch("hotpdf.processor.generate_xml_file", return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_negative_coords.xml")):
         hot_pdf_object = HotPdf()
         hot_pdf_object.load(mock_hotpdf_bank_file_name)
         assert not hot_pdf_object.find_text(QUERY)[0], "Expected string to be empty"
     # For sanity: The following file is same as above, except the coords are normal
-    with patch("hotpdf.processor.generate_xml_file", return_value="tests/resources/xml/hotpdf_bank_normal_coords.xml"):
+    with patch("hotpdf.processor.generate_xml_file", return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_normal_coords.xml")):
         hot_pdf_object_normal = HotPdf()
         hot_pdf_object_normal.load(mock_hotpdf_bank_file_name)
         assert hot_pdf_object_normal.find_text(QUERY)[0], "Expected string to be not empty"
