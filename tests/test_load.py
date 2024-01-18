@@ -5,7 +5,7 @@ import pytest
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
 from hotpdf.memory_map import MemoryMap
-from hotpdf.utils import get_element_dimension
+from hotpdf.utils import get_element_dimension, to_text
 
 
 @pytest.fixture
@@ -207,7 +207,6 @@ def test_get_spans(valid_file_name):
                     y0=element_dimension.y0,
                     x1=element_dimension.x1,
                     y1=element_dimension.y1 + 100,  # to simulate multi line extraction
-                    sort=False,
                 )
             assert len(full_spans_in_bbox) == 1
             assert len(__full_spans_in_bbox_unsorted) > 1
@@ -293,3 +292,13 @@ def test_find_text_multiple_pages(multiple_pages_file_name):
     hot_pdf_object.load(multiple_pages_file_name)
     occurences = hot_pdf_object.find_text(query="God", pages=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     assert len(occurences) == 11
+
+
+def test_extract_spans(valid_file_name):
+    hot_pdf_object = HotPdf()
+    hot_pdf_object.load(valid_file_name)
+    spans = hot_pdf_object.extract_spans(0, 0, 1000, 1000)
+    assert len(spans) > 0
+    assert to_text(spans[0]) == "HOTPDF "
+    assert to_text(spans[1]) == "PDF "
+    assert to_text(spans[2]) == "THE BEST PDF PARSING LIBRARY TO EVER EXIST(DEBATABLE) "
