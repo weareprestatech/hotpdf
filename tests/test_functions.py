@@ -117,7 +117,7 @@ def test_duplicate_spans_not_removed(mock_hotpdf_bank_file_name):
 
 def test_load_negative_coordinates(mock_hotpdf_bank_file_name):
     QUERY = "HOTPDF BANK"
-    with patch("hotpdf.processor.generate_xml_file", return_value=xlm_copy_file_name("tests/resources/xml/hotpdf_bank_negative_coords.xml")):
+    with patch("hotpdf.processor.generate_xml_file", return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_negative_coords.xml")):
         hot_pdf_object = HotPdf()
         hot_pdf_object.load(mock_hotpdf_bank_file_name)
         assert not hot_pdf_object.find_text(QUERY)[0], "Expected string to be empty"
