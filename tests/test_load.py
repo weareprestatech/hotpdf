@@ -224,18 +224,7 @@ def test_get_spans(valid_file_name):
 
     # Test Non Existent Word
     occurences = hot_pdf_object.find_text(NON_EXISTENT_WORD)
-    for _, page_num in enumerate(occurences):
-        occurences_by_page = occurences[page_num]
-        for occurence_by_page in occurences_by_page:
-            element_dimension = get_element_dimension(occurence_by_page)
-            full_spans_in_bbox = hot_pdf_object.extract_spans(
-                x0=element_dimension.x0,
-                y0=element_dimension.y0,
-                x1=element_dimension.x1,
-                y1=element_dimension.y1,
-            )
-            # Assert empty list returned
-            assert full_spans_in_bbox == []
+    assert occurences == {0: []}
 
 
 @pytest.mark.parametrize("first_page, last_page", [(1, 1), (1, 2)])
