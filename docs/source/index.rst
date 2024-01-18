@@ -49,7 +49,8 @@ Some examples of running tests locally:
 Contents
 --------------
 
-To view detailed usage information, please navigate to `Usage`
+To view detailed usage information, please navigate to `Usage` and `User Guide`
+
 
 .. toctree::
 
