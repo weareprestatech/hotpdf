@@ -7,7 +7,7 @@ from typing import Optional, Union
 
 from hotpdf import processor
 from hotpdf.memory_map import MemoryMap
-from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect
+from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect, to_text
 
 from .data.classes import HotCharacter, PageResult, SearchResult, Span
 
@@ -257,3 +257,64 @@ class HotPdf:
             y1=y1,
         )
         return extracted_text
+
+    def extract_page(
+        self,
+        page: int = 0,
+    ) -> str:
+        """
+        Extract text from a specified page.
+
+        Args:
+            page (int): The page number. Defaults to 0.
+        Raises:
+            ValueError: If the page number is invalid.
+        Returns:
+            str: Extracted text from the page.
+        """
+        self.__check_page_number(page)
+
+        page_to_search: MemoryMap = self.pages[page]
+        extracted_text = page_to_search.extract_text_from_bbox(
+            x0=0,
+            x1=page_to_search.width,
+            y0=0,
+            y1=page_to_search.height,
+        )
+        return extracted_text
+
+    def extract_spans_text(
+        self,
+        x0: int,
+        y0: int,
+        x1: int,
+        y1: int,
+        page: int = 0,
+    ) -> str:
+        """
+        Extract text from spans that intersect with the given bounding box.
+
+        Args:
+            x0 (int): The left x-coordinate of the bounding box.
+            y0 (int): The bottom y-coordinate of the bounding box.
+            x1 (int): The right x-coordinate of the bounding box.
+            y1 (int): The top y-coordinate of the bounding box.
+            page (int, optional): The page number. Defaults to 0.
+        Raises:
+            ValueError: If the coordinates are invalid.
+            ValueError: If the page number is invalid.
+        Returns:
+            str: Extracted text that intersects with the bounding box.
+        """
+        self.__check_coordinates(x0, y0, x1, y1)
+        self.__check_page_number(page)
+
+        # TODO: This will be a list[Span] in the next release
+        spans: list[list[HotCharacter]] = self.extract_spans(x0, y0, x1, y1, page)
+        extracted_text: list[str] = []
+
+        for span in spans:
+            # TODO: This will be span.to_text() in the next release
+            extracted_text.append(to_text(span))
+
+        return "".join(extracted_text)
