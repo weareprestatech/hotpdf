@@ -1,8 +1,6 @@
 Usage
 =====
 
-Basic usage is as follows:
-
 HotPdf Class
 ------------------------------------------
 

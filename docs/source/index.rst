@@ -54,6 +54,7 @@ To view detailed usage information, please navigate to `Usage`
 .. toctree::
 
    usage
+   guide
    api
 
 License
