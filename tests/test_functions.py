@@ -7,7 +7,7 @@ import pytest
 from hotpdf import HotPdf
 from hotpdf.data.classes import HotCharacter
 from hotpdf.sparse_matrix import SparseMatrix
-from hotpdf.utils import filter_adjacent_coords, intersect
+from hotpdf.utils import filter_adjacent_coords, intersect, to_text
 
 
 @pytest.fixture
@@ -146,3 +146,39 @@ def test_load_negative_coordinates(mock_hotpdf_bank_file_name):
 )
 def test_intersect(bbox1, bbox2, expected):
     assert intersect(bbox1, bbox2) == expected
+
+
+@pytest.mark.parametrize(
+    "hot_characters, expected",
+    [
+        ([HotCharacter(value="H", x=0, y=0, x_end=10, span_id="x")], "H"),
+        (
+            [
+                HotCharacter(value="H", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="e", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="o", x=0, y=0, x_end=10, span_id="x"),
+            ],
+            "Hello",
+        ),
+        (
+            [
+                HotCharacter(value="H", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="e", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="o", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value=" ", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="W", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="o", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="r", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="d", x=0, y=0, x_end=10, span_id="x"),
+            ],
+            "Hello World",
+        ),
+    ],
+)
+def test_to_text(hot_characters, expected):
+    assert to_text(hot_characters) == expected

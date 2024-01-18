@@ -104,3 +104,16 @@ def intersect(bbox1: tuple[int, int, int, int], bbox2: tuple[int, int, int, int]
         bool: True if the bounding boxes intersect, else False.
     """
     return not (bbox2[0] > bbox1[2] or bbox2[2] < bbox1[0] or bbox2[1] > bbox1[3] or bbox2[3] < bbox1[1])
+
+
+def to_text(el: list[HotCharacter]) -> str:
+    """
+    Convert a list of HotCharacter instances to text.
+
+    Args:
+        el (list): List of HotCharacter instances.
+
+    Returns:
+        str: The text.
+    """
+    return "".join([char.value for char in el])
