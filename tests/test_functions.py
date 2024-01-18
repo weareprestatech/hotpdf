@@ -107,7 +107,7 @@ def test_sparse_matrix_iterator():
 def test_duplicate_spans_not_removed(mock_hotpdf_bank_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object_with_dup_span = HotPdf()
-    with patch("hotpdf.processor.generate_xml_file", return_value=xlm_copy_file_name("tests/resources/xml/hotpdf_bank_dup_span.xml")):
+    with patch("hotpdf.processor.generate_xml_file", return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_dup_span.xml")):
         hot_pdf_object_with_dup_span.load(mock_hotpdf_bank_file_name, drop_duplicate_spans=False)
     with patch("hotpdf.processor.generate_xml_file", return_value=xlm_copy_file_name("tests/resources/xml/hotpdf_bank_dup_span.xml")):
         hot_pdf_object.load(mock_hotpdf_bank_file_name)
