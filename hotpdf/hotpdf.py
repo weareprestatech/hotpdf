@@ -6,6 +6,7 @@ from collections import defaultdict
 from typing import Optional, Union
 
 from hotpdf import processor
+from hotpdf.custom import exceptions
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect
 
@@ -38,7 +39,7 @@ class HotPdf:
 
     def __check_file_already_loaded(self) -> None:
         if len(self.pages) > 0:
-            raise Exception("A file is already loaded!")
+            raise exceptions.FileAlreadyLoadedException("A file is already loaded!")
 
     def __check_coordinates(self, x0: int, y0: int, x1: int, y1: int) -> None:
         if x0 < 0 or x1 < 0 or y0 < 0 or y1 < 0:
@@ -73,7 +74,7 @@ class HotPdf:
             first_page (int, optional): The first page to load. Defaults to 0.
             last_page (int, optional): The last page to load. Defaults to 0.
         Raises:
-            Exception: If a file is already loaded.
+            FileAlreadyLoadedException: If a file is already loaded.
             ValueError: If the page range is invalid.
             FileNotFoundError: If the file is not found.
         """
