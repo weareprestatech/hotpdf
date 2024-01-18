@@ -181,7 +181,6 @@ class HotPdf:
         x1: int,
         y1: int,
         page: int = 0,
-        sort: bool = True,  # TODO: Remove this after the deprecation
     ) -> PageResult:
         """
         Extract spans that intersect with the given bounding box.

@@ -42,6 +42,15 @@ class Span:
     x_end: int
     span_id: Optional[str]
 
+    def to_text(self) -> str:
+        """
+        Convert span to text.
+
+        Returns:
+            str: text of the span.
+        """
+        return "".join([character.value for character in self.characters])
+
 
 @dataclass
 class ElementDimension:
