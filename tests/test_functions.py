@@ -20,7 +20,7 @@ def mock_hotpdf_bank_file_name():
     return "tests/resources/hotpdf_bank.pdf"
 
 
-def xlm_copy_file_name(xml_file_name: str):
+def xml_copy_file_name(xml_file_name: str):
     shutil.copy(xml_file_name, f"{xml_file_name}_copy.xml")
     return f"{xml_file_name}_copy.xml"
 
