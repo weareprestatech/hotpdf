@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 
 [project]
 name="hotpdf"
-version="0.3.3"
+version="0.3.4"
 authors = [
   {name = "Krishnasis Mandal", email = "krishnasis.mandal@prestatech.com"}]
 maintainers = [
@@ -45,7 +45,7 @@ include = ["hotpdf*"]
 exclude = ["docs*", "tests*"]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "pytest-xdist", "pylint", "mypy", "typing-extensions", "pre-commit", "ruff", "pytest-memray"]
+dev = ["pytest", "pytest-cov", "pytest-xdist", "pylint", "mypy", "typing-extensions", "pre-commit", "ruff"]
 
 [tool.ruff]
 indent-width = 4
