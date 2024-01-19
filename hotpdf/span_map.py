@@ -30,20 +30,12 @@ class SpanMap:
             raise KeyError("Cannot set key as None")
         if span_id in self.span_map:
             span = self.span_map[span_id]
-            assert span.x0 <= hot_character.x
-            assert span.y0 == hot_character.y
             span.characters.append(hot_character)
-            if hot_character.x_end > span.x_end:
-                span.x_end = hot_character.x_end
         else:
             span = Span(
                 characters=[hot_character],
-                x0=hot_character.x,
-                y0=hot_character.y,
-                x_end=hot_character.x_end,
                 span_id=span_id,
             )
-
         self.span_map[span_id] = span
 
     def get_span(self, span_id: Union[str, None]) -> Union[Span, None]:

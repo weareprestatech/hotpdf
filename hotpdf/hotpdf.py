@@ -9,7 +9,7 @@ from hotpdf import processor
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect, to_text
 
-from .data.classes import HotCharacter, PageResult, SearchResult, Span
+from .data.classes import ElementDimension, HotCharacter, PageResult, SearchResult, Span
 
 
 class HotPdf:
@@ -208,7 +208,7 @@ class HotPdf:
             return hotcharacters_in_spans
 
         for _, span in self.pages[page].span_map.items():
-            if intersect((x0, y0, x1, y1), (span.x0, span.y0, span.x_end, span.y0)):
+            if intersect(ElementDimension(x0, y0, x1, y1), span.get_element_dimension()):
                 spans.append(span)
 
         # TODO: Remove this after the deprecation
