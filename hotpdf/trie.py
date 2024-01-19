@@ -5,8 +5,7 @@ from .data.classes import HotCharacter, PageResult
 
 class TrieNode:
     def __init__(self) -> None:
-        """
-        Initialize a TrieNode.
+        """Initialize a TrieNode.
 
         Args:
             children (dict): Mapping of characters to TrieNode objects.
@@ -24,8 +23,7 @@ class Trie:
         self.root = TrieNode()
 
     def insert(self, word: str, hot_character: HotCharacter) -> None:
-        """
-        Insert a word and a HotCharacter into the Trie.
+        """Insert a word and a HotCharacter into the Trie.
 
         Args:
             word (str): The word to insert.
@@ -38,8 +36,7 @@ class Trie:
         node.hot_characters = node.hot_characters + [hot_character]
 
     def search_all(self, text: str) -> tuple[list[str], PageResult]:
-        """
-        Search for words in the Trie that match a given text.
+        """Search for words in the Trie that match a given text.
 
         Args:
             text (str): The text to search for.
@@ -51,10 +48,9 @@ class Trie:
         found: list[str] = []
         hot_characters: PageResult = []
         for char in text:
-            if char in node.children:
-                if node.children[char].is_end_of_word:
-                    found.append(char)
-                    if node.children[char].hot_characters:
-                        hot_characters.append(node.children[char].hot_characters)
+            if char in node.children and node.children[char].is_end_of_word:
+                found.append(char)
+                if node.children[char].hot_characters:
+                    hot_characters.append(node.children[char].hot_characters)
             node = self.root
         return found, hot_characters

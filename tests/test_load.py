@@ -124,7 +124,7 @@ def test_row_index_greater_than_rows_of_memory_map(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
-    pages[0].memory_map.get(row_idx=9999, column_idx=100) is not None
+    assert pages[0].memory_map.get(row_idx=9999, column_idx=100) is not None
     assert pages[0].memory_map.get(row_idx=9999, column_idx=100) == ""
 
 
@@ -132,7 +132,7 @@ def test_col_index_greater_than_columns_of_memory_map(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
-    pages[0].memory_map.get(row_idx=100, column_idx=9999) is not None
+    assert pages[0].memory_map.get(row_idx=100, column_idx=9999) is not None
     assert pages[0].memory_map.get(row_idx=100, column_idx=9999) == ""
 
 

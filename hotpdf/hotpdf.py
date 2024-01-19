@@ -1,6 +1,6 @@
 import math
 import os
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Optional, Union
 
@@ -16,8 +16,7 @@ class HotPdf:
         self,
         extraction_tolerance: int = 4,
     ) -> None:
-        """
-        Initialize the HotPdf class.
+        """Initialize the HotPdf class.
 
         Args:
             extraction_tolerance (int, optional): Tolerance value used during text extraction
@@ -58,14 +57,14 @@ class HotPdf:
         first_page: int = 0,
         last_page: int = 0,
     ) -> None:
-        """
-        Load a PDF file into memory.
+        """Load a PDF file into memory.
 
         Args:
             pdf_file (str): The path to the PDF file to be loaded.
             drop_duplicate_spans (bool, optional): Drop duplicate spans when loading. Defaults to True.
             first_page (int, optional): The first page to load. Defaults to 0.
             last_page (int, optional): The last page to load. Defaults to 0.
+
         Raises:
             ValueError: If the page range is invalid.
             FileNotFoundError: If the file is not found.
@@ -93,8 +92,7 @@ class HotPdf:
         hot_characters: list[HotCharacter],
         page_num: int,
     ) -> Union[list[HotCharacter], None]:
-        """
-        Extract the full span of text that the given hot characters are a part of.
+        """Extract the full span of text that the given hot characters are a part of.
 
         Args:
             hot_characters (list[HotCharacter]): the list of hot characters to extract the span for.
@@ -111,30 +109,33 @@ class HotPdf:
     def find_text(
         self,
         query: str,
-        pages: list[int] = [],
+        pages: Optional[list[int]] = None,
         validate: bool = True,
         take_span: bool = False,
     ) -> SearchResult:
-        """
-        Find text within the loaded PDF pages.
+        """Find text within the loaded PDF pages.
 
         Args:
             query (str): The text to search for.
-            pages (list[int], optional): List of page numbers to search. Defaults to [].
+            pages (list[int], optional): List of page numbers to search.
             validate (bool, optional): Double check the extracted bounding boxes with the query string.
             take_span (bool, optional): Take the full span of the text that it is a part of.
+
         Raises:
             ValueError: If the page number is invalid.
+
         Returns:
             SearchResult: A dictionary mapping page numbers to found text coordinates.
         """
+        if pages is None:
+            pages = []
+
         for page in pages:
             self.__check_page_number(page)
 
-        if len(pages) == 0:
-            query_pages = {i: self.pages[i] for i in range(len(self.pages))}
-        else:
-            query_pages = {i: self.pages[i] for i in pages}
+        query_pages = (
+            {i: self.pages[i] for i in range(len(self.pages))} if len(pages) == 0 else {i: self.pages[i] for i in pages}
+        )
 
         found_page_map = {}
 
@@ -143,7 +144,7 @@ class HotPdf:
 
         final_found_page_map: SearchResult = defaultdict(PageResult)
 
-        for page_num in found_page_map.keys():
+        for page_num in found_page_map:
             hot_character_page_occurences: PageResult = found_page_map[page_num]
             final_found_page_map[page_num] = []
             for hot_characters in hot_character_page_occurences:
@@ -162,7 +163,9 @@ class HotPdf:
                             page_num=page_num,
                         )
                     final_found_page_map[page_num].append(
-                        full_span_dimension_hot_characters if (take_span and full_span_dimension_hot_characters) else hot_characters
+                        full_span_dimension_hot_characters
+                        if (take_span and full_span_dimension_hot_characters)
+                        else hot_characters
                     )
 
         return final_found_page_map
@@ -175,8 +178,7 @@ class HotPdf:
         y1: int,
         page: int = 0,
     ) -> list[Span]:
-        """
-        Extract spans that intersect with the given bounding box.
+        """Extract spans that intersect with the given bounding box.
 
         Args:
             x0 (int): The left x-coordinate of the bounding box.
@@ -185,13 +187,14 @@ class HotPdf:
             y1 (int): The top y-coordinate of the bounding box.
             page (int, optional): The page number. Defaults to 0.
             sort (bool, optional): Sort the spans by their coordinates. Defaults to True.
+
         Raises:
             ValueError: If the coordinates are invalid.
             ValueError: If the page number is invalid.
+
         Returns:
             list: List of spans of hotcharacters that intersect with the given bounding box
         """
-
         spans: list[Span] = []
 
         self.__check_coordinates(x0, y0, x1, y1)
@@ -210,8 +213,7 @@ class HotPdf:
         y1: int,
         page: int = 0,
     ) -> str:
-        """
-        Extract text from a specified bounding box on a page.
+        """Extract text from a specified bounding box on a page.
 
         Args:
             x0 (int): The left x-coordinate of the bounding box.
@@ -219,9 +221,11 @@ class HotPdf:
             x1 (int): The right x-coordinate of the bounding box.
             y1 (int): The top y-coordinate of the bounding box.
             page (int): The page number. Defaults to 0.
+
         Raises:
             ValueError: If the coordinates are invalid.
             ValueError: If the page number is invalid.
+
         Returns:
             str: Extracted text within the bounding box.
         """
@@ -241,13 +245,14 @@ class HotPdf:
         self,
         page: int,
     ) -> str:
-        """
-        Extract text from a specified page.
+        """Extract text from a specified page.
 
         Args:
             page (int): The page number.
+
         Raises:
             ValueError: If the page number is invalid.
+
         Returns:
             str: Extracted text from the page.
         """
@@ -270,8 +275,7 @@ class HotPdf:
         y1: int,
         page: int = 0,
     ) -> str:
-        """
-        Extract text from spans that intersect with the given bounding box.
+        """Extract text from spans that intersect with the given bounding box.
 
         Args:
             x0 (int): The left x-coordinate of the bounding box.
@@ -279,9 +283,11 @@ class HotPdf:
             x1 (int): The right x-coordinate of the bounding box.
             y1 (int): The top y-coordinate of the bounding box.
             page (int, optional): The page number. Defaults to 0.
+
         Raises:
             ValueError: If the coordinates are invalid.
             ValueError: If the page number is invalid.
+
         Returns:
             str: Extracted text that intersects with the bounding box.
         """

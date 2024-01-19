@@ -6,11 +6,12 @@ import tempfile
 
 
 def generate_xml_file(file_path: str, first_page: int, last_page: int) -> str:
-    """
-    Generates XML notation of PDF File.
+    """Generate XML notation of PDF File.
 
     Args:
         file_path (str): The path to the PDF file.
+        first_page (int): The first page to extract.
+        last_page (int): The last page to extract.
 
     Returns:
         str: XML File Path
@@ -36,7 +37,9 @@ def generate_xml_file(file_path: str, first_page: int, last_page: int) -> str:
         raw_xml = re.sub(r"(&#x[0-9]+;)", "", raw_xml)
         raw_xml = re.sub(r"(&quot;)", "'", raw_xml)
         raw_xml = html.unescape(raw_xml)
-        raw_xml = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]", "", raw_xml)  # Remove invalid XML chars
+        raw_xml = re.sub(
+            r"[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]", "", raw_xml
+        )  # Remove invalid XML chars
         raw_xml = raw_xml.replace("&", "&amp;")
         raw_xml = re.sub(r"<(?!/?[a-zA-Z])", "&lt;", raw_xml)
         raw_xml = '<?xml version="1.0" encoding="UTF-8"?><pages>' + raw_xml + "</pages>"
