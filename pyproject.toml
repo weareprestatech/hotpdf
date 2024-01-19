@@ -45,7 +45,7 @@ include = ["hotpdf*"]
 exclude = ["docs*", "tests*"]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "pytest-xdist", "pylint", "mypy", "typing-extensions", "pre-commit", "ruff"]
+dev = ["pytest", "pytest-cov", "pytest-xdist", "pylint", "mypy", "typing-extensions", "pre-commit", "ruff", "pytest-memray"]
 
 [tool.ruff]
 indent-width = 4

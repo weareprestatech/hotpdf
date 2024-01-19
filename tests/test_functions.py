@@ -1,13 +1,13 @@
-import os
 import shutil
 from unittest.mock import patch
 
 import pytest
 
 from hotpdf import HotPdf
+from hotpdf.data.classes import ElementDimension as El
 from hotpdf.data.classes import HotCharacter
 from hotpdf.sparse_matrix import SparseMatrix
-from hotpdf.utils import filter_adjacent_coords, intersect
+from hotpdf.utils import filter_adjacent_coords, intersect, to_text
 
 
 @pytest.fixture
@@ -50,16 +50,6 @@ def test_span_map_behaviours(valid_file_name):
     assert hot_pdf_object.pages[0].span_map["foo"] is None
     assert hot_pdf_object.pages[0].span_map.get_span("foo") is None
     assert hot_pdf_object.pages[0].span_map.get_span(None) is None
-
-
-def test_memory_map_behaviour(valid_file_name):
-    hot_pdf_object = HotPdf()
-    with pytest.raises(Exception, match="list index out of range"):
-        hot_pdf_object.pages[0].text()
-    hot_pdf_object.load(valid_file_name, drop_duplicate_spans=False)
-    hot_pdf_object.pages[0].display_memory_map(save=True, filename="test.txt")
-    assert os.path.exists("test.txt")
-    os.remove("test.txt")
 
 
 def test_sparse_matrix_insert_and_get():
@@ -131,18 +121,61 @@ def test_load_negative_coordinates(mock_hotpdf_bank_file_name):
 @pytest.mark.parametrize(
     "bbox1, bbox2, expected",
     [
-        ((0, 0, 2, 2), (3, 3, 5, 5), False),
-        ((0, 0, 2, 2), (3, 3, 4, 4), False),
-        ((0, 0, 2, 2), (3, 3, 5, 5), False),
-        ((1, 1, 4, 4), (3, 2, 6, 5), True),
-        ((1, 1, 6, 6), (2, 2, 5, 5), True),
-        ((0, 0, 4, 4), (4, 0, 8, 4), True),
-        ((0, 0, 3, 3), (3, 3, 6, 6), True),
-        ((2, 1, 5, 4), (4, 0, 7, 3), True),
-        ((1, 2, 4, 5), (0, 4, 3, 7), True),
-        ((0, 0, 3, 3), (0, 0, 3, 3), True),
-        ((2, 0, 6, 4), (4, 2, 8, 6), True),
+        (El(0, 0, 2, 2), El(3, 3, 5, 5), False),
+        (El(0, 0, 2, 2), El(3, 3, 4, 4), False),
+        (El(0, 0, 2, 2), El(3, 3, 5, 5), False),
+        (El(1, 1, 4, 4), El(3, 2, 6, 5), True),
+        (El(1, 1, 6, 6), El(2, 2, 5, 5), True),
+        (El(0, 0, 4, 4), El(4, 0, 8, 4), True),
+        (El(0, 0, 3, 3), El(3, 3, 6, 6), True),
+        (El(2, 1, 5, 4), El(4, 0, 7, 3), True),
+        (El(1, 2, 4, 5), El(0, 4, 3, 7), True),
+        (El(0, 0, 3, 3), El(0, 0, 3, 3), True),
+        (El(2, 0, 6, 4), El(4, 2, 8, 6), True),
     ],
 )
 def test_intersect(bbox1, bbox2, expected):
     assert intersect(bbox1, bbox2) == expected
+
+
+@pytest.mark.parametrize(
+    "hot_characters, expected",
+    [
+        ([HotCharacter(value="H", x=0, y=0, x_end=10, span_id="x")], "H"),
+        (
+            [
+                HotCharacter(value="H", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="e", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="o", x=0, y=0, x_end=10, span_id="x"),
+            ],
+            "Hello",
+        ),
+        (
+            [
+                HotCharacter(value="H", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="e", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="o", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value=" ", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="W", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="o", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="r", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="d", x=0, y=0, x_end=10, span_id="x"),
+            ],
+            "Hello World",
+        ),
+    ],
+)
+def test_to_text(hot_characters, expected):
+    assert to_text(hot_characters) == expected
+
+
+def test_invalid_page_number(valid_file_name):
+    hotpdf_object = HotPdf()
+    hotpdf_object.load(valid_file_name)
+    with pytest.raises(ValueError, match="Invalid page number"):
+        _ = hotpdf_object.extract_page_text(page=2)

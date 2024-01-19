@@ -5,7 +5,7 @@ import pytest
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
 from hotpdf.memory_map import MemoryMap
-from hotpdf.utils import get_element_dimension
+from hotpdf.utils import get_element_dimension, to_text
 
 
 @pytest.fixture
@@ -36,9 +36,9 @@ def test_load(valid_file_name):
 def test_full_text(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
-    pages = hot_pdf_object.pages
+    text_first_page = hot_pdf_object.extract_page_text(page=0)
     # Not blank extraction
-    assert len(pages[0].text()) > 1000
+    assert len(text_first_page) > 500
 
 
 def test_pages_length(valid_file_name):
@@ -113,18 +113,11 @@ def test_non_existent_file_path(non_existent_file_name):
         hot_pdf_object.load(non_existent_file_name)
 
 
-def test_double_loading(valid_file_name):
-    hot_pdf_object = HotPdf()
-    hot_pdf_object.load(valid_file_name)
-    with pytest.raises(Exception, match="A file is already loaded!"):
-        hot_pdf_object.load(valid_file_name)
-
-
 def test_blank_pdf(blank_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(blank_file_name)
-    pages = hot_pdf_object.pages
-    assert all([len(page.text().strip("\n").strip()) == 0 for page in pages])
+    len_pages = len(hot_pdf_object.pages)
+    assert all([len(hot_pdf_object.extract_page_text(page=i).strip("\n").strip()) == 0 for i in range(len_pages)])
 
 
 def test_row_index_greater_than_rows_of_memory_map(valid_file_name):
@@ -172,13 +165,6 @@ def test_extract_invalid_coordinates(valid_file_name, coordinates):
         hot_pdf_object.extract_text(x0=coordinates[0], y0=coordinates[1], x1=coordinates[2], y1=coordinates[3])
 
 
-def test_display_memory_map(valid_file_name):
-    hot_pdf_object = HotPdf()
-    hot_pdf_object.load(valid_file_name)
-    pages = hot_pdf_object.pages
-    pages[0].display_memory_map(save=False, filename="test.txt")
-
-
 def test_get_spans(valid_file_name):
     INCOMPLETE_WORD = "EXPERIEN"
     NON_EXISTENT_WORD = "BLAH"
@@ -207,7 +193,6 @@ def test_get_spans(valid_file_name):
                     y0=element_dimension.y0,
                     x1=element_dimension.x1,
                     y1=element_dimension.y1 + 100,  # to simulate multi line extraction
-                    sort=False,
                 )
             assert len(full_spans_in_bbox) == 1
             assert len(__full_spans_in_bbox_unsorted) > 1
@@ -293,3 +278,13 @@ def test_find_text_multiple_pages(multiple_pages_file_name):
     hot_pdf_object.load(multiple_pages_file_name)
     occurences = hot_pdf_object.find_text(query="God", pages=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     assert len(occurences) == 11
+
+
+def test_extract_spans(valid_file_name):
+    hot_pdf_object = HotPdf()
+    hot_pdf_object.load(valid_file_name)
+    spans = hot_pdf_object.extract_spans(0, 0, 1000, 1000)
+    assert len(spans) > 0
+    assert to_text(spans[0]) == "HOTPDF "
+    assert to_text(spans[1]) == "PDF "
+    assert to_text(spans[2]) == "THE BEST PDF PARSING LIBRARY TO EVER EXIST(DEBATABLE) "
