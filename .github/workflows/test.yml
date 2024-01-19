@@ -64,7 +64,7 @@ jobs:
         run: pip install -e '.[dev]'
       - name: Run tests with coverage
         run:
-          python -m pytest --cov -n=auto --cov-fail-under=98 --cov-report= --memray
+          python -m pytest --cov -n=auto --cov-fail-under=98 --cov-report=
       - name: Upload coverage to coveralls
         if: github.event_name == 'push'
         uses: coverallsapp/github-action@v2.2.3
