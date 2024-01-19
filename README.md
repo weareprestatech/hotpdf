@@ -42,6 +42,22 @@ python3 -m pip install -e '.[dev]'               # install extra deps for testin
 python3 -m pytest -n=auto test/                      # run the test suite
 ```
 
+### Documentation
+
+We use [sphinx](https://www.sphinx-doc.org/en/master/) for generating our docs and host them on [readthedocs](https://readthedocs.org/)
+
+Please update and add documentation if required, with your contributions.
+
+Update the `.rst` files, rebuild them, and commit them along with your PRs.
+
+```bash
+cd docs
+make clean
+make html
+```
+
+This will generate the necessary documentation files. Once merged to `main` the docs will be updated automatically.
+
 ## Usage
 
 **To view more detailed usage information, please [read the docs](https://hotpdf.readthedocs.io/en/latest/)**
