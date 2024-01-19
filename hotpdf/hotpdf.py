@@ -1,13 +1,12 @@
 import math
 import os
-import warnings
 import xml.etree.cElementTree as ET
 from collections import defaultdict
 from typing import Optional, Union
 
 from hotpdf import processor
 from hotpdf.memory_map import MemoryMap
-from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect, to_text
+from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect
 
 from .data.classes import ElementDimension, HotCharacter, PageResult, SearchResult, Span
 
@@ -175,7 +174,7 @@ class HotPdf:
         x1: int,
         y1: int,
         page: int = 0,
-    ) -> PageResult:
+    ) -> list[Span]:
         """
         Extract spans that intersect with the given bounding box.
 
@@ -195,25 +194,13 @@ class HotPdf:
 
         spans: list[Span] = []
 
-        # TODO: Remove this after the deprecation
-        hotcharacters_in_spans: list[list[HotCharacter]] = []
-
         self.__check_coordinates(x0, y0, x1, y1)
         self.__check_page_number(page)
-
-        if len(self.pages[page].span_map) == 0:
-            warnings.warn("No spans exist on this page")
-            return hotcharacters_in_spans
 
         for _, span in self.pages[page].span_map.items():
             if intersect(ElementDimension(x0, y0, x1, y1), span.get_element_dimension()):
                 spans.append(span)
-
-        # TODO: Remove this after the deprecation
-        for span in spans:
-            hotcharacters_in_spans.append(span.characters)
-
-        return hotcharacters_in_spans  # TODO: Make this return spans instead of hotcharacters
+        return spans
 
     def extract_text(
         self,
@@ -301,12 +288,10 @@ class HotPdf:
         self.__check_coordinates(x0, y0, x1, y1)
         self.__check_page_number(page)
 
-        # TODO: This will be a list[Span] in the next release
-        spans: list[list[HotCharacter]] = self.extract_spans(x0, y0, x1, y1, page)
+        spans: list[Span] = self.extract_spans(x0, y0, x1, y1, page)
         extracted_text: list[str] = []
 
         for span in spans:
             # TODO: This will be span.to_text() in the next release
-            extracted_text.append(to_text(span))
-
+            extracted_text.append(span.to_text())
         return "".join(extracted_text)
