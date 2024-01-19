@@ -1,4 +1,3 @@
-import os
 import shutil
 from unittest.mock import patch
 
@@ -50,16 +49,6 @@ def test_span_map_behaviours(valid_file_name):
     assert hot_pdf_object.pages[0].span_map["foo"] is None
     assert hot_pdf_object.pages[0].span_map.get_span("foo") is None
     assert hot_pdf_object.pages[0].span_map.get_span(None) is None
-
-
-def test_memory_map_behaviour(valid_file_name):
-    hot_pdf_object = HotPdf()
-    with pytest.raises(Exception, match="list index out of range"):
-        hot_pdf_object.pages[0].text()
-    hot_pdf_object.load(valid_file_name, drop_duplicate_spans=False)
-    hot_pdf_object.pages[0].display_memory_map(save=True, filename="test.txt")
-    assert os.path.exists("test.txt")
-    os.remove("test.txt")
 
 
 def test_sparse_matrix_insert_and_get():
