@@ -181,19 +181,18 @@ def test_get_spans(valid_file_name):
         occurences_by_page = occurences[page_num]
         for occurence_by_page in occurences_by_page:
             element_dimension = get_element_dimension(occurence_by_page)
-            with pytest.warns(UserWarning, match="This function will be deprecated in the next release"):
-                full_spans_in_bbox = hot_pdf_object.extract_spans(
-                    x0=element_dimension.x0,
-                    y0=element_dimension.y0,
-                    x1=element_dimension.x1,
-                    y1=element_dimension.y1,
-                )
-                __full_spans_in_bbox_unsorted = hot_pdf_object.extract_spans(
-                    x0=element_dimension.x0,
-                    y0=element_dimension.y0,
-                    x1=element_dimension.x1,
-                    y1=element_dimension.y1 + 100,  # to simulate multi line extraction
-                )
+            full_spans_in_bbox = hot_pdf_object.extract_spans(
+                x0=element_dimension.x0,
+                y0=element_dimension.y0,
+                x1=element_dimension.x1,
+                y1=element_dimension.y1,
+            )
+            __full_spans_in_bbox_unsorted = hot_pdf_object.extract_spans(
+                x0=element_dimension.x0,
+                y0=element_dimension.y0,
+                x1=element_dimension.x1,
+                y1=element_dimension.y1 + 100,  # to simulate multi line extraction
+            )
             assert len(full_spans_in_bbox) == 1
             assert len(__full_spans_in_bbox_unsorted) > 1
             assert full_spans_in_bbox[0] in __full_spans_in_bbox_unsorted

@@ -17,3 +17,4 @@
       find_neighbour_coord
       get_element_dimension
       intersect
+      to_text

@@ -14,6 +14,8 @@
    .. autosummary::
 
       ~Span.__init__
+      ~Span.get_element_dimension
+      ~Span.to_text
 
 
 
@@ -24,7 +26,4 @@
    .. autosummary::
 
       ~Span.characters
-      ~Span.x0
-      ~Span.y0
-      ~Span.x_end
       ~Span.span_id
