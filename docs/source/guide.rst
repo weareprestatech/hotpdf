@@ -87,6 +87,21 @@ If you don't specify a `page` it will default to 0 (i.e., the first page).
 
 This will return a `str` in plain text format. Characters, if they are on different lines, will be separated by `\n`.
 
+Extracting Spans Text
+^^^^^^^
+
+If you want to extract text of all spans that lay or intersect the coordinates (`x0`, `y0`, `x1`, `y1`) that you specify on the `page` that you specify, you need to use the `extract_spans_text` function.
+
+In case you want more granular view of the spans, use `extract_spans` instead.
+
+.. code-block:: python
+
+    text_spans = pdf.extract_spans_text(x0=0, y0=0, x1=600, y1=500, page=0)
+
+This will return a `list` of `str`.
+
+The `list` contains text of spans that lay within the given coordinates.
+
 Extracting Spans
 ^^^^^^^
 
@@ -115,6 +130,17 @@ If you want to extract the text, you can iterate over a span and get the `value`
 .. code-block:: python
 
     extracted_span = "".join([hc.value for hc in text_spans[0]])
+
+Extracting Text of Page
+^^^^^^^
+
+In case you want to view the text of a specified page, you can use the `extract_page_text` function.
+
+This will return you an `str` of the whole page of the PDF.
+
+.. code-block:: python
+
+    page_text = pdf.extract_page_text(page=0)
 
 ---
 
