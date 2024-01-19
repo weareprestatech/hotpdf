@@ -76,7 +76,7 @@ text_in_bbox = hotpdf_document.extract_text(
    page=0,
 )
 
-# Extract text spans in region
+# Extract spans in region
 spans_in_bbox = hotpdf_document.extract_spans(
    x0=0,
    y0=0,
@@ -84,6 +84,18 @@ spans_in_bbox = hotpdf_document.extract_spans(
    y1=10,
    page=0,
 )
+
+# Extract spans text in region
+spans_text_in_bbox = hotpdf_document.extract_spans_text(
+   x0=0,
+   y0=0,
+   x1=100,
+   y1=10,
+   page=0,
+)
+
+# Extract full page text
+full_page_text = hotpdf_document.extract_page_text(page=0)
 ```
 
 For more granular function level documentation please check the [docs](https://hotpdf.readthedocs.io/en/latest/).

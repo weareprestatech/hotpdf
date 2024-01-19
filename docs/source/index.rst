@@ -1,10 +1,6 @@
-.. hotpdf documentation master file, created by
-   sphinx-quickstart on Sun Jan 14 23:51:19 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
+=========
 hotpdf
-======
+=========
 
 This project was started as an internal project @ `Prestatech <http://prestatech.com/>`_ to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as `pdfquery <https://github.com/jcushman/pdfquery>`_.
 
@@ -46,6 +42,25 @@ Some examples of running tests locally:
    python3 -m pip install -e '.[testing]'               # install extra deps for testing
    python3 -m pytest -n=auto test/                      # run the test suite
 
+
+Documentation
+--------------
+
+We use `sphinx <https://www.sphinx-doc.org/en/master/>`_ for generating our docs and host them on `readthedocs <https://readthedocs.org/>`_.
+
+Please update and add documentation if required, with your contributions.
+
+Update the `.rst` files, rebuild them, and commit them along with your PRs.
+
+.. code-block:: bash
+
+    cd docs
+    make clean
+    make html
+
+This will generate the necessary documentation files. Once merged to `main` the docs will be updated automatically.
+
+
 Contents
 --------------
 
@@ -53,6 +68,8 @@ To view detailed usage information, please navigate to `Usage` and `User Guide`
 
 
 .. toctree::
+   :maxdepth: 3
+   :caption: Contents:
 
    usage
    guide
