@@ -113,13 +113,6 @@ def test_non_existent_file_path(non_existent_file_name):
         hot_pdf_object.load(non_existent_file_name)
 
 
-def test_double_loading(valid_file_name):
-    hot_pdf_object = HotPdf()
-    hot_pdf_object.load(valid_file_name)
-    with pytest.raises(Exception, match="A file is already loaded!"):
-        hot_pdf_object.load(valid_file_name)
-
-
 def test_blank_pdf(blank_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(blank_file_name)

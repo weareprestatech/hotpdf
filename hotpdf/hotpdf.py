@@ -36,10 +36,6 @@ class HotPdf:
         if not os.path.exists(pdf_file):
             raise FileNotFoundError(f"File {pdf_file} not found")
 
-    def __check_file_already_loaded(self) -> None:
-        if len(self.pages) > 0:
-            raise Exception("A file is already loaded!")
-
     def __check_coordinates(self, x0: int, y0: int, x1: int, y1: int) -> None:
         if x0 < 0 or x1 < 0 or y0 < 0 or y1 < 0:
             raise ValueError("Invalid coordinates")
@@ -54,7 +50,6 @@ class HotPdf:
 
     def __prechecks(self, pdf_file: str, first_page: int, last_page: int) -> None:
         self.__check_file_exists(pdf_file)
-        self.__check_file_already_loaded()
         self.__check_page_range(first_page, last_page)
 
     def load(
@@ -73,7 +68,6 @@ class HotPdf:
             first_page (int, optional): The first page to load. Defaults to 0.
             last_page (int, optional): The last page to load. Defaults to 0.
         Raises:
-            Exception: If a file is already loaded.
             ValueError: If the page range is invalid.
             FileNotFoundError: If the file is not found.
         """
