@@ -63,8 +63,6 @@ select = [
     "SIM",
     # isort
     "I",
-    # pycodestyle
-    "W",
     # MaccaBe
     "C901",
     # Pep8-naming
