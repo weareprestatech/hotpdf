@@ -193,7 +193,7 @@ class HotPdf:
             ValueError: If the page number is invalid.
 
         Returns:
-            list: List of spans of hotcharacters that intersect with the given bounding box
+            list[Span]: List of spans of hotcharacters that intersect with the given bounding box
         """
         spans: list[Span] = []
 
