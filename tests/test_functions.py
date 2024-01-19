@@ -171,3 +171,10 @@ def test_intersect(bbox1, bbox2, expected):
 )
 def test_to_text(hot_characters, expected):
     assert to_text(hot_characters) == expected
+
+
+def test_invalid_page_number(valid_file_name):
+    hotpdf_object = HotPdf()
+    hotpdf_object.load(valid_file_name)
+    with pytest.raises(ValueError, match="Invalid page number"):
+        _ = hotpdf_object.extract_page_text(page=2)
