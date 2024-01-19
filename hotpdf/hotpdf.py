@@ -192,8 +192,6 @@ class HotPdf:
         Returns:
             list: List of spans of hotcharacters that intersect with the given bounding box
         """
-        # TODO: Make this function return spans instead of hotcharacters
-        warnings.warn("This function will be deprecated in the next release")
 
         spans: list[Span] = []
 
