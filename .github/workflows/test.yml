@@ -55,10 +55,12 @@ jobs:
         run: sudo apt-get install ghostscript
       - name: Cache python packages
         uses: actions/cache@v3
+        id: cache
         with:
           path: ${{ env.Python3_ROOT_DIR }}/lib/python${{ matrix.python-version }}/site-packages
           key: dev-${{ hashFiles('**/pyproject.toml') }}-${{ matrix.python-version }}
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: pip install -e '.[dev]'
       - name: Run tests with coverage
         run:
