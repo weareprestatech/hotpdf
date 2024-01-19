@@ -10,11 +10,10 @@ def find_neighbour_coord(
     max_distance: int = 5,
     span_tolerance: int = 5,
 ) -> Union[HotCharacter, None]:
-    """
-    Find a neighbouring coordinate within a specified maximum distance.
+    """Find a neighbouring coordinate within a specified maximum distance.
 
     Args:
-        reference_coord (HotCharacter): Previous char instance.
+        reference_character (HotCharacter): Previous char instance.
         hot_characters (list[HotCharacter]): List of character instances to search through.
         max_distance (int): Maximum distance between reference coordinate and target coordinate.
         span_tolerance (int): Additional distance to consider if text lies in the same span.
@@ -28,7 +27,8 @@ def find_neighbour_coord(
             <= (hot_character.x - reference_character.x_end)
             <= (
                 (max_distance + span_tolerance)
-                if hot_character.span_id == reference_character.span_id and (hot_character.span_id and reference_character.span_id)
+                if hot_character.span_id == reference_character.span_id
+                and (hot_character.span_id and reference_character.span_id)
                 else max_distance
             )
             and reference_character.y == hot_character.y
@@ -38,8 +38,7 @@ def find_neighbour_coord(
 
 
 def filter_adjacent_coords(text: list[str], page_hot_character_occurences: PageResult) -> PageResult:
-    """
-    Filter adjacent coordinates based on the given text.
+    """Filter adjacent coordinates based on the given text.
 
     Args:
         text (str): The text to filter by.
@@ -75,8 +74,7 @@ def filter_adjacent_coords(text: list[str], page_hot_character_occurences: PageR
 
 
 def get_element_dimension(elem: list[HotCharacter]) -> ElementDimension:
-    """
-    Get the dimensions of an element based on its coordinates.
+    """Get the dimensions of an element based on its coordinates.
 
     Args:
         elem (list): List of coordinates representing an element.
@@ -93,8 +91,7 @@ def get_element_dimension(elem: list[HotCharacter]) -> ElementDimension:
 
 
 def intersect(bbox1: ElementDimension, bbox2: ElementDimension) -> bool:
-    """
-    Check if two bounding boxes intersect.
+    """Check if two bounding boxes intersect.
 
     Args:
         bbox1 (ElementDimension): Bounding box 1. (x0, y0, x1, y1)
@@ -107,8 +104,7 @@ def intersect(bbox1: ElementDimension, bbox2: ElementDimension) -> bool:
 
 
 def to_text(el: list[HotCharacter]) -> str:
-    """
-    Convert a list of HotCharacter instances to text.
+    """Convert a list of HotCharacter instances to text.
 
     Args:
         el (list): List of HotCharacter instances.

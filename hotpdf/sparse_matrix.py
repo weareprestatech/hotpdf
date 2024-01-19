@@ -1,10 +1,10 @@
 from collections import defaultdict
-from typing import Iterator
+from collections.abc import Iterator
 
 
 class SparseMatrix:
-    """
-    2D representation of a PDF in plain text format.
+    """2D representation of a PDF in plain text format.
+
     Sparse matrix removes the need to keep in memory the blank spaces
     that are present in a PDF. Thus reducing memory usage drastically.
     """

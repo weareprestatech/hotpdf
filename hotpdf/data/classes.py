@@ -5,8 +5,7 @@ from typing import Optional
 
 @dataclass
 class HotCharacter:
-    """
-    A hot character is a character on a page with certain attributes.
+    """A hot character is a character on a page with certain attributes.
 
     Attributes:
         value (str): value value of the character.
@@ -25,8 +24,7 @@ class HotCharacter:
 
 @dataclass
 class ElementDimension:
-    """
-    ElementDimension is the dimension of an element in hotpdf.
+    """ElementDimension is the dimension of an element in hotpdf.
 
     Attributes:
         x0 (int): starting x position of the element (column).
@@ -45,8 +43,7 @@ class ElementDimension:
 
 @dataclass(init=True)
 class Span:
-    """
-    A span is a group of characters that are close to each other.
+    """A span is a group of characters that are close to each other.
 
     Attributes:
         characters (list[HotCharacter]): list of characters in the span.
@@ -60,12 +57,22 @@ class Span:
     span_id: Optional[str]
 
     def to_text(self) -> str:
-        """
-        Returns the text of the span.
+        """Convert the span to text.
+
+        Returns:
+            str: text representation of the span.
         """
         return "".join([char.value for char in self.characters])
 
     def get_element_dimension(self) -> ElementDimension:
+        """Get the element dimension of the span.
+
+        Raises:
+            ValueError: if the span has no characters.
+
+        Returns:
+            ElementDimension: _description_
+        """
         if not self.characters:
             raise ValueError("Span has no characters")
         x0 = self.characters[0].x
