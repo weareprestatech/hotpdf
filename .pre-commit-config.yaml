@@ -7,14 +7,14 @@ repos:
     - id: trailing-whitespace
   - repo: local
     hooks:
-    - id: ruff-format
-      name: ruff format
-      entry: ruff format
-      language: system
-      pass_filenames: false
     - id: ruff-lint
       name: ruff lint
       entry: ruff check
+      language: system
+      pass_filenames: false
+    - id: ruff-format
+      name: ruff format
+      entry: ruff format
       language: system
       pass_filenames: false
     - id: mypy

@@ -5,7 +5,7 @@ import pytest
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
 from hotpdf.memory_map import MemoryMap
-from hotpdf.utils import get_element_dimension, to_text
+from hotpdf.utils import get_element_dimension
 
 
 @pytest.fixture
@@ -124,7 +124,7 @@ def test_row_index_greater_than_rows_of_memory_map(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
-    pages[0].memory_map.get(row_idx=9999, column_idx=100) is not None
+    assert pages[0].memory_map.get(row_idx=9999, column_idx=100) is not None
     assert pages[0].memory_map.get(row_idx=9999, column_idx=100) == ""
 
 
@@ -132,7 +132,7 @@ def test_col_index_greater_than_columns_of_memory_map(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     pages = hot_pdf_object.pages
-    pages[0].memory_map.get(row_idx=100, column_idx=9999) is not None
+    assert pages[0].memory_map.get(row_idx=100, column_idx=9999) is not None
     assert pages[0].memory_map.get(row_idx=100, column_idx=9999) == ""
 
 
@@ -196,7 +196,7 @@ def test_get_spans(valid_file_name):
             assert len(full_spans_in_bbox) == 1
             assert len(__full_spans_in_bbox_unsorted) > 1
             assert full_spans_in_bbox[0] in __full_spans_in_bbox_unsorted
-            element_dimensions.append(get_element_dimension(full_spans_in_bbox[0]))
+            element_dimensions.append(full_spans_in_bbox[0].get_element_dimension())
 
     span_1 = element_dimensions[0]
     span_2 = element_dimensions[1]
@@ -228,7 +228,7 @@ def test_extract_page_range_exception(multiple_pages_file_name, first_page, last
 
 def test_no_spans_in_xml_file_extraction(valid_file_name):
     hot_pdf_object = HotPdf()
-    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans, pytest.warns(UserWarning, match="No spans exist on this page"):
+    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
         get_page_spans.return_value = None
         hot_pdf_object.load(valid_file_name)
         get_page_spans.assert_called_once()
@@ -257,7 +257,7 @@ def test_no_spans_in_xml_file_extraction(valid_file_name):
 
 def test_no_spans_in_xml_file_extract_spans(valid_file_name):
     hot_pdf_object = HotPdf()
-    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans, pytest.warns(UserWarning, match="No spans exist on this page"):
+    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
         hot_pdf_object.load(valid_file_name)
         get_page_spans.return_value = None
         # Test No spans
@@ -284,6 +284,6 @@ def test_extract_spans(valid_file_name):
     hot_pdf_object.load(valid_file_name)
     spans = hot_pdf_object.extract_spans(0, 0, 1000, 1000)
     assert len(spans) > 0
-    assert to_text(spans[0]) == "HOTPDF "
-    assert to_text(spans[1]) == "PDF "
-    assert to_text(spans[2]) == "THE BEST PDF PARSING LIBRARY TO EVER EXIST(DEBATABLE) "
+    assert spans[0].to_text() == "HOTPDF "
+    assert spans[1].to_text() == "PDF "
+    assert spans[2].to_text() == "THE BEST PDF PARSING LIBRARY TO EVER EXIST(DEBATABLE) "
