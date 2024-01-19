@@ -258,15 +258,15 @@ class HotPdf:
         )
         return extracted_text
 
-    def extract_page(
+    def extract_page_text(
         self,
-        page: int = 0,
+        page: int,
     ) -> str:
         """
         Extract text from a specified page.
 
         Args:
-            page (int): The page number. Defaults to 0.
+            page (int): The page number.
         Raises:
             ValueError: If the page number is invalid.
         Returns:
