@@ -23,32 +23,6 @@ class HotCharacter:
     span_id: Optional[str] = None
 
 
-@dataclass(init=True)
-class Span:
-    """
-    A span is a group of characters that are close to each other.
-
-    Attributes:
-        characters (list[HotCharacter]): list of characters in the span.
-        x0 (int): starting x position of the span (column).
-        y0 (int): starting y position of the span (row).
-        x_end (int): end x position of the span (column). x_end - x0 = width.
-        span_id (str, Optional): hash of the span.
-    """
-
-    characters: list[HotCharacter]
-    x0: int
-    y0: int
-    x_end: int
-    span_id: Optional[str]
-
-    def to_text(self) -> str:
-        """
-        Returns the text of the span.
-        """
-        return "".join([char.value for char in self.characters])
-
-
 @dataclass
 class ElementDimension:
     """
@@ -67,6 +41,38 @@ class ElementDimension:
     x1: int
     y1: int
     span_id: Optional[str] = None
+
+
+@dataclass(init=True)
+class Span:
+    """
+    A span is a group of characters that are close to each other.
+
+    Attributes:
+        characters (list[HotCharacter]): list of characters in the span.
+        x0 (int): starting x position of the span (column).
+        y0 (int): starting y position of the span (row).
+        x_end (int): end x position of the span (column). x_end - x0 = width.
+        span_id (str, Optional): hash of the span.
+    """
+
+    characters: list[HotCharacter]
+    span_id: Optional[str]
+
+    def to_text(self) -> str:
+        """
+        Returns the text of the span.
+        """
+        return "".join([char.value for char in self.characters])
+
+    def get_element_dimension(self) -> ElementDimension:
+        if not self.characters:
+            raise ValueError("Span has no characters")
+        x0 = self.characters[0].x
+        y0 = self.characters[0].y
+        x1 = self.characters[-1].x_end
+        y1 = y0
+        return ElementDimension(x0, y0, x1, y1, self.span_id)
 
 
 # All occurences of HotCharacters in a page
