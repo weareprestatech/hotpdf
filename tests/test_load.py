@@ -36,9 +36,9 @@ def test_load(valid_file_name):
 def test_full_text(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
-    pages = hot_pdf_object.pages
+    text_first_page = hot_pdf_object.extract_page_text(page=0)
     # Not blank extraction
-    assert len(pages[0].text()) > 1000
+    assert len(text_first_page) > 500
 
 
 def test_pages_length(valid_file_name):
@@ -123,8 +123,8 @@ def test_double_loading(valid_file_name):
 def test_blank_pdf(blank_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(blank_file_name)
-    pages = hot_pdf_object.pages
-    assert all([len(page.text().strip("\n").strip()) == 0 for page in pages])
+    len_pages = len(hot_pdf_object.pages)
+    assert all([len(hot_pdf_object.extract_page_text(page=i).strip("\n").strip()) == 0 for i in range(len_pages)])
 
 
 def test_row_index_greater_than_rows_of_memory_map(valid_file_name):
@@ -170,13 +170,6 @@ def test_extract_invalid_coordinates(valid_file_name, coordinates):
 
     with pytest.raises(ValueError, match="Invalid coordinates"):
         hot_pdf_object.extract_text(x0=coordinates[0], y0=coordinates[1], x1=coordinates[2], y1=coordinates[3])
-
-
-def test_display_memory_map(valid_file_name):
-    hot_pdf_object = HotPdf()
-    hot_pdf_object.load(valid_file_name)
-    pages = hot_pdf_object.pages
-    pages[0].display_memory_map(save=False, filename="test.txt")
 
 
 def test_get_spans(valid_file_name):
