@@ -1,6 +1,4 @@
-"""
-Implementation from: https://github.com/puyuan/py-nanoid
-"""
+"""Implementation from: https://github.com/puyuan/py-nanoid."""
 
 from math import ceil, log
 from os import urandom
@@ -8,6 +6,14 @@ from typing import Callable
 
 
 def algorithm_generate(random_bytes: int) -> bytearray:
+    """Algorithm to generate random bytes.
+
+    Args:
+        random_bytes (int):
+
+    Returns:
+        bytearray:
+    """
     return bytearray(urandom(random_bytes))
 
 
@@ -25,12 +31,11 @@ def method(algorithm: Callable[[int], bytearray], alphabet: str, size: int) -> s
 
         for i in range(step):
             random_byte = random_bytes[i] & mask
-            if random_byte < alphabet_len:
-                if alphabet[random_byte]:
-                    id += alphabet[random_byte]
+            if random_byte < alphabet_len and alphabet[random_byte]:
+                id += alphabet[random_byte]
 
-                    if len(id) == size:
-                        return id
+                if len(id) == size:
+                    return id
 
 
 def generate_nano_id(

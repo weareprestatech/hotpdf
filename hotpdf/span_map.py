@@ -1,12 +1,13 @@
-from typing import Iterable, Union
+from collections.abc import Iterable
+from typing import Union
 
 from .data.classes import HotCharacter, Span
 
 
 class SpanMap:
-    """
-    Hashmap to store spans and their child words for fast referencing
+    """Hashmap to store spans and their child words for fast referencing
     and character grouping.
+
     Keys are span_ids and values are Span objects.
     """
 
