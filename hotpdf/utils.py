@@ -92,15 +92,28 @@ def get_element_dimension(elem: list[HotCharacter]) -> ElementDimension:
     return ElementDimension(x0=x0, x1=x1, y0=y0, y1=y1, span_id=span)
 
 
-def intersect(bbox1: tuple[int, int, int, int], bbox2: tuple[int, int, int, int]) -> bool:
+def intersect(bbox1: ElementDimension, bbox2: ElementDimension) -> bool:
     """
     Check if two bounding boxes intersect.
 
     Args:
-        bbox1 (tuple): Bounding box 1. (x0, y0, x1, y1)
-        bbox2 (tuple): Bounding box 2. (x0, y0, x1, y1)
+        bbox1 (ElementDimension): Bounding box 1. (x0, y0, x1, y1)
+        bbox2 (ElementDimension): Bounding box 2. (x0, y0, x1, y1)
 
     Returns:
         bool: True if the bounding boxes intersect, else False.
     """
-    return not (bbox2[0] > bbox1[2] or bbox2[2] < bbox1[0] or bbox2[1] > bbox1[3] or bbox2[3] < bbox1[1])
+    return not (bbox2.x0 > bbox1.x1 or bbox2.x1 < bbox1.x0 or bbox2.y0 > bbox1.y1 or bbox2.y1 < bbox1.y0)
+
+
+def to_text(el: list[HotCharacter]) -> str:
+    """
+    Convert a list of HotCharacter instances to text.
+
+    Args:
+        el (list): List of HotCharacter instances.
+
+    Returns:
+        str: The text.
+    """
+    return "".join([char.value for char in el])

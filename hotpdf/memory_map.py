@@ -32,34 +32,6 @@ class MemoryMap:
         """
         self.memory_map = SparseMatrix()
 
-    def text(self) -> str:
-        """
-        Get text of the memory map
-        Returns:
-            str: Text in the page of the pdf preserving the order of occurence.
-        """
-        memory_map_str = ""
-        for row in range(self.memory_map.rows):
-            for col in range(self.memory_map.columns):
-                memory_map_str += self.memory_map.get(row_idx=row, column_idx=col)
-            memory_map_str += "\n"
-        return memory_map_str
-
-    def display_memory_map(self, save: bool = False, filename: str = "memory_map.txt") -> None:
-        """
-        Display or save the memory map.
-
-        Args:
-            save (bool, optional): Whether to save to a file. Defaults to False.
-            filename (str, optional): The filename to save the map. Defaults to "memory_map.txt".
-        """
-        memory_map_str = self.text()
-        if save:
-            with open(filename, "w", encoding="utf-8") as file:
-                file.write(memory_map_str)
-        else:
-            print(memory_map_str)
-
     def __get_page_spans(self, page: ET.Element) -> Generator[ET.Element, None, None]:
         return page.iterfind(".//span")
 
