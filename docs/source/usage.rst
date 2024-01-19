@@ -1,5 +1,6 @@
+=========
 Usage
-=====
+=========
 
 HotPdf Class
 ------------------------------------------
@@ -26,7 +27,7 @@ File Operations
 ------------------------------------------
 
 Length
-^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 The number of pages in the PDF file can be determined by checking the `len` of `pages` property of the hotpdf object.
 
@@ -38,7 +39,7 @@ Search
 ------------------------------------------
 
 find_text
-^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 To look for a string in the entire PDF File, you can use the `find_text` function.
 You can also specify what pages you want to search in. By default it will look through the whole PDF.
@@ -59,7 +60,7 @@ Extraction
 ------------------------------------------
 
 extract_text
-^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 To extract string from specific positions in the PDF, you can use the `extract_text` function.
 This will extract the string that lies within the positions that have been specified on the page that it's specified (default is Page 0).
@@ -77,7 +78,7 @@ This will extract the string that lies within the positions that have been speci
 .. autofunction:: hotpdf.HotPdf.extract_text
 
 extract_spans
-^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 Instead of just the individual characters that lay within the bounds that you specify, if you want full words, or the complete spans that intersect within the specified bounds - you can use the `extract_spans` functions instead.
 This will extract all the spans that intersect with the positions that have been specified on the page that it's specified (default is Page 0).
@@ -96,7 +97,7 @@ This will extract all the spans that intersect with the positions that have been
 .. autofunction:: hotpdf.HotPdf.extract_spans
 
 extract_spans_text
-^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 Instead of handling the spans structures yourself, if you are only interested in the text of the spans, you can use the `extract_spans_text` function instead.
 
@@ -115,7 +116,7 @@ The function is the same as `extract_spans`_ except it returns you a `list` of `
 .. autofunction:: hotpdf.HotPdf.extract_spans_text
 
 extract_page_text
-^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 If you want to view the text of an entire page in plaintext `str` format, you can use the `extract_page_text` function.
 

@@ -88,6 +88,23 @@ spans_in_bbox = hotpdf_document.extract_spans(
 
 For more granular function level documentation please check the [docs](https://hotpdf.readthedocs.io/en/latest/).
 
+### Docs
+
+We use [sphinx](https://www.sphinx-doc.org/en/master/) for generating our docs and host them on [readthedocs](https://readthedocs.org/).
+
+Please update and add documentation if required, with your contributions.
+
+Update the `.rst` files, rebuild them, and commit them alongwith your PRs.
+
+```bash
+cd docs
+make clean
+make html
+```
+
+This will generate the necessary documentation files. Once merged to `main` the docs will be updated automatically.
+
+
 ## License
 
 This project is licensed under the terms of the MIT license.

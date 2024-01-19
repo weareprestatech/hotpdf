@@ -1,5 +1,6 @@
+==================
 User Guide
-=====
+==================
 
 This guide contains a couple of common use cases that your application might have. Since HotPdf returns data in its own structure, its readability may not be optimal.
 
@@ -20,7 +21,7 @@ Start by loading the file.
 The `HotPdf` object has many attributes that you can use to solve your problems. One of them is `pages`, representing each page of the PDF stored in data structures (trie & sparse matrix) to help with text operations.
 
 Number of Pages
-^^^^^^^
+~~~~~~~~~~~~~~~~~~
 
 Begin by getting the number of loaded pages or the total pages in the PDF.
 
@@ -31,7 +32,7 @@ Begin by getting the number of loaded pages or the total pages in the PDF.
 Each `page` in the `pages` list is an in-memory representation of a page of the loaded PDF. All operations are performed on a page.
 
 Looking up Text
-^^^^^^^
+~~~~~~~~~~~~~~~~~~
 
 To look up text, use the `find_text` function.
 
@@ -71,10 +72,10 @@ You can set `take_span` to `True` to find the whole span that it lies in. Usage 
 For example, if you are looking for a text like "hotpdf v23" but you know that the part "v23" is variable, you can simply search for "hotpdf v" or just "hotpdf".
 This will return the spans of the text as well, so you could also find "hotpdf v24" just by searching for "hotpdf v" or "hotpdf".
 
-**Please note:** The text children of a `span` depend on the PDF producing software, so it could be unpredictable. Either way, if it works for you, then it works. Please test it!
+**Please note:** The text children of a `Span` depend on the PDF producing software, so it could be unpredictable. Either way, if it works for you, then it works. Please test it!
 
 Extracting Text
-^^^^^^^
+~~~~~~~~~~~~~~~~~~
 
 If you know the coordinates of the text that you are going to extract, you can use the `extract_text` function.
 
@@ -88,7 +89,7 @@ If you don't specify a `page` it will default to 0 (i.e., the first page).
 This will return a `str` in plain text format. Characters, if they are on different lines, will be separated by `\n`.
 
 Extracting Spans Text
-^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~
 
 If you want to extract text of all spans that lay or intersect the coordinates (`x0`, `y0`, `x1`, `y1`) that you specify on the `page` that you specify, you need to use the `extract_spans_text` function.
 
@@ -103,7 +104,7 @@ This will return a `list` of `str`.
 The `list` contains text of spans that lay within the given coordinates.
 
 Extracting Spans
-^^^^^^^
+~~~~~~~~~~~~~~~~~~
 
 If you want to extract all spans that lay or intersect the coordinates (`x0`, `y0`, `x1`, `y1`) that you specify on the `page` that you specify, you need to use the `extract_spans` function.
 
@@ -111,9 +112,9 @@ If you want to extract all spans that lay or intersect the coordinates (`x0`, `y
 
     text_spans = pdf.extract_spans(x0=0, y0=0, x1=600, y1=500, page=0)
 
-This will return a `list` of `list` of `HotCharacter`.
+This will return a `list` of `Span`.
 
-The `list` contains the spans that lay within the given coordinates. A span is nothing but a `list` of `HotCharacter`.
+The `list` contains the spans that lay within the given coordinates. A `Span` is a collection of `HotCharacter`
 
 To access a span, you can access it by index. For example, if you want to get the dimensions of the first span that was returned, you can do this:
 
@@ -121,7 +122,11 @@ To access a span, you can access it by index. For example, if you want to get th
 
     from hotpdf.utils import get_element_dimension
 
-    first_span_dimensions = get_element_dimension(text_spans[0])
+    # Get the dimensions of the first span
+    first_span_dimensions = spans[0].get_element_dimension()
+
+    # Get the text of the first span
+    span_text = spans[0].to_text()
 
 This will give you the dimension of the span.
 
@@ -132,7 +137,7 @@ If you want to extract the text, you can iterate over a span and get the `value`
     extracted_span = "".join([hc.value for hc in text_spans[0]])
 
 Extracting Text of Page
-^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In case you want to view the text of a specified page, you can use the `extract_page_text` function.
 
