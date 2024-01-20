@@ -1,7 +1,6 @@
 import math
 import xml.etree.ElementTree as ET
 from collections.abc import Generator
-from functools import lru_cache
 from hashlib import md5
 
 from .data.classes import HotCharacter, PageResult
@@ -103,7 +102,6 @@ class MemoryMap:
         self.width = self.memory_map.columns
         self.height = self.memory_map.rows
 
-    @lru_cache  # noqa: B019
     def extract_text_from_bbox(self, x0: int, x1: int, y0: int, y1: int) -> str:
         """Extract text within a specified bounding box.
 
@@ -128,7 +126,6 @@ class MemoryMap:
 
         return extracted_text
 
-    @lru_cache  # noqa: B019
     def find_text(self, query: str) -> tuple[list[str], PageResult]:
         """Find text within the memory map.
 
