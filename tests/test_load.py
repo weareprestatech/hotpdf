@@ -287,3 +287,14 @@ def test_extract_spans(valid_file_name):
     assert spans[0].to_text() == "HOTPDF "
     assert spans[1].to_text() == "PDF "
     assert spans[2].to_text() == "THE BEST PDF PARSING LIBRARY TO EVER EXIST(DEBATABLE) "
+
+
+def test_span_has_no_characters(valid_file_name):
+    hot_pdf_object = HotPdf()
+    hot_pdf_object.load(valid_file_name)
+    spans = hot_pdf_object.extract_spans(0, 0, 1000, 1000)
+    span_1 = spans[0]
+    assert span_1.get_element_dimension()
+    span_1.characters = None
+    with pytest.raises(ValueError, match="Span has no characters"):
+        span_1.get_element_dimension()
