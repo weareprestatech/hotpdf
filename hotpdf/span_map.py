@@ -29,14 +29,13 @@ class SpanMap:
     def insert(self, span_id: Union[str, None], hot_character: HotCharacter) -> None:
         if not span_id:
             raise KeyError("Cannot set key as None")
-        if span_id in self.span_map:
-            span = self.span_map[span_id]
-            span.characters.append(hot_character)
-        else:
+        span = self.span_map.get(span_id)
+        if not span:
             span = Span(
-                characters=[hot_character],
+                characters=[],
                 span_id=span_id,
             )
+        span.characters.append(hot_character)
         self.span_map[span_id] = span
 
     def get_span(self, span_id: Union[str, None]) -> Union[Span, None]:
