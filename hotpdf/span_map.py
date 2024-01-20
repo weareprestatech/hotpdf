@@ -24,7 +24,7 @@ class SpanMap:
         self.insert(span_id, hot_character)
 
     def items(self) -> Iterable[tuple[str, Span]]:
-        return self.span_map.items()
+        yield from self.span_map.items()
 
     def insert(self, span_id: Union[str, None], hot_character: HotCharacter) -> None:
         if not span_id:
