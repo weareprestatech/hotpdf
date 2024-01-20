@@ -298,6 +298,5 @@ class HotPdf:
         extracted_text: list[str] = []
 
         for span in spans:
-            # TODO: This will be span.to_text() in the next release
             extracted_text.append(span.to_text())
         return "".join(extracted_text)
