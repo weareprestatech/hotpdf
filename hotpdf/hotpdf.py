@@ -62,7 +62,7 @@ class HotPdf:
 
         Args:
             pdf_file (str): The path to the PDF file to be loaded.
-            password (str): Password to use to unlock the pdf
+            password (str, optional): Password to use to unlock the pdf
             drop_duplicate_spans (bool, optional): Drop duplicate spans when loading. Defaults to True.
             first_page (int, optional): The first page to load. Defaults to 0.
             last_page (int, optional): The last page to load. Defaults to 0.
