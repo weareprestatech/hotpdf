@@ -47,7 +47,8 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
             errors="ignore"
         )
     except subprocess.CalledProcessError as err:
-        raise RuntimeError("Unknown error in processing") from err
+        logging.error(err)
+        raise RuntimeError("Unknown error in processing") from None
 
     status = validate_gs_output(output)
 
