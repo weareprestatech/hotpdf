@@ -42,9 +42,12 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
 
     gs_call = " ".join(command_line_args)
 
-    output = subprocess.check_output(gs_call, shell=ghostscript == "gs", stderr=subprocess.STDOUT).decode(
-        errors="ignore"
-    )
+    try:
+        output = subprocess.check_output(gs_call, shell=ghostscript == "gs", stderr=subprocess.STDOUT).decode(
+            errors="ignore"
+        )
+    except subprocess.CalledProcessError as err:
+        raise RuntimeError("Unknown error in processing") from err
 
     status = validate_gs_output(output)
 
