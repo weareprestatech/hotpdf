@@ -84,3 +84,9 @@ check_untyped_defs = true
 explicit_package_bases = true
 warn_unreachable = true
 warn_redundant_casts = true
+strict = true
+
+[tool.pytest.ini_options]
+log_cli=true
+log_level="NOTSET"
+addopts="-n=auto --cov --cov-report term-missing"
