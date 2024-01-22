@@ -32,7 +32,7 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
     command_line_args = [ghostscript, "-dNOPAUSE", "-dBATCH", "-dSAFER", "-dTextFormat=1", "-sDEVICE=txtwrite"]
 
     if password:
-        command_line_args.append(f"-sPDFPassword={password}")
+        command_line_args.append(f'-sPDFPassword="{password}"')
     if first_page:
         command_line_args.append(f"-dFirstPage={first_page}")
     if last_page:
