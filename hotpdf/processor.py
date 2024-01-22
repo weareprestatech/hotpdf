@@ -50,7 +50,7 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
 
     if status != Result.LOADED:
         if status == Result.WRONG_PASSWORD:
-            logging.error("GS: WRONG PASSWORD DIPS**T")
+            logging.error("GS: WRONG PASSWORD")
             raise PermissionError("Wrong password")
 
         if status == Result.LOCKED:
