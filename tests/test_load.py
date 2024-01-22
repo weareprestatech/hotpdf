@@ -48,13 +48,13 @@ def test_load_locked(locked_file_name):
 
 def test_load_locked_wrong_psw(locked_file_name):
     hot_pdf_object = HotPdf()
-    with pytest.raises(PermissionError or RuntimeError):
+    with pytest.raises((PermissionError, RuntimeError)):
         hot_pdf_object.load(locked_file_name, password="defenitelythewrongpassword")
 
 
 def test_load_locked_no_psw(locked_file_name):
     hot_pdf_object = HotPdf()
-    with pytest.raises(PermissionError or RuntimeError):
+    with pytest.raises((PermissionError, RuntimeError)):
         hot_pdf_object.load(locked_file_name)
 
 
