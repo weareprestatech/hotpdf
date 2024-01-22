@@ -46,11 +46,10 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
         output = subprocess.check_output(gs_call, shell=ghostscript == "gs", stderr=subprocess.STDOUT).decode(
             errors="ignore"
         )
+        status = validate_gs_output(output)
     except subprocess.CalledProcessError as err:
         logging.error(err)
-        raise RuntimeError("Unknown error in processing") from None
-
-    status = validate_gs_output(output)
+        status = Result.UNKNOWN_ERROR
 
     if status != Result.LOADED:
         if status == Result.WRONG_PASSWORD:
