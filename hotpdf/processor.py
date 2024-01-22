@@ -11,7 +11,7 @@ class Result(Enum):
     LOADED = 0
     LOCKED = 1
     WRONG_PASSWORD = 2
-    UNKOWN_ERROR = 3
+    UNKNOWN_ERROR = 3
 
 
 def generate_xml_file(file_path: str, password: str, first_page: int, last_page: int) -> str:
@@ -96,4 +96,4 @@ def validate_gs_output(output: str) -> Result:
         return Result.WRONG_PASSWORD
     if "Page" in output:
         return Result.LOADED
-    return Result.UNKOWN_ERROR
+    return Result.UNKNOWN_ERROR
