@@ -14,7 +14,7 @@ class Result(Enum):
     UNKOWN_ERROR = 3
 
 
-def generate_xml_file(file_path: str, password: str, first_page: int, last_page: int = 0) -> str:
+def generate_xml_file(file_path: str, password: str, first_page: int, last_page: int) -> str:
     """Generate XML notation of PDF File.
 
     Args:
@@ -38,7 +38,7 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
     if last_page:
         command_line_args.append(f"-dLastPage={last_page}")
 
-    command_line_args.extend([f"-sOutputFile={temporary_xml_file.name}", file_path])
+    command_line_args.extend([f'-sOutputFile="{temporary_xml_file.name}"', f'"{file_path}"'])
 
     gs_call = " ".join(command_line_args)
 
