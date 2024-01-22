@@ -27,8 +27,19 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
     Returns:
         str: XML File Path
     """
+    temp_file_name = tempfile.NamedTemporaryFile(delete=False).name
+
+    result = call_ghostscript(file_path, temp_file_name, password, first_page, last_page)
+
+    handle_gs_result(result)
+
+    clean_xlm(temp_file_name)
+
+    return temp_file_name
+
+
+def call_ghostscript(file_path: str, temp_file_name: str, password: str, first_page: int, last_page: int) -> Result:
     ghostscript = "gs" if os.name != "nt" else "gswin64c"
-    temporary_xml_file = tempfile.NamedTemporaryFile(delete=False)
     command_line_args = [ghostscript, "-dNOPAUSE", "-dBATCH", "-dSAFER", "-dTextFormat=1", "-sDEVICE=txtwrite"]
 
     if password:
@@ -38,8 +49,7 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
     if last_page:
         command_line_args.append(f"-dLastPage={last_page}")
 
-    command_line_args.extend([f'-sOutputFile="{temporary_xml_file.name}"', f'"{file_path}"'])
-
+    command_line_args.extend([f'-sOutputFile="{temp_file_name}"', f'"{file_path}"'])
     gs_call = " ".join(command_line_args)
 
     try:
@@ -48,24 +58,10 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
         )
         status = validate_gs_output(output)
     except subprocess.CalledProcessError as err:
-        logging.error(err)
         status = Result.UNKNOWN_ERROR
+        logging.error(err)
 
-    if status != Result.LOADED:
-        if status == Result.WRONG_PASSWORD:
-            logging.error("GS: WRONG PASSWORD")
-            raise PermissionError("Wrong password")
-
-        if status == Result.LOCKED:
-            logging.error("GS: FILE IS ENCRYPTED. PROVIDE A PASSWORD")
-            raise PermissionError("File is encrypted. You need a password")
-
-        logging.error("GS: UNKNOWN ERROR")
-        logging.error("GS OUTPUT: ", output)
-        raise RuntimeError("Unknown error in processing")
-
-    clean_xlm(temporary_xml_file.name)
-    return temporary_xml_file.name
+    return status
 
 
 def clean_xlm(temporary_xml_file_name: str) -> None:
@@ -100,3 +96,21 @@ def validate_gs_output(output: str) -> Result:
     if "Page" in output:
         return Result.LOADED
     return Result.UNKNOWN_ERROR
+
+
+def handle_gs_result(status: Result) -> None:
+    if status == Result.LOADED:
+        logging.info("GS: PARSING COMPLETE")
+        return
+
+    if status == Result.WRONG_PASSWORD:
+        logging.error("GS: WRONG PASSWORD")
+        raise PermissionError("Wrong password")
+
+    if status == Result.LOCKED:
+        logging.error("GS: FILE IS ENCRYPTED. PROVIDE A PASSWORD")
+        raise PermissionError("File is encrypted. You need a password")
+
+    if status == Result.UNKNOWN_ERROR:
+        logging.error("GS: UNKNOWN ERROR")
+        raise RuntimeError("Unknown error in processing")
