@@ -19,6 +19,12 @@ Start by loading the file.
     hotpdf_document = hotpdf_document.load(pdf_file_path)
 
 The `HotPdf` object has many attributes that you can use to solve your problems. One of them is `pages`, representing each page of the PDF stored in data structures (trie & sparse matrix) to help with text operations.
+Locked PDFs can be loaded passing the password as the password argument:
+
+.. code-block:: python
+
+    hotpdf_document = HotPdf()
+    hotpdf_document = hotpdf_document.load(locked_pdf_file_path, password="your_password")
 
 Number of Pages
 ~~~~~~~~~~~~~~~~~~
