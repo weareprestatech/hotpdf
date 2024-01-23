@@ -39,9 +39,23 @@ def test_load(valid_file_name):
     hot_pdf_object.load(valid_file_name)
 
 
+def test_load_bytes(valid_file_name):
+    with open(valid_file_name, "rb") as f:
+        hot_pdf_object = HotPdf()
+        hot_pdf_object.load(f.read())
+
+
 def test_load_locked(locked_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(locked_file_name, password="hotpdfiscool")
+    page = hot_pdf_object.extract_page_text(page=0)
+    assert len(page) > 500
+
+
+def test_load_locked_bytes(locked_file_name):
+    hot_pdf_object = HotPdf()
+    with open(locked_file_name, "rb") as f:
+        hot_pdf_object.load(f.read(), password="hotpdfiscool")
     page = hot_pdf_object.extract_page_text(page=0)
     assert len(page) > 500
 
@@ -52,10 +66,22 @@ def test_load_locked_wrong_psw(locked_file_name):
         hot_pdf_object.load(locked_file_name, password="defenitelythewrongpassword")
 
 
+def test_load_locked_wrong_psw_bytes(locked_file_name):
+    hot_pdf_object = HotPdf()
+    with open(locked_file_name, "rb") as f, pytest.raises((PermissionError, RuntimeError)):
+        hot_pdf_object.load(f.read(), password="defenitelythewrongpassword")
+
+
 def test_load_locked_no_psw(locked_file_name):
     hot_pdf_object = HotPdf()
     with pytest.raises((PermissionError, RuntimeError)):
         hot_pdf_object.load(locked_file_name)
+
+
+def test_load_locked_no_psw_bytes(locked_file_name):
+    hot_pdf_object = HotPdf()
+    with open(locked_file_name, "rb") as f, pytest.raises((PermissionError, RuntimeError)):
+        hot_pdf_object.load(f.read())
 
 
 def test_full_text(valid_file_name):
@@ -64,6 +90,15 @@ def test_full_text(valid_file_name):
     text_first_page = hot_pdf_object.extract_page_text(page=0)
     # Not blank extraction
     assert len(text_first_page) > 500
+
+
+def test_full_text_bytes(valid_file_name):
+    with open(valid_file_name, "rb") as f:
+        hot_pdf_object = HotPdf()
+        hot_pdf_object.load(f.read())
+        text_first_page = hot_pdf_object.extract_page_text(page=0)
+        # Not blank extraction
+        assert len(text_first_page) > 500
 
 
 def test_pages_length(valid_file_name):

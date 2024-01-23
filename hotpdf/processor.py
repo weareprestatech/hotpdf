@@ -28,18 +28,20 @@ def generate_xml_file(file_path: str, password: str, first_page: int, last_page:
     Returns:
         str: XML File Path.
     """
-    temp_file_name = tempfile.NamedTemporaryFile(delete=False).name
+    temp_xml_file_name = tempfile.NamedTemporaryFile(delete=False).name
 
-    result = __call_ghostscript(file_path, temp_file_name, password, first_page, last_page)
+    result = __call_ghostscript(file_path, temp_xml_file_name, password, first_page, last_page)
 
     __handle_gs_result(result)
 
-    __clean_xml(temp_file_name)
+    __clean_xml(temp_xml_file_name)
 
-    return temp_file_name
+    return temp_xml_file_name
 
 
-def __call_ghostscript(file_path: str, temp_file_name: str, password: str, first_page: int, last_page: int) -> Result:
+def __call_ghostscript(
+    file_path: str, temp_xml_file_name: str, password: str, first_page: int, last_page: int
+) -> Result:
     ghostscript = "gs" if os.name != "nt" else "gswin64c"
     command_line_args = [ghostscript, "-dNOPAUSE", "-dBATCH", "-dSAFER", "-dTextFormat=1", "-sDEVICE=txtwrite"]
 
@@ -50,7 +52,7 @@ def __call_ghostscript(file_path: str, temp_file_name: str, password: str, first
     if last_page:
         command_line_args.append(f"-dLastPage={last_page}")
 
-    command_line_args.extend([f'-sOutputFile="{temp_file_name}"', f'"{file_path}"'])
+    command_line_args.extend([f'-sOutputFile="{temp_xml_file_name}"', f'"{file_path}"'])
     gs_call = " ".join(command_line_args)
 
     try:
