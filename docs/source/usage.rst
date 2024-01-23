@@ -14,12 +14,22 @@ Loading a file
 
 Before you can perform operations on your PDFs, you will need to load it first.
 
+You can load a PDF either by giving the path to the file, or you can also send the opened PDF file as bytes.
+
 .. code-block:: python
 
    from hotpdf import HotPdf
    pdf_file_path = "path to your pdf file"
+
+   # directly from path
    hotpdf_document = HotPdf()
    hotpdf_document = hotpdf_document.load(pdf_file_path)
+
+   # already opened file
+   hotpdf_document_2 = HotPdf()
+   with open(pdf_file_path, "rb") as f:
+      hotpdf_document_2 = hotpdf_document_2.load(f.read())
+
 
 .. autofunction:: hotpdf.HotPdf.load
 
