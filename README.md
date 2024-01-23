@@ -75,9 +75,9 @@ hotpdf_document = HotPdf()
 hotpdf_document.load(pdf_file_path)
 
 # Alternatively, you can also an opened pdf stream to be loaded
-hotpdf_document_bytes = HotPdf()
+hotpdf_document_2 = HotPdf()
 with open(pdf_file_path, "rb") as f:
-   hotpdf_document_bytes.load(f.read())
+   hotpdf_document_2.load(f.read())
 
 # Get number of pages
 print(len(hotpdf_document.pages))
