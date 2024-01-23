@@ -14,7 +14,7 @@ Loading a file
 
 Before you can perform operations on your PDFs, you will need to load it first.
 
-You can load a PDF either by giving the path to the file, or you can also send the opened PDF file as bytes.
+The PDF can be loaded through two methods: either by specifying the file path or by providing the opened PDF file as a byte stream.
 
 .. code-block:: python
 
