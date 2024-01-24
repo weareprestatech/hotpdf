@@ -65,10 +65,7 @@ def __call_ghostscript(
 
     # Uses gs in pipe mode
     pipe = type(source) is bytes
-    if pipe:
-        command_line_args.append("-")
-    else:
-        command_line_args.append(str(source))
+    command_line_args.append("-" if pipe else str(source))
 
     gs_call = " ".join(command_line_args)
 
