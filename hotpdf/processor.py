@@ -115,7 +115,7 @@ def __validate_gs_output(output: subprocess.CompletedProcess[bytes]) -> Result:
         return Result.LOCKED
     if "Password did not work" in err:
         return Result.WRONG_PASSWORD
-    return Result.UNKNOWN_ERROR if "Error" in err else Result.LOADED
+    return Result.LOADED
 
 
 def __handle_gs_result(status: Result) -> None:
