@@ -13,23 +13,23 @@ from .data.classes import ElementDimension, HotCharacter, PageResult, SearchResu
 class HotPdf:
     def __init__(
         self,
-        extraction_tolerance: int = 4,
         pdf_file: Union[str, bytes, None] = None,
         password: str = "",
         drop_duplicate_spans: bool = True,
         first_page: int = 0,
         last_page: int = 0,
+        extraction_tolerance: int = 4,
     ) -> None:
         """Initialize the HotPdf class.
 
         Args:
-            extraction_tolerance (int, optional): Tolerance value used during text extraction
-                to adjust the bounding box for capturing text. Defaults to 4.
             pdf_file (str | bytes, optional): The path to the PDF file to be loaded, or a bytes object.
             password (str, optional): Password to use to unlock the pdf
             drop_duplicate_spans (bool, optional): Drop duplicate spans when loading. Defaults to True.
             first_page (int, optional): The first page to load. Defaults to 0.
             last_page (int, optional): The last page to load. Defaults to 0.
+            extraction_tolerance (int, optional): Tolerance value used during text extraction
+                to adjust the bounding box for capturing text. Defaults to 4.
 
         Raises:
             ValueError: If the page range is invalid.

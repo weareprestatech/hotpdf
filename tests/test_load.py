@@ -40,7 +40,7 @@ def test_load(valid_file_name):
 
 
 def test_load_constructor(valid_file_name):
-    hotpdf_obj = HotPdf(source=valid_file_name)
+    hotpdf_obj = HotPdf(valid_file_name)
     assert len(hotpdf_obj.pages) > 0
 
 
