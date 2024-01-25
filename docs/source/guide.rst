@@ -11,7 +11,21 @@ Text Operations
 
 Start by loading the file.
 
-The PDF can be loaded through two methods: either by specifying the file path or by providing the opened PDF file as a byte stream.
+The PDF can be loaded either by passing the file path or the file stream.
+
+.. code-block:: python
+
+    from hotpdf import HotPdf
+    pdf_file_path = "path to your pdf file"
+
+    # Loading from path
+    hotpdf_document = HotPdf(pdf_file_path)
+
+    # Loading opened file
+    with open(pdf_file_path, "rb") as f:
+        hotpdf_document_2 = HotPdf(f.read())
+
+Alternatively, to load a file, you can also defer loading from the constructor and using `.load()` instead.
 
 .. code-block:: python
 
@@ -20,12 +34,13 @@ The PDF can be loaded through two methods: either by specifying the file path or
 
     # Loading from path
     hotpdf_document = HotPdf()
-    hotpdf_document = hotpdf_document.load(pdf_file_path)
+    hotpdf_document.load(pdf_file_path)
 
     # Loading opened file
     hotpdf_document_2 = HotPdf()
     with open(pdf_file_path, "rb") as f:
-        hotpdf_document_2 = hotpdf_document_2.load(f.read())
+        hotpdf_document_2.load(f.read())
+
 
 The `HotPdf` object has many attributes that you can use to solve your problems. One of them is `pages`, representing each page of the PDF stored in data structures (trie & sparse matrix) to help with text operations.
 Locked PDFs can be loaded passing the password as the password argument:
