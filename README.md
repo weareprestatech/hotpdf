@@ -71,13 +71,11 @@ from hotpdf import HotPdf
 pdf_file_path = "test.pdf"
 
 # Load pdf file into memory
-hotpdf_document = HotPdf()
-hotpdf_document.load(pdf_file_path)
+hotpdf_document = HotPdf(pdf_file_path)
 
-# Alternatively, you can also an opened pdf stream to be loaded
-hotpdf_document_2 = HotPdf()
+# Alternatively, you can also pass an opened pdf stream to be loaded
 with open(pdf_file_path, "rb") as f:
-   hotpdf_document_2.load(f.read())
+   hotpdf_document_2 = HotPdf(f.read())
 
 # Get number of pages
 print(len(hotpdf_document.pages))
@@ -118,8 +116,6 @@ spans_text_in_bbox = hotpdf_document.extract_spans_text(
 # Extract full page text
 full_page_text = hotpdf_document.extract_page_text(page=0)
 ```
-
-For more granular function level documentation please check the [docs](https://hotpdf.readthedocs.io/en/latest/).
 
 ## License
 
