@@ -104,6 +104,7 @@ def __validate_gs_output(output: subprocess.CompletedProcess[bytes]) -> Result:
     if output.returncode != 0:
         return Result.UNKNOWN_ERROR
     err = output.stderr.decode(errors="ignore") + output.stdout.decode(errors="ignore")
+    logging.debug(err)
     if "This file requires a password for access" in err:
         return Result.LOCKED
     if "Password did not work" in err:
