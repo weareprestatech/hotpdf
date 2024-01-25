@@ -11,6 +11,8 @@ jobs:
   linter:
     name: Linters
     runs-on: ubuntu-latest
+    env:
+      Python3_ROOT_DIR:
     timeout-minutes: 2
 
     steps:
@@ -41,6 +43,8 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.11", "3.10", "3.9"]
+    env:
+      Python3_ROOT_DIR:
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 2
