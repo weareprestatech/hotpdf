@@ -9,36 +9,6 @@ from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 
 
-@pytest.fixture
-def valid_file_name():
-    return "tests/resources/PDF.pdf"
-
-
-@pytest.fixture
-def blank_file_name():
-    return "tests/resources/blank.pdf"
-
-
-@pytest.fixture
-def multiple_pages_file_name():
-    return "tests/resources/20pages.pdf"
-
-
-@pytest.fixture
-def non_existent_file_name():
-    return "non_existent_file.pdf"
-
-
-@pytest.fixture
-def locked_file_name():
-    return "tests/resources/PDF_locked.pdf"
-
-
-@pytest.fixture
-def invalid_file_name():
-    return "tests/resources/invalid_file.txt"
-
-
 def test_load(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
