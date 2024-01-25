@@ -69,12 +69,8 @@ def __call_ghostscript(
 
     gs_call = " ".join(command_line_args)
 
-    try:
-        output = subprocess.run(gs_call, shell=ghostscript == "gs", input=source if pipe else None, capture_output=True)
-        status = __validate_gs_output(output)
-    except subprocess.CalledProcessError as err:
-        status = Result.UNKNOWN_ERROR
-        logging.error(err)
+    output = subprocess.run(gs_call, shell=ghostscript == "gs", input=source if pipe else None, capture_output=True)
+    status = __validate_gs_output(output)
 
     return status
 

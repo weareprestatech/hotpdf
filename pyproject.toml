@@ -89,4 +89,4 @@ strict = true
 [tool.pytest.ini_options]
 log_cli=true
 log_level="NOTSET"
-addopts="--cov --cov-report term-missing"
+# addopts="--cov=. --cov-report term-missing -n=auto"
