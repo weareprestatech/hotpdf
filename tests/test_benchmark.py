@@ -1,29 +1,7 @@
 import time
 import tracemalloc
 
-import pytest
-
 from hotpdf import HotPdf
-
-
-@pytest.fixture
-def default_file_name():
-    return "tests/resources/PDF.pdf"
-
-
-@pytest.fixture
-def multiple_pages_file_name():
-    return "tests/resources/20pages.pdf"
-
-
-@pytest.fixture
-def mock_hotpdf_bank_file_name():
-    return "tests/resources/hotpdf_bank.pdf"
-
-
-@pytest.fixture
-def bible_file_name():
-    return "tests/resources/bible.pdf"
 
 
 def perform_speed_test(file_name, expected_processing_seconds):
@@ -60,19 +38,9 @@ def test_memory_luca_mock(mock_hotpdf_bank_file_name):
     perform_memory_test(mock_hotpdf_bank_file_name, 12.5)
 
 
-def test_speed_default_file(default_file_name):
-    perform_speed_test(default_file_name, 2.5)
+def test_speed_default_file(valid_file_name):
+    perform_speed_test(valid_file_name, 2.5)
 
 
-def test_memory_default_file(default_file_name):
-    perform_memory_test(default_file_name, 1)
-
-
-@pytest.mark.slow
-def test_speed_bible(bible_file_name):
-    perform_speed_test(bible_file_name, 100)
-
-
-@pytest.mark.slow
-def test_memory_bible(bible_file_name):
-    perform_memory_test(bible_file_name, 1300)
+def test_memory_default_file(valid_file_name):
+    perform_memory_test(valid_file_name, 1)

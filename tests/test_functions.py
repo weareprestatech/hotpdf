@@ -10,16 +10,6 @@ from hotpdf.sparse_matrix import SparseMatrix
 from hotpdf.utils import filter_adjacent_coords, intersect, to_text
 
 
-@pytest.fixture
-def valid_file_name():
-    return "tests/resources/PDF.pdf"
-
-
-@pytest.fixture
-def mock_hotpdf_bank_file_name():
-    return "tests/resources/hotpdf_bank.pdf"
-
-
 def xml_copy_file_name(xml_file_name: str):
     shutil.copy(xml_file_name, f"{xml_file_name}_copy.xml")
     return f"{xml_file_name}_copy.xml"
