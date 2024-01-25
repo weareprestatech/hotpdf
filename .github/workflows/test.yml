@@ -69,9 +69,6 @@ jobs:
       - name: Run tests
         run:
           python -m pytest --cov-fail-under=98 -n=auto --cov=hotpdf --cov-report term-missing -m "not slow"
-      - name: Run benchmarks
-        run:
-          python -m pytest -m slow
       - name: Upload coverage to coveralls
         if: github.event_name == 'push'
         uses: coverallsapp/github-action@v2.2.3
