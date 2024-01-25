@@ -13,7 +13,7 @@
 
    .. autosummary::
 
-      generate_xml_file
+      process
 
 
 
