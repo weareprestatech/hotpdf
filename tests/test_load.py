@@ -39,6 +39,11 @@ def test_load(valid_file_name):
     hot_pdf_object.load(valid_file_name)
 
 
+def test_load_constructor(valid_file_name):
+    hotpdf_obj = HotPdf(valid_file_name)
+    assert len(hotpdf_obj.pages) > 0
+
+
 def test_load_bytes(valid_file_name):
     with open(valid_file_name, "rb") as f:
         hot_pdf_object = HotPdf()
