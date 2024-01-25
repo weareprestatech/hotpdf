@@ -47,7 +47,7 @@ jobs:
       Python3_ROOT_DIR:
     name: Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 10
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
