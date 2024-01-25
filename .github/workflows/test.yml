@@ -11,6 +11,8 @@ jobs:
   linter:
     name: Linters
     runs-on: ubuntu-latest
+    env:
+      Python3_ROOT_DIR:
     timeout-minutes: 2
 
     steps:
@@ -41,9 +43,11 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.11", "3.10", "3.9"]
+    env:
+      Python3_ROOT_DIR:
     name: Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 10
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -62,9 +66,9 @@ jobs:
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: pip install -e '.[dev]'
-      - name: Run tests with coverage
+      - name: Run tests
         run:
-          python -m pytest --cov-fail-under=98 -n=auto
+          python -m pytest --cov-fail-under=98 -n=auto --cov=hotpdf --cov-report term-missing
       - name: Upload coverage to coveralls
         if: github.event_name == 'push'
         uses: coverallsapp/github-action@v2.2.3

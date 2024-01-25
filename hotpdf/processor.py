@@ -69,12 +69,8 @@ def __call_ghostscript(
 
     gs_call = " ".join(command_line_args)
 
-    try:
-        output = subprocess.run(gs_call, shell=ghostscript == "gs", input=source if pipe else None, capture_output=True)
-        status = __validate_gs_output(output)
-    except subprocess.CalledProcessError as err:
-        status = Result.UNKNOWN_ERROR
-        logging.error(err)
+    output = subprocess.run(gs_call, shell=ghostscript == "gs", input=source if pipe else None, capture_output=True)
+    status = __validate_gs_output(output)
 
     return status
 
@@ -105,13 +101,14 @@ def __clean_xml(temporary_xml_path: Path) -> Path:
 
 
 def __validate_gs_output(output: subprocess.CompletedProcess[bytes]) -> Result:
-    if output.returncode != 0:
-        return Result.UNKNOWN_ERROR
-    err = output.stderr.decode(errors="ignore")
+    err = output.stderr.decode(errors="ignore") + output.stdout.decode(errors="ignore")
+    logging.debug(err)
     if "This file requires a password for access" in err:
         return Result.LOCKED
     if "Password did not work" in err:
         return Result.WRONG_PASSWORD
+    if "Unrecoverable error" in err or output.returncode:
+        return Result.UNKNOWN_ERROR
     return Result.LOADED
 
 

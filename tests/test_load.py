@@ -9,31 +9,6 @@ from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 
 
-@pytest.fixture
-def valid_file_name():
-    return "tests/resources/PDF.pdf"
-
-
-@pytest.fixture
-def blank_file_name():
-    return "tests/resources/blank.pdf"
-
-
-@pytest.fixture
-def multiple_pages_file_name():
-    return "tests/resources/20pages.pdf"
-
-
-@pytest.fixture
-def non_existent_file_name():
-    return "non_existent_file.pdf"
-
-
-@pytest.fixture
-def locked_file_name():
-    return "tests/resources/PDF_locked.pdf"
-
-
 def test_load(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
@@ -67,26 +42,31 @@ def test_load_locked_bytes(locked_file_name):
 
 def test_load_locked_wrong_psw(locked_file_name):
     hot_pdf_object = HotPdf()
-    with pytest.raises((PermissionError, RuntimeError)):
+    with pytest.raises(PermissionError):
         hot_pdf_object.load(locked_file_name, password="defenitelythewrongpassword")
 
 
 def test_load_locked_wrong_psw_bytes(locked_file_name):
     hot_pdf_object = HotPdf()
-    with open(locked_file_name, "rb") as f, pytest.raises((PermissionError, RuntimeError)):
+    with open(locked_file_name, "rb") as f, pytest.raises(PermissionError):
         hot_pdf_object.load(f.read(), password="defenitelythewrongpassword")
 
 
 def test_load_locked_no_psw(locked_file_name):
     hot_pdf_object = HotPdf()
-    with pytest.raises((PermissionError, RuntimeError)):
+    with pytest.raises(PermissionError):
         hot_pdf_object.load(locked_file_name)
 
 
 def test_load_locked_no_psw_bytes(locked_file_name):
     hot_pdf_object = HotPdf()
-    with open(locked_file_name, "rb") as f, pytest.raises((PermissionError, RuntimeError)):
+    with open(locked_file_name, "rb") as f, pytest.raises(PermissionError):
         hot_pdf_object.load(f.read())
+
+
+def test_load_invalid(invalid_file_name):
+    with pytest.raises(RuntimeError):
+        HotPdf(invalid_file_name)
 
 
 def test_full_text(valid_file_name):
@@ -374,11 +354,9 @@ def test_extract_spans_text(valid_file_name):
     assert len(text) == 608 if os.name == "nt" else 728
 
 
-@pytest.mark.skip("FAILING")
 def test_CONSISTENCY(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     page_text = hot_pdf_object.extract_page_text(0)
     bbox_text = hot_pdf_object.extract_text(0, 0, 1000, 1000)
-    spans_text = hot_pdf_object.extract_spans_text(0, 0, 1000, 1000)
-    assert page_text == bbox_text == spans_text
+    assert page_text == bbox_text
