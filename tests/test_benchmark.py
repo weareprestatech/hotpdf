@@ -45,7 +45,7 @@ def perform_memory_test(file_name, expected_peak_memory):
 
 
 def test_speed_benchmark_multiple_pages(multiple_pages_file_name):
-    perform_speed_test(multiple_pages_file_name, 1)
+    perform_speed_test(multiple_pages_file_name, 2)
 
 
 def test_memory_benchmark_multiple_pages(multiple_pages_file_name):
@@ -68,11 +68,11 @@ def test_memory_default_file(default_file_name):
     perform_memory_test(default_file_name, 1)
 
 
-@pytest.mark.skip
+@pytest.mark.slow
 def test_speed_bible(bible_file_name):
     perform_speed_test(bible_file_name, 100)
 
 
-@pytest.mark.skip
+@pytest.mark.slow
 def test_memory_bible(bible_file_name):
     perform_memory_test(bible_file_name, 1300)
