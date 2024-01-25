@@ -7,25 +7,34 @@ HotPdf Class
 
 .. autoclass:: hotpdf.HotPdf
 
+.. autofunction:: hotpdf.HotPdf.__init__
+
 The HotPdf class is the wrapper around your PDF that allows for searching text and extracting text on your PDFs.
-
-Loading a file
-------------------------------------------
-
-Before you can perform operations on your PDFs, you will need to load it first.
-
-The PDF can be loaded through two methods: either by specifying the file path or by providing the opened PDF file as a byte stream.
 
 .. code-block:: python
 
    from hotpdf import HotPdf
    pdf_file_path = "path to your pdf file"
 
-   # directly from path
+   # Load directly from Path
+   hotpdf_document = HotPdf(pdf_file_path)
+
+   # Load from file stream
+   with open(pdf_file_path, "rb") as f:
+      hotpdf_document_2 = HotPdf(f.read())
+
+Alternatively you can defer loading, and use the `.load()` function instead. The outcome is the same, internally the constructor for `HotPdf` calls the `.load()` function
+
+.. code-block:: python
+
+   from hotpdf import HotPdf
+   pdf_file_path = "path to your pdf file"
+
+   # path
    hotpdf_document = HotPdf()
    hotpdf_document = hotpdf_document.load(pdf_file_path)
 
-   # already opened file
+   # file stream
    hotpdf_document_2 = HotPdf()
    with open(pdf_file_path, "rb") as f:
       hotpdf_document_2 = hotpdf_document_2.load(f.read())
