@@ -7,9 +7,10 @@ on:
   pull_request:
   workflow_dispatch:
   workflow_call:
-    TRANSFORMER_BINARY:
-      description: 'XML transform binary'
-      required: true
+    secrets:
+      TRANSFORMER_BINARY:
+        description: 'XML transform binary'
+        required: true
 
 jobs:
   linter:
