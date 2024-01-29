@@ -33,4 +33,4 @@ jobs:
           pip install $GITHUB_WORKSPACE pytest pytest-xdist
           python -m pytest -n=auto
         env:
-          HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
+          HOTPDF_XML_TRANSFORMER: ${{ vars.TRANSFORMER_BINARY }}
