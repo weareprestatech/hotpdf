@@ -53,5 +53,7 @@ jobs:
           source venv/bin/activate
           pip install hotpdf pytest pytest-xdist
           python -m pytest tests -n=auto
+        with:
+          HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
         env:
           HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
