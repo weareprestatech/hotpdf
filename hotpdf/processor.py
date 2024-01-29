@@ -26,7 +26,7 @@ def process(
     drop_duplicate_spans: bool,
     first_page: int,
     last_page: int,
-    transformer: Optional[str] = None,
+    transformer: str,
 ) -> list[MemoryMap]:
     xml_file = __generate_xml_file(source, password, first_page, last_page, transformer)
     pages = __parse_xml(xml_file, drop_duplicate_spans)
@@ -34,7 +34,7 @@ def process(
 
 
 def __generate_xml_file(
-    source: Union[str, bytes], password: str, first_page: int, last_page: int, transformer: Optional[str] = None
+    source: Union[str, bytes], password: str, first_page: int, last_page: int, transformer: str
 ) -> Path:
     """Generate XML notation of PDF File.
 
@@ -62,7 +62,7 @@ def __call_transformer(
     password: str,
     first_page: int,
     last_page: int,
-    transformer: Optional[str] = None,
+    transformer: str,
 ) -> Result:
     command_line_args = [transformer, "-dNOPAUSE", "-dBATCH", "-dSAFER", "-dTextFormat=1", "-sDEVICE=txtwrite"]
 

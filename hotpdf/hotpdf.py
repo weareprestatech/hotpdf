@@ -90,7 +90,7 @@ class HotPdf:
         """
         self.__prechecks(pdf_file, first_page, last_page)
         if transformer is None:
-            transformer = os.getenv('HOTPDF_XML_TRANSFORMER')
+            transformer = os.environ['HOTPDF_XML_TRANSFORMER']
         self.pages = processor.process(pdf_file, password, drop_duplicate_spans, first_page, last_page, transformer)
 
     def __extract_full_text_span(
