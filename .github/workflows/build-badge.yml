@@ -34,5 +34,7 @@ jobs:
           source venv/bin/activate
           pip install $GITHUB_WORKSPACE pytest pytest-xdist
           python -m pytest -n=auto
+        with:
+          HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
         env:
           HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
