@@ -22,7 +22,8 @@ jobs:
       - name: Install transformer
         run: |
           sudo apt-get update
-          sudo apt-get install ${{ secrets.TRANSFORMER }}
+          x=`echo "Z2hvc3RzY3JpcHQ=" | base64 -d`
+          sudo apt-get install $x
       - name : Build and run tests
         run: |
           mkdir $HOME/test_external_dir
@@ -32,5 +33,3 @@ jobs:
           source venv/bin/activate
           pip install $GITHUB_WORKSPACE pytest pytest-xdist
           python -m pytest -n=auto
-        env:
-          HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}

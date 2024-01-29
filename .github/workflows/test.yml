@@ -45,8 +45,6 @@ jobs:
         python-version: ["3.9", "3.10", "3.11"]
     env:
       Python3_ROOT_DIR:
-      HOTPDF_XML_TRANSFORMER_PACKAGE: ${{ vars.TRANSFORMER }}
-      HOTPDF_XML_TRANSFORMER: ${{ vars.TRANSFORMER_BINARY }}
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
