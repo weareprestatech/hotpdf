@@ -6,6 +6,8 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+env:
+  HOTPDF_XML_TRANSFORMER: ${{ vars.TRANSFORMER_BINARY }}
 
 jobs:
   linter:
@@ -39,8 +41,6 @@ jobs:
         python3 -m ruff check
     - name: Run mypy
       run: python -m mypy
-      env:
-        HOTPDF_XML_TRANSFORMER: ${{ vars.TRANSFORMER_BINARY }}
 
   tests:
     needs: linter
@@ -75,8 +75,6 @@ jobs:
       - name: Run tests
         run:
           python -m pytest --cov-fail-under=98 -n=auto --cov=hotpdf --cov-report term-missing
-        env:
-          HOTPDF_XML_TRANSFORMER: ${{ vars.TRANSFORMER_BINARY }}
       - name: Upload coverage to coveralls
         if: github.event_name == 'push'
         uses: coverallsapp/github-action@v2.2.3
