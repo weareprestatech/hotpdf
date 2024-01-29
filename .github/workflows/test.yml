@@ -6,6 +6,8 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+environment:
+  name: test
 env:
   HOTPDF_XML_TRANSFORMER: ${{ vars.TRANSFORMER_BINARY }}
 
