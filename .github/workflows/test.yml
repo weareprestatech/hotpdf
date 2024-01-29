@@ -56,7 +56,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install transformer
-        run: sudo apt-get install ${{ secrets.TRANSFORMER }}
+        run: sudo apt-get install ${{ vars.TRANSFORMER }}
       - name: Cache python packages
         uses: actions/cache@v4
         id: cache
@@ -70,7 +70,7 @@ jobs:
         run:
           python -m pytest --cov-fail-under=98 -n=auto --cov=hotpdf --cov-report term-missing
         env:
-          HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
+          HOTPDF_XML_TRANSFORMER: ${{ vars.TRANSFORMER_BINARY }}
       - name: Upload coverage to coveralls
         if: github.event_name == 'push'
         uses: coverallsapp/github-action@v2.2.3
