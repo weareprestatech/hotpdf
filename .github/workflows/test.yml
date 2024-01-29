@@ -37,6 +37,8 @@ jobs:
         python3 -m ruff check
     - name: Run mypy
       run: python -m mypy
+      env:
+        HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
 
   tests:
     needs: linter
