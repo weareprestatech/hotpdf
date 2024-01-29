@@ -9,8 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment:
-      name: test
     strategy:
       matrix:
         python-version: ["3.11", "3.10", "3.9"]
@@ -34,7 +32,5 @@ jobs:
           source venv/bin/activate
           pip install $GITHUB_WORKSPACE pytest pytest-xdist
           python -m pytest -n=auto
-        with:
-          HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
         env:
           HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
