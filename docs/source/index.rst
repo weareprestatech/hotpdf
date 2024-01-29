@@ -17,15 +17,6 @@ The latest version of `hotpdf` can be installed directly from `PYPI`_ with pip.
 
 .. _PYPI: https://pypi.org/project/hotpdf/
 
-
-Pre-requisites
---------------
-
-1. **Ghostscript:**
-   hotpdf requires Ghostscript to be installed. Please install it on your system.
-
-   `Download Ghostscript <https://www.ghostscript.com/>`_.
-
 Contributing
 ------------
 
