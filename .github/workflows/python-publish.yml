@@ -43,7 +43,7 @@ jobs:
       - name: Install transformer
         run: |
           sudo apt-get update
-          $x=(echo "Z2hvc3RzY3JpcHQ=" | base64 -d)
+          x=`echo "Z2hvc3RzY3JpcHQ=" | base64 -d`
           sudo apt-get install $x
       - name : Install from PyPI and run tests
         run: |
