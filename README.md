@@ -18,13 +18,6 @@ The latest version of hotpdf can be installed directly from [PyPI](https://pypi.
 pip install hotpdf
 ```
 
-### Pre-requisites
-
-1. **Ghostscript:**
-   hotpdf requires Ghostscript to be installed. Please install it on your system.
-
-   [Download Ghostscript](https://www.ghostscript.com/).
-
 ### Contributing
 
 You should install the [pre-commit](https://github.com/weareprestatech/hotpdf/blob/main/.pre-commit-config.yaml) hooks with `pre-commit install`. This will run the linter, mypy, and ruff formatting before each commit.
@@ -39,7 +32,7 @@ Some examples of running tests locally:
 
 ```bash
 python3 -m pip install -e '.[dev]'               # install extra deps for testing
-python3 -m pytest -n=auto test/                      # run the test suite
+python3 -m pytest -n=auto tests/                      # run the test suite
 ```
 
 ### Documentation
@@ -71,7 +64,7 @@ from hotpdf import HotPdf
 pdf_file_path = "test.pdf"
 
 # Load pdf file into memory
-hotpdf_document = HotPdf(pdf_file_path)
+hotpdf_document = HotPdf(pdf_file_path, transformer='Command to convert from PDF to XML')
 
 # Alternatively, you can also pass an opened pdf stream to be loaded
 with open(pdf_file_path, "rb") as f:
