@@ -6,6 +6,10 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+  workflow_call:
+    TRANSFORMER_BINARY:
+      description: 'XML transform binary'
+      required: true
 
 jobs:
   linter:
@@ -37,6 +41,8 @@ jobs:
       run: |
         pip install --upgrade --force-reinstall ruff
         python3 -m ruff check
+      with:
+        HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
       env:
         HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
     - name: Run mypy
@@ -75,6 +81,8 @@ jobs:
       - name: Run tests
         run:
           python -m pytest --cov-fail-under=98 -n=auto --cov=hotpdf --cov-report term-missing
+        with:
+          HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
         env:
           HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
       - name: Upload coverage to coveralls
