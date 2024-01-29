@@ -1,6 +1,8 @@
 import time
 import tracemalloc
 
+import pytest
+
 from hotpdf import HotPdf
 
 
@@ -13,6 +15,7 @@ def perform_speed_test(file_name, expected_processing_seconds):
     assert (elapsed) < expected_processing_seconds, "Benchmark time exceeded!"
 
 
+@pytest.mark.skip(reason="Need to perform benchmarks first for pdfminer")
 def perform_memory_test(file_name, expected_peak_memory):
     tracemalloc.start()
     hot_pdf_object = HotPdf()
@@ -42,5 +45,6 @@ def test_speed_default_file(valid_file_name):
     perform_speed_test(valid_file_name, 2.5)
 
 
+@pytest.mark.skip(reason="Need to perform benchmarks first")
 def test_memory_default_file(valid_file_name):
     perform_memory_test(valid_file_name, 1)

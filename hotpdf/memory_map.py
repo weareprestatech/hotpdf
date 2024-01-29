@@ -1,7 +1,9 @@
 import math
-import xml.etree.ElementTree as ET
 from collections.abc import Generator
 from hashlib import md5
+from typing import Any
+
+from pdfminer.layout import LTChar, LTPage, LTText, LTTextContainer, LTTextLine
 
 from .data.classes import HotCharacter, PageResult
 from .helpers.nanoid import generate_nano_id
@@ -30,30 +32,12 @@ class MemoryMap:
         """
         self.memory_map = SparseMatrix()
 
-    def __get_page_spans(self, page: ET.Element) -> Generator[ET.Element, None, None]:
-        return page.iterfind(".//span")
+    def __get_page_spans(self, page: LTPage) -> Generator[LTTextContainer[Any], None, None]:
+        for element in page:
+            if isinstance(element, LTTextContainer):
+                yield element
 
-    def __get_page_chars(self, page: ET.Element) -> Generator[ET.Element, None, None]:
-        return page.iterfind(".//char")
-
-    def __get_span_chars(
-        self, spans: Generator[ET.Element, None, None], drop_duplicate_spans: bool
-    ) -> Generator[ET.Element, None, None]:
-        seen_span_hashes: set[str] = set()
-        for span in spans:
-            span_id: str = generate_nano_id(size=10)
-            span_hash: str = md5(
-                f"{str(span.attrib)}|{str([_char.attrib for _char in span.iterfind('.//')])}".encode()
-            ).hexdigest()
-            if drop_duplicate_spans:
-                if span_hash in seen_span_hashes:
-                    continue
-                seen_span_hashes.add(span_hash)
-            for char in span.iterfind(".//"):
-                char.set("span_id", span_id)
-                yield char
-
-    def load_memory_map(self, page: ET.Element, drop_duplicate_spans: bool = True) -> None:
+    def load_memory_map(self, page: LTPage, drop_duplicate_spans: bool = True) -> None:
         """Load memory map data from an XML page.
 
         Args:
@@ -64,43 +48,50 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[tuple[str, HotCharacter]] = []
-        spans: Generator[ET.Element, None, None] = self.__get_page_spans(page)
-        chars: Generator[ET.Element, None, None]
-        chars = (
-            self.__get_span_chars(spans=spans, drop_duplicate_spans=drop_duplicate_spans)
-            if spans
-            else self.__get_page_chars(page)
-        )
-        for char in chars:
-            char_bbox = char.attrib["bbox"]
-            char_x0, char_y0, char_x1, char_y1 = map(float, char_bbox.split())
-            if char_x0 < 0 or char_y0 < 0 or char_x1 < 0 or char_y1 < 0:
+        spans: Generator[LTTextContainer[Any], None, None] = self.__get_page_spans(page)
+        seen_span_hashes: list[str] = []
+        if not spans:
+            return
+        for span in spans:
+            span_hash = md5(str(seen_span_hashes).encode(), usedforsecurity=False).hexdigest()
+            if span_hash in seen_span_hashes:
                 continue
-            char_c = char.attrib["c"]
-            char_span_id = char.attrib.get("span_id")
-            cell_x = math.floor(char_x0)
-            cell_y = math.floor(char_y0)
-            cell_x_end = math.ceil(char_x1)
-            hot_character = HotCharacter(
-                value=char_c,
-                x=cell_x,
-                y=cell_y,
-                x_end=cell_x_end,
-                span_id=char_span_id,
-            )
-            self.memory_map.insert(value=char_c, row_idx=cell_y, column_idx=cell_x)
-            char_hot_characters.append((
-                char_c,
-                hot_character,
-            ))
+            seen_span_hashes.append(span_hash)
+            span_id = generate_nano_id(size=10)
+            for line in span:
+                if not isinstance(line, LTTextLine):
+                    continue
+                for character in line:
+                    if isinstance(character, (LTChar, LTText)) and (
+                        hasattr(character, "x0")
+                        and hasattr(character, "x1")
+                        and hasattr(character, "y0")
+                        and hasattr(character, "y1")
+                    ):
+                        char_c = character.get_text()
+                        x0 = round(character.x0)
+                        x1 = round(character.x1)
+                        y0 = round(page.height - character.y0)
+                        hot_character = HotCharacter(
+                            value=char_c,
+                            x=x0,
+                            y=y0,
+                            x_end=x1,
+                            span_id=span_id,
+                        )
+                        self.memory_map.insert(value=char_c, row_idx=y0, column_idx=x0)
+                        char_hot_characters.append((
+                            char_c,
+                            hot_character,
+                        ))
         # Insert into Trie and Span Maps
         _hot_character: HotCharacter
         for char_c, _hot_character in char_hot_characters:
             self.text_trie.insert(char_c, _hot_character)
             if _hot_character.span_id:
                 self.span_map[_hot_character.span_id] = _hot_character
-        self.width = self.memory_map.columns
-        self.height = self.memory_map.rows
+        self.width = math.ceil(page.width)
+        self.height = math.ceil(page.height)
 
     def extract_text_from_bbox(self, x0: int, x1: int, y0: int, y1: int) -> str:
         """Extract text within a specified bounding box.

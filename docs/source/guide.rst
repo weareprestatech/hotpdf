@@ -23,7 +23,7 @@ The PDF can be loaded either by passing the file path or the file stream.
 
     # Loading opened file
     with open(pdf_file_path, "rb") as f:
-        hotpdf_document_2 = HotPdf(f.read())
+        hotpdf_document_2 = HotPdf(f)
 
 Alternatively, to load a file, you can also defer loading from the constructor and using `.load()` instead.
 
@@ -39,7 +39,7 @@ Alternatively, to load a file, you can also defer loading from the constructor a
     # Loading opened file
     hotpdf_document_2 = HotPdf()
     with open(pdf_file_path, "rb") as f:
-        hotpdf_document_2.load(f.read())
+        hotpdf_document_2.load(f)
 
 
 The `HotPdf` object has many attributes that you can use to solve your problems. One of them is `pages`, representing each page of the PDF stored in data structures (trie & sparse matrix) to help with text operations.

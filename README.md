@@ -68,7 +68,7 @@ hotpdf_document = HotPdf(pdf_file_path, transformer='Command to convert from PDF
 
 # Alternatively, you can also pass an opened pdf stream to be loaded
 with open(pdf_file_path, "rb") as f:
-   hotpdf_document_2 = HotPdf(f.read())
+   hotpdf_document_2 = HotPdf(f)
 
 # Get number of pages
 print(len(hotpdf_document.pages))
