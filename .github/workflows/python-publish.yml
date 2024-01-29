@@ -43,7 +43,7 @@ jobs:
       - name: Install transformer
         run: |
           sudo apt-get update
-          sudo apt-get install ${{ secrets.TRANSFORMER }}
+          sudo apt-get install ${{ vars.TRANSFORMER }}
       - name : Install from PyPI and run tests
         run: |
           mkdir $HOME/test_external_dir
@@ -54,4 +54,4 @@ jobs:
           pip install hotpdf pytest pytest-xdist
           python -m pytest tests -n=auto
         env:
-          HOTPDF_XML_TRANSFORMER: ${{ secrets.TRANSFORMER_BINARY }}
+          HOTPDF_XML_TRANSFORMER: ${{ vars.TRANSFORMER_BINARY }}
