@@ -67,7 +67,7 @@ from hotpdf import HotPdf
 pdf_file_path = "test.pdf"
 
 # Load pdf file into memory
-hotpdf_document = HotPdf(pdf_file_path, transformer='Command to convert from PDF to XML')
+hotpdf_document = HotPdf(pdf_file_path)
 
 # Alternatively, you can also pass an opened pdf stream to be loaded
 with open(pdf_file_path, "rb") as f:
