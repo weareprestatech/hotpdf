@@ -39,3 +39,8 @@ def bible_file_name():
 @pytest.fixture()
 def mock_hotpdf_bank_file_name():
     return "tests/resources/hotpdf_bank.pdf"
+
+
+@pytest.fixture()
+def duplicate_span_file_name():
+    return "tests/resources/dup_span.pdf"
