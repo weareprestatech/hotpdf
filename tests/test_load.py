@@ -356,3 +356,12 @@ def test_CONSISTENCY(valid_file_name):
     page_text = hot_pdf_object.extract_page_text(0)
     bbox_text = hot_pdf_object.extract_text(0, 0, 1000, 1000)
     assert page_text == bbox_text
+
+
+def test_load_pages_defined(multiple_pages_file_name):
+    hotpdf_object = HotPdf()
+    hotpdf_object.load(multiple_pages_file_name, first_page=1, last_page=1)
+    assert len(hotpdf_object.pages) == 1
+
+    hotpdf_object_1 = HotPdf(multiple_pages_file_name, first_page=1, last_page=3)
+    assert len(hotpdf_object_1.pages) == 3
