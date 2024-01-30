@@ -51,7 +51,7 @@ def test_sparse_matrix_getitem_and_setitem():
     assert matrix[1, 1] == "D"
     with pytest.raises(IndexError, match="Specified index is out of range"):
         matrix[0, -1]
-    with pytest.raises(IndexError):
+    with pytest.warns(UserWarning, match="Index Error. Skipping insertion into SparseMatrix"):
         matrix[-1, 0] = "Y"
 
 

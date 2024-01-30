@@ -1,5 +1,6 @@
 from collections import defaultdict
 from collections.abc import Iterator
+from warnings import warn
 
 
 class SparseMatrix:
@@ -31,7 +32,12 @@ class SparseMatrix:
 
     def __setitem__(self, key: tuple[int, int], value: str) -> None:
         row_idx, column_idx = key
-        self.__check_indices(row_idx, column_idx)
+        try:
+            self.__check_indices(row_idx, column_idx)
+        except IndexError as ie:
+            warn("Index Error. Skipping insertion into SparseMatrix", stacklevel=1)
+            warn(str(ie), stacklevel=1)
+            return
         self.__update_indices(row_idx, column_idx)
         if value:
             self.values[(row_idx, column_idx)] = value
@@ -41,7 +47,11 @@ class SparseMatrix:
 
     def insert(self, value: str, row_idx: int, column_idx: int) -> None:
         self.__update_indices(row_idx, column_idx)
-        self.__check_indices(row_idx, column_idx)
+        try:
+            self.__check_indices(row_idx, column_idx)
+        except IndexError:
+            warn("Index Error. Skipping insertion into SparseMatrix", stacklevel=1)
+            return
         if value:
             self.values[(row_idx, column_idx)] = value
 
