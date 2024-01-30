@@ -379,3 +379,10 @@ def test_remove_duplicate_span(duplicate_span_file_name):
     for span in occurences[0]:
         text = "".join([ch.value for ch in span]).strip().strip("\n")
     assert text == "SPAN"
+
+    # To check non removal of duplicate span
+    hotpdf_object_duplicate = HotPdf(duplicate_span_file_name, drop_duplicate_spans=False)
+    occurences = hotpdf_object_duplicate.find_text("SPAN", take_span=True)
+    for span in occurences[0]:
+        text = "".join([ch.value for ch in span]).strip().strip("\n")
+    assert text == "SSPPAANN"
