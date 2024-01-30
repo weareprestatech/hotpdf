@@ -51,8 +51,13 @@ def test_sparse_matrix_getitem_and_setitem():
     assert matrix[1, 1] == "D"
     with pytest.raises(IndexError, match="Specified index is out of range"):
         matrix[0, -1]
-    with pytest.raises(IndexError):
+    with pytest.warns(UserWarning, match="Index Error. Skipping insertion into SparseMatrix"):
         matrix[-1, 0] = "Y"
+
+    with pytest.raises(IndexError, match="Specified index is out of range"):
+        matrix.get(-1, 0)
+    with pytest.warns(UserWarning, match="Index Error. Skipping insertion into SparseMatrix"):
+        matrix.insert("Y", -1, 0)
 
 
 def test_sparse_matrix_iterator():
@@ -126,3 +131,9 @@ def test_invalid_page_number(valid_file_name):
     hotpdf_object.load(valid_file_name)
     with pytest.raises(ValueError, match="Invalid page number"):
         _ = hotpdf_object.extract_page_text(page=2)
+
+
+def test_len_memory_map_magic_function(valid_file_name):
+    hotpdf_object = HotPdf()
+    hotpdf_object.load(valid_file_name)
+    assert len(hotpdf_object.pages[0].span_map) > 10
