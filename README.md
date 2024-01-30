@@ -36,6 +36,8 @@ Some examples of running tests locally:
 ```bash
 python3 -m pip install -e '.[dev]'               # install extra deps for testing
 python3 -m pytest -n=auto tests/                      # run the test suite
+# run tests with coverage
+python3 -m pytest --cov-fail-under=98 -n=auto --cov=hotpdf --cov-report term-missing
 ```
 
 ### Documentation
