@@ -23,8 +23,8 @@
 
    .. autosummary::
 
-      ~HotCharacter.span_id
       ~HotCharacter.value
       ~HotCharacter.x
       ~HotCharacter.y
       ~HotCharacter.x_end
+      ~HotCharacter.span_id

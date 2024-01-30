@@ -7,7 +7,7 @@ from typing import Optional, Union
 
 from hotpdf import processor
 from hotpdf.memory_map import MemoryMap
-from hotpdf.utils import filter_adjacent_coords, get_element_dimension, intersect
+from hotpdf.utils import filter_adjacent_coords, intersect
 
 from .data.classes import ElementDimension, HotCharacter, PageResult, SearchResult, Span
 
@@ -152,17 +152,10 @@ class HotPdf:
         for page_num in found_page_map:
             hot_character_page_occurences: PageResult = found_page_map[page_num]
             final_found_page_map[page_num] = []
+            seen_span_ids: list[str] = []
             for hot_characters in hot_character_page_occurences:
-                element_dimension = get_element_dimension(hot_characters)
-                text = self.extract_text(
-                    x0=element_dimension.x0,
-                    y0=element_dimension.y0,
-                    x1=element_dimension.x1,
-                    y1=element_dimension.y1,
-                    page=page_num,
-                )
+                text = "".join(hc.value for hc in hot_characters)
                 if (query in text) or not validate:
-                    seen_span_ids: list[str] = []
                     full_span_dimension_hot_characters: Union[list[HotCharacter], None] = (
                         self.__extract_full_text_span(
                             hot_characters=hot_characters,
