@@ -5,7 +5,10 @@
 [![build](https://github.com/weareprestatech/hotpdf/actions/workflows/build-badge.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/build-badge.yml)
 [![Coverage Status](https://coveralls.io/repos/github/weareprestatech/hotpdf/badge.svg?branch=main)](https://coveralls.io/github/weareprestatech/hotpdf?branch=main)
 
+
 This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery).
+
+hotpdf is a wrapper around [pdfminer.six](https://github.com/pdfminer/pdfminer.six) focusing on text extraction and text search operations on PDFs.
 
 hotpdf can be used to find and extract text from PDFs.
 Please [read the docs](https://hotpdf.readthedocs.io/en/latest/) to understand how the library can help you!
