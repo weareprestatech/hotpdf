@@ -119,6 +119,7 @@ class HotPdf:
         pages: Optional[list[int]] = None,
         validate: bool = True,
         take_span: bool = False,
+        sort: bool = True,
     ) -> SearchResult:
         """Find text within the loaded PDF pages.
 
@@ -127,7 +128,7 @@ class HotPdf:
             pages (list[int], optional): List of page numbers to search.
             validate (bool, optional): Double check the extracted bounding boxes with the query string.
             take_span (bool, optional): Take the full span of the text that it is a part of.
-
+            sort (bool, Optional): Return elements sorted by their positions.
         Raises:
             ValueError: If the page number is invalid.
 
@@ -165,12 +166,14 @@ class HotPdf:
                 )
                 if (query in text) or not validate:
                     seen_span_ids: list[str] = []
-                    full_span_dimension_hot_characters: Union[list[HotCharacter], None] = None
-                    if take_span:
-                        full_span_dimension_hot_characters = self.__extract_full_text_span(
+                    full_span_dimension_hot_characters: Union[list[HotCharacter], None] = (
+                        self.__extract_full_text_span(
                             hot_characters=hot_characters,
                             page_num=page_num,
                         )
+                        if take_span
+                        else None
+                    )
                     chars_to_append = (
                         full_span_dimension_hot_characters
                         if (take_span and full_span_dimension_hot_characters)
@@ -179,7 +182,9 @@ class HotPdf:
                     if chars_to_append:
                         if chars_to_append[0].span_id in seen_span_ids:
                             continue
-                        seen_span_ids.append(chars_to_append[0].span_id)
+                        seen_span_ids.extend(list(set([ch.span_id for ch in chars_to_append])))
+                        if sort:
+                            chars_to_append = sorted(chars_to_append, key=lambda ch: (ch.x, ch.y))
                     final_found_page_map[page_num].append(chars_to_append)
         return final_found_page_map
 
