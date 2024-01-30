@@ -26,8 +26,8 @@ def __process(
     last_page: int = 0,
 ) -> list[MemoryMap]:
     pages: list[MemoryMap] = []
-    page_numbers = None if first_page == 0 and last_page == 0 else list(range(first_page, last_page + 1))
-    hl_page_layouts = extract_pages(source, password=password, page_numbers=page_numbers)
+    page_numbers = None if first_page == 0 and last_page == 0 else list(range(first_page - 1, last_page))
+    hl_page_layouts = extract_pages(source, password=password, page_numbers=page_numbers, caching=False)
     for page_layout in hl_page_layouts:
         parsed_page: MemoryMap = MemoryMap()
         parsed_page.build_memory_map()
