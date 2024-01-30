@@ -28,8 +28,8 @@ class HotPdf:
             pdf_file (PurePath | str | IOBytes): The path to the PDF file to be loaded, or a bytes object.
             password (str, optional): Password to use to unlock the pdf
             drop_duplicate_spans (bool, optional): Drop duplicate spans when loading. Defaults to True.
-            first_page (int, optional): The first page to load. Defaults to 0.
-            last_page (int, optional): The last page to load. Defaults to 0.
+            first_page (int, optional): The first page to load (1-indexed). Defaults to 0 (will load full PDF).
+            last_page (int, optional): The last page to load (1-indexed). Defaults to 0 (will load full PDF).
             extraction_tolerance (int, optional): Tolerance value used during text extraction
                 to adjust the bounding box for capturing text. Defaults to 4.
 
