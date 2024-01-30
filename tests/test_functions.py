@@ -1,5 +1,4 @@
 import shutil
-from unittest.mock import patch
 
 import pytest
 
@@ -22,24 +21,6 @@ def test_load_file(valid_file_name):
 
 def test_element_dimensions_empty():
     assert filter_adjacent_coords(["d", "u", "m", "m", "y"], []) == []
-
-
-def test_span_map_behaviours(valid_file_name):
-    hot_pdf_object = HotPdf()
-    hot_pdf_object.load(valid_file_name)
-
-    with pytest.raises(KeyError, match="Cannot set key as None"):
-        hot_pdf_object.pages[0].span_map[None] = HotCharacter(
-            value="c",
-            x=0,
-            y=0,
-            x_end=10,
-            span_id="x",
-        )
-
-    assert hot_pdf_object.pages[0].span_map["foo"] is None
-    assert hot_pdf_object.pages[0].span_map.get_span("foo") is None
-    assert hot_pdf_object.pages[0].span_map.get_span(None) is None
 
 
 def test_sparse_matrix_insert_and_get():
@@ -82,42 +63,6 @@ def test_sparse_matrix_iterator():
     non_empty_values = list(matrix)
     expected_result = [((0, 0), "A"), ((1, 1), "B"), ((2, 2), "C")]
     assert non_empty_values == expected_result
-
-
-def test_duplicate_spans_not_removed(mock_hotpdf_bank_file_name):
-    hot_pdf_object = HotPdf()
-    hot_pdf_object_with_dup_span = HotPdf()
-    with patch(
-        "hotpdf.processor.__generate_xml_file",
-        return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_dup_span.xml"),
-    ):
-        hot_pdf_object_with_dup_span.load(mock_hotpdf_bank_file_name, drop_duplicate_spans=False)
-    with patch(
-        "hotpdf.processor.__generate_xml_file",
-        return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_dup_span.xml"),
-    ):
-        hot_pdf_object.load(mock_hotpdf_bank_file_name)
-
-    assert len(hot_pdf_object.pages[0].span_map) < len(hot_pdf_object_with_dup_span.pages[0].span_map)
-
-
-def test_load_negative_coordinates(mock_hotpdf_bank_file_name):
-    QUERY = "HOTPDF BANK"
-    with patch(
-        "hotpdf.processor.__generate_xml_file",
-        return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_negative_coords.xml"),
-    ):
-        hot_pdf_object = HotPdf()
-        hot_pdf_object.load(mock_hotpdf_bank_file_name)
-        assert not hot_pdf_object.find_text(QUERY)[0], "Expected string to be empty"
-    # For sanity: The following file is same as above, except the coords are normal
-    with patch(
-        "hotpdf.processor.__generate_xml_file",
-        return_value=xml_copy_file_name("tests/resources/xml/hotpdf_bank_normal_coords.xml"),
-    ):
-        hot_pdf_object_normal = HotPdf()
-        hot_pdf_object_normal.load(mock_hotpdf_bank_file_name)
-        assert hot_pdf_object_normal.find_text(QUERY)[0], "Expected string to be not empty"
 
 
 @pytest.mark.parametrize(

@@ -21,7 +21,7 @@ The HotPdf class is the wrapper around your PDF that allows for searching text a
 
    # Load from file stream
    with open(pdf_file_path, "rb") as f:
-      hotpdf_document_2 = HotPdf(f.read())
+      hotpdf_document_2 = HotPdf(f)
 
 Alternatively you can defer loading, and use the `.load()` function instead. The outcome is the same, internally the constructor for `HotPdf` calls the `.load()` function
 
@@ -37,7 +37,7 @@ Alternatively you can defer loading, and use the `.load()` function instead. The
    # file stream
    hotpdf_document_2 = HotPdf()
    with open(pdf_file_path, "rb") as f:
-      hotpdf_document_2 = hotpdf_document_2.load(f.read())
+      hotpdf_document_2 = hotpdf_document_2.load(f)
 
 
 .. autofunction:: hotpdf.HotPdf.load

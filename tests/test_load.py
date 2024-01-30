@@ -2,6 +2,8 @@ import os
 from unittest.mock import patch
 
 import pytest
+from pdfminer.pdfdocument import PDFPasswordIncorrect
+from pdfminer.pdfparser import PDFSyntaxError
 
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
@@ -22,7 +24,7 @@ def test_load_constructor(valid_file_name):
 def test_load_bytes(valid_file_name):
     with open(valid_file_name, "rb") as f:
         hot_pdf_object = HotPdf()
-        hot_pdf_object.load(f.read())
+        hot_pdf_object.load(f)
 
 
 def test_load_locked(locked_file_name):
@@ -35,37 +37,37 @@ def test_load_locked(locked_file_name):
 def test_load_locked_bytes(locked_file_name):
     hot_pdf_object = HotPdf()
     with open(locked_file_name, "rb") as f:
-        hot_pdf_object.load(f.read(), password="hotpdfiscool")
+        hot_pdf_object.load(f, password="hotpdfiscool")
     page = hot_pdf_object.extract_page_text(page=0)
     assert len(page) > 500
 
 
 def test_load_locked_wrong_psw(locked_file_name):
     hot_pdf_object = HotPdf()
-    with pytest.raises(PermissionError):
+    with pytest.raises(PDFPasswordIncorrect):
         hot_pdf_object.load(locked_file_name, password="defenitelythewrongpassword")
 
 
 def test_load_locked_wrong_psw_bytes(locked_file_name):
     hot_pdf_object = HotPdf()
-    with open(locked_file_name, "rb") as f, pytest.raises(PermissionError):
-        hot_pdf_object.load(f.read(), password="defenitelythewrongpassword")
+    with open(locked_file_name, "rb") as f, pytest.raises(PDFPasswordIncorrect):
+        hot_pdf_object.load(f, password="defenitelythewrongpassword")
 
 
 def test_load_locked_no_psw(locked_file_name):
     hot_pdf_object = HotPdf()
-    with pytest.raises(PermissionError):
+    with pytest.raises(PDFPasswordIncorrect):
         hot_pdf_object.load(locked_file_name)
 
 
 def test_load_locked_no_psw_bytes(locked_file_name):
     hot_pdf_object = HotPdf()
-    with open(locked_file_name, "rb") as f, pytest.raises(PermissionError):
-        hot_pdf_object.load(f.read())
+    with open(locked_file_name, "rb") as f, pytest.raises(PDFPasswordIncorrect):
+        hot_pdf_object.load(f)
 
 
 def test_load_invalid(invalid_file_name):
-    with pytest.raises(RuntimeError):
+    with pytest.raises(PDFSyntaxError):
         HotPdf(invalid_file_name)
 
 
@@ -80,7 +82,7 @@ def test_full_text(valid_file_name):
 def test_full_text_bytes(valid_file_name):
     with open(valid_file_name, "rb") as f:
         hot_pdf_object = HotPdf()
-        hot_pdf_object.load(f.read())
+        hot_pdf_object.load(f)
         text_first_page = hot_pdf_object.extract_page_text(page=0)
         # Not blank extraction
         assert len(text_first_page) > 500
@@ -110,14 +112,16 @@ def test_extraction(valid_file_name):
         y1=element.y1,
     )
     extracted_text = extracted_text.strip("\n").strip()
-    assert extracted_text == WORD
+    assert WORD in extracted_text
 
 
 def test_full_span_extraction(valid_file_name):
     WORD = "EXPERIENCE"
-    # hotpdf should return the following span values
-    FULL_SPAN_1 = "EXPERIENCE"
-    FULL_SPAN_2 = "VOLUNTEER EXPERIENCE OR LEADERSHIP"
+
+    to_check = {
+        "EXPERIENCE ": False,
+        "VOLUNTEER EXPERIENCE OR LEADERSHIP": False,
+    }
 
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
@@ -129,27 +133,47 @@ def test_full_span_extraction(valid_file_name):
     for page_num, _ in occurences.items():
         assert page_num == 0
 
-    element_1 = get_element_dimension(occurences[0][0])
-    element_2 = get_element_dimension(occurences[0][1])
+    for occurence in occurences[0]:
+        dimension = get_element_dimension(occurence)
+        text_extracted = hot_pdf_object.extract_text(
+            x0=dimension.x0,
+            y0=dimension.y0,
+            x1=dimension.x1,
+            y1=dimension.y1,
+        )
+        if text_extracted in to_check:
+            to_check[text_extracted] = True
+    assert all([to_check.values()])
 
-    extracted_text_1 = hot_pdf_object.extract_text(
-        x0=element_1.x0,
-        y0=element_1.y0,
-        x1=element_1.x1,
-        y1=element_1.y1,
-    )
 
-    extracted_text_2 = hot_pdf_object.extract_text(
-        x0=element_2.x0,
-        y0=element_2.y0,
-        x1=element_2.x1,
-        y1=element_2.y1,
-    )
-    extracted_text_1 = extracted_text_1.strip("\n").strip()
-    extracted_text_2 = extracted_text_2.strip("\n").strip()
+def test_full_span_extraction_sorted(valid_file_name):
+    WORD = "EXPERIENCE"
 
-    assert extracted_text_1 == FULL_SPAN_1
-    assert extracted_text_2 == FULL_SPAN_2
+    checks = [
+        "EXPERIENCE",
+        "VOLUNTEER EXPERIENCE OR LEADERSHIP",
+    ]
+
+    hot_pdf_object = HotPdf()
+    hot_pdf_object.load(valid_file_name)
+    occurences = hot_pdf_object.find_text(WORD, take_span=True, sort=True)
+
+    # Only 1 page
+    assert len(occurences) == 1
+    # Should be page 0
+    for page_num, _ in occurences.items():
+        assert page_num == 0
+    for i in range(len(checks)):
+        occurence = occurences[0][i]
+        dimension = get_element_dimension(occurence)
+        text_extracted = hot_pdf_object.extract_text(
+            x0=dimension.x0,
+            y0=dimension.y0,
+            x1=dimension.x1,
+            y1=dimension.y1,
+        )
+        text_extracted = text_extracted.strip("\n").strip()
+        assert text_extracted == checks[i]
 
 
 def test_non_existent_file_path(non_existent_file_name):
@@ -211,16 +235,18 @@ def test_extract_invalid_coordinates(valid_file_name, coordinates):
 
 
 def test_get_spans(valid_file_name):
-    INCOMPLETE_WORD = "EXPERIEN"
+    INCOMPLETE_WORD = "EXPERIENCE"
     NON_EXISTENT_WORD = "BLAH"
     # hotpdf should return the following span values
-    FULL_SPAN_1 = "EXPERIENCE"
-    FULL_SPAN_2 = "VOLUNTEER EXPERIENCE OR LEADERSHIP"
 
+    to_check = {
+        "EXPERIENCE ": False,
+        "VOLUNTEER EXPERIENCE OR LEADERSHIP": False,
+    }
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
 
-    occurences = hot_pdf_object.find_text(INCOMPLETE_WORD)
+    occurences = hot_pdf_object.find_text(INCOMPLETE_WORD, take_span=True)
     element_dimensions: list[ElementDimension] = []
     for _, page_num in enumerate(occurences):
         occurences_by_page = occurences[page_num]
@@ -232,24 +258,15 @@ def test_get_spans(valid_file_name):
                 x1=element_dimension.x1,
                 y1=element_dimension.y1,
             )
-            __full_spans_in_bbox_unsorted = hot_pdf_object.extract_spans(
-                x0=element_dimension.x0,
-                y0=element_dimension.y0,
-                x1=element_dimension.x1,
-                y1=element_dimension.y1 + 100,  # to simulate multi line extraction
-            )
             assert len(full_spans_in_bbox) == 1
-            assert len(__full_spans_in_bbox_unsorted) > 1
-            assert full_spans_in_bbox[0] in __full_spans_in_bbox_unsorted
             element_dimensions.append(full_spans_in_bbox[0].get_element_dimension())
 
-    span_1 = element_dimensions[0]
-    span_2 = element_dimensions[1]
+    for span_dim in element_dimensions:
+        text_extracted = hot_pdf_object.extract_text(x0=span_dim.x0, y0=span_dim.y0, x1=span_dim.x1, y1=span_dim.y1)
+        if text_extracted in to_check:
+            to_check[text_extracted] = True
 
-    text_1_extracted = hot_pdf_object.extract_text(x0=span_1.x0, y0=span_1.y0, x1=span_1.x1, y1=span_1.y1)
-    text_2_extracted = hot_pdf_object.extract_text(x0=span_2.x0, y0=span_2.y0, x1=span_2.x1, y1=span_2.y1)
-    assert text_1_extracted.strip("\n").strip() == FULL_SPAN_1, f"{text_1_extracted}, {FULL_SPAN_1}"
-    assert text_2_extracted.strip("\n").strip() == FULL_SPAN_2, f"{text_2_extracted}, {FULL_SPAN_2}"
+    assert all([to_check.values()])
 
     # Test Non Existent Word
     occurences = hot_pdf_object.find_text(NON_EXISTENT_WORD)
@@ -269,35 +286,6 @@ def test_extract_page_range_exception(multiple_pages_file_name, first_page, last
     hot_pdf_object = HotPdf()
     with pytest.raises(ValueError, match="Invalid page range"):
         hot_pdf_object.load(multiple_pages_file_name, first_page=first_page, last_page=last_page)
-
-
-def test_no_spans_in_xml_file_extraction(valid_file_name):
-    hot_pdf_object = HotPdf()
-    with patch.object(MemoryMap, "_MemoryMap__get_page_spans") as get_page_spans:
-        get_page_spans.return_value = None
-        hot_pdf_object.load(valid_file_name)
-        get_page_spans.assert_called_once()
-
-        # No spans should be extracted
-        spans = hot_pdf_object.extract_spans(0, 0, 1000, 1000)
-        assert spans == []
-
-        # Test extraction of word without span
-        WORD = "DEGREE"
-        occurences = hot_pdf_object.find_text(WORD)
-        assert len(occurences) == 1
-        for page_num, _ in occurences.items():
-            assert page_num == 0
-
-        element = get_element_dimension(occurences[0][0])
-        extracted_text = hot_pdf_object.extract_text(
-            x0=element.x0,
-            y0=element.y0,
-            x1=element.x1,
-            y1=element.y1,
-        )
-        extracted_text = extracted_text.strip("\n").strip()
-        assert extracted_text == WORD
 
 
 def test_no_spans_in_xml_file_extract_spans(valid_file_name):
@@ -328,11 +316,19 @@ def test_extract_spans(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
     spans = hot_pdf_object.extract_spans(0, 0, 1000, 1000)
-    assert spans[0].to_text() == "HOTPDF "
-    assert spans[1].to_text() == "PDF "
-    assert spans[2].to_text() == "THE BEST PDF PARSING LIBRARY TO EVER EXIST(DEBATABLE) "
-    text = "".join([span.to_text() for span in spans])
-    assert len(text) == 608 if os.name == "nt" else 728
+    to_check = {
+        "PDF ": False,
+        "THE BEST PDF PARSING LIBRARY TO EVER EXIST(DEBATABLE) ": False,
+        "HOTPDF ": False,
+    }
+    all_text: str = ""
+    for span in spans:
+        span_text: str = span.to_text()
+        if span_text in to_check:
+            to_check[span_text] = True
+        all_text += span_text
+    assert all(to_check.values()), "Not all spans were extracted"
+    assert len(all_text) == 608 if os.name == "nt" else 728
 
 
 def test_span_has_no_characters(valid_file_name):

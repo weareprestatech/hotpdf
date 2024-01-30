@@ -37,6 +37,10 @@ keywords = [
   "pdfquery"
 ]
 
+dependencies = [
+    "pdfminer.six==20231228",
+]
+
 [tool.setuptools]
 include-package-data = false
 

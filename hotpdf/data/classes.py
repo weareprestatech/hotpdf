@@ -19,7 +19,7 @@ class HotCharacter:
     x: int
     y: int
     x_end: int
-    span_id: Optional[str] = None
+    span_id: str
 
 
 @dataclass
@@ -54,7 +54,7 @@ class Span:
     """
 
     characters: list[HotCharacter]
-    span_id: Optional[str]
+    span_id: str
 
     def to_text(self) -> str:
         """Convert the span to text.
