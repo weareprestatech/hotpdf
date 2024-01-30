@@ -312,6 +312,12 @@ def test_find_text_multiple_pages(multiple_pages_file_name):
     assert len(occurences) == 11
 
 
+def test_find_spans_unique(valid_file_name):
+    hot_pdf_object = HotPdf(valid_file_name)
+    occurences = hot_pdf_object.find_text("EXPERIENCE")
+    assert len(occurences[0]) == 2
+
+
 def test_extract_spans(valid_file_name):
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(valid_file_name)
