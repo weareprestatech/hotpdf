@@ -32,7 +32,7 @@ def find_neighbour_coord(
                 else max_distance
             )
             and reference_character.y == hot_character.y
-        ):
+        ) or (reference_character.span_id == hot_character.span_id and reference_character.x < hot_character.x):
             return hot_character
     return None
 
