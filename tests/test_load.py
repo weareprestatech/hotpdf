@@ -146,6 +146,36 @@ def test_full_span_extraction(valid_file_name):
     assert all([to_check.values()])
 
 
+def test_full_span_extraction_sorted(valid_file_name):
+    WORD = "EXPERIENCE"
+
+    checks = [
+        "EXPERIENCE",
+        "VOLUNTEER EXPERIENCE OR LEADERSHIP",
+    ]
+
+    hot_pdf_object = HotPdf()
+    hot_pdf_object.load(valid_file_name)
+    occurences = hot_pdf_object.find_text(WORD, take_span=True, sort=True)
+
+    # Only 1 page
+    assert len(occurences) == 1
+    # Should be page 0
+    for page_num, _ in occurences.items():
+        assert page_num == 0
+    for i in range(len(checks)):
+        occurence = occurences[0][i]
+        dimension = get_element_dimension(occurence)
+        text_extracted = hot_pdf_object.extract_text(
+            x0=dimension.x0,
+            y0=dimension.y0,
+            x1=dimension.x1,
+            y1=dimension.y1,
+        )
+        text_extracted = text_extracted.strip("\n").strip()
+        assert text_extracted == checks[i]
+
+
 def test_non_existent_file_path(non_existent_file_name):
     with pytest.raises(FileNotFoundError):
         hot_pdf_object = HotPdf()
