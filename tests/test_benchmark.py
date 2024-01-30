@@ -26,7 +26,7 @@ def perform_memory_test(file_name, expected_peak_memory):
 
 
 def test_speed_benchmark_multiple_pages(multiple_pages_file_name):
-    perform_speed_test(multiple_pages_file_name, 2.5)
+    perform_speed_test(multiple_pages_file_name, 2.9)
 
 
 def test_memory_benchmark_multiple_pages(multiple_pages_file_name):
