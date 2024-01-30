@@ -40,11 +40,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install transformer
-        run: |
-          sudo apt-get update
-          x=`echo "Z2hvc3RzY3JpcHQ=" | base64 -d`
-          sudo apt-get install $x
       - name : Install from PyPI and run tests
         run: |
           mkdir $HOME/test_external_dir
