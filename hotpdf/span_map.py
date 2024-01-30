@@ -37,6 +37,4 @@ class SpanMap:
         self.span_map[span_id] = span
 
     def get_span(self, span_id: str) -> Union[Span, None]:
-        if span_id:
-            return self.span_map.get(span_id)
-        return None
+        return self.span_map.get(span_id)

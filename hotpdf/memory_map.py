@@ -50,8 +50,6 @@ class MemoryMap:
         char_hot_characters: list[tuple[str, HotCharacter]] = []
         spans: Generator[LTTextContainer[Any], None, None] = self.__get_page_spans(page)
         seen_span_hashes: list[str] = []
-        if not spans:
-            return
         for span in spans:
             span_hash = md5(str(seen_span_hashes).encode(), usedforsecurity=False).hexdigest()
             if span_hash in seen_span_hashes:
