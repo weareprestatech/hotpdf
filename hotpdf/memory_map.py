@@ -37,6 +37,18 @@ class MemoryMap:
             if isinstance(element, LTTextContainer):
                 yield element
 
+    def __deduplicate_span(self, span: LTTextContainer[Any]) -> LTTextContainer[Any]:
+        seen_span_objs: list[str] = []
+        unique_span_objs: list[LTTextLine] = []
+        for _span_obj in span._objs:
+            span_obj_hash = md5(str(_span_obj).encode()).hexdigest()
+            if span_obj_hash in seen_span_objs:
+                continue
+            seen_span_objs.append(span_obj_hash)
+            unique_span_objs.append(_span_obj)
+        span._objs = unique_span_objs
+        return span
+
     def load_memory_map(self, page: LTPage, drop_duplicate_spans: bool = True) -> None:
         """Load memory map data from an XML page.
 
@@ -49,12 +61,9 @@ class MemoryMap:
         """
         char_hot_characters: list[tuple[str, HotCharacter]] = []
         spans: Generator[LTTextContainer[Any], None, None] = self.__get_page_spans(page)
-        seen_span_hashes: list[str] = []
         for span in spans:
-            span_hash = md5(str(seen_span_hashes).encode(), usedforsecurity=False).hexdigest()
-            if span_hash in seen_span_hashes:
-                continue
-            seen_span_hashes.append(span_hash)
+            if drop_duplicate_spans:
+                span = self.__deduplicate_span(span)
             span_id = generate_nano_id(size=10)
             for line in span:
                 if not isinstance(line, LTTextLine):

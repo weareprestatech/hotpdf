@@ -371,3 +371,18 @@ def test_load_pages_defined(multiple_pages_file_name):
 
     hotpdf_object_1 = HotPdf(multiple_pages_file_name, first_page=1, last_page=3)
     assert len(hotpdf_object_1.pages) == 3
+
+
+def test_remove_duplicate_span(duplicate_span_file_name):
+    hotpdf_object = HotPdf(duplicate_span_file_name)
+    occurences = hotpdf_object.find_text("SPAN", take_span=True)
+    for span in occurences[0]:
+        text = "".join([ch.value for ch in span]).strip().strip("\n")
+    assert text == "SPAN"
+
+    # To check non removal of duplicate span
+    hotpdf_object_duplicate = HotPdf(duplicate_span_file_name, drop_duplicate_spans=False)
+    occurences = hotpdf_object_duplicate.find_text("SPAN", take_span=True)
+    for span in occurences[0]:
+        text = "".join([ch.value for ch in span]).strip().strip("\n")
+    assert text == "SSPPAANN"
