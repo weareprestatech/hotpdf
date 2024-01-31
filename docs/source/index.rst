@@ -17,6 +17,16 @@ The latest version of `hotpdf` can be installed directly from `PYPI`_ with pip.
 
 .. _PYPI: https://pypi.org/project/hotpdf/
 
+Local Setup
+------------
+
+First install the dependencies required by hotpdf
+
+.. code-block:: bash
+
+   python3 -m pip install -e .
+
+
 Contributing
 ------------
 
