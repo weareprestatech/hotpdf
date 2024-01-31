@@ -83,8 +83,8 @@ def get_element_dimension(elem: list[HotCharacter]) -> ElementDimension:
     """
     x0 = min(elem, key=lambda item: item.x).x
     x1 = max(elem, key=lambda item: item.x_end).x_end
-    y0 = elem[0].y
-    y1 = elem[0].y
+    y0 = min(elem, key=lambda item: item.y).y
+    y1 = max(elem, key=lambda item: item.y).y
     span = elem[0].span_id
     return ElementDimension(x0=x0, x1=x1, y0=y0, y1=y1, span_id=span)
 
