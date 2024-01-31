@@ -178,7 +178,7 @@ class HotPdf:
                     final_found_page_map[page_num].append(chars_to_append)
         return final_found_page_map
 
-    def extract_spans(self, x0: int, y0: int, x1: int, y1: int, page: int = 0) -> list[Span]:
+    def extract_spans(self, x0: int, y0: int, x1: int, y1: int, page: int = 0, sort: bool = True) -> list[Span]:
         """Extract spans that intersect with the given bounding box.
 
         Args:
@@ -203,7 +203,13 @@ class HotPdf:
 
         for _, span in self.pages[page].span_map.items():
             if intersect(ElementDimension(x0, y0, x1, y1, ""), span.get_element_dimension()):
+                span.characters = sorted(span.characters, key=lambda ch: (ch.y, ch.x))
                 spans.append(span)
+                if sort:
+                    spans = sorted(
+                        spans, key=lambda span: (span.get_element_dimension().y0, span.get_element_dimension().x0)
+                    )
+
         return spans
 
     def extract_text(

@@ -37,4 +37,8 @@ class SpanMap:
         self.span_map[span_id] = span
 
     def get_span(self, span_id: str) -> Union[Span, None]:
-        return self.span_map.get(span_id)
+        span = self.span_map.get(span_id)
+        if not span:
+            return None
+        span.characters = sorted(span.characters, key=lambda ch: (ch.y, ch.x))
+        return span
