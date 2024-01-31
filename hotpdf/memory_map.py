@@ -1,7 +1,5 @@
 import math
 from collections.abc import Generator
-from hashlib import md5
-from typing import Any
 
 from pdfminer.layout import LTChar, LTPage, LTText, LTTextContainer, LTTextLine
 
@@ -32,22 +30,14 @@ class MemoryMap:
         """
         self.memory_map = SparseMatrix()
 
-    def __get_page_spans(self, page: LTPage) -> Generator[LTTextContainer[Any], None, None]:
-        for element in page:
-            if isinstance(element, LTTextContainer):
-                yield element
-
-    def __deduplicate_span(self, span: LTTextContainer[Any]) -> LTTextContainer[Any]:
-        seen_span_objs: list[str] = []
-        unique_span_objs: list[LTTextLine] = []
-        for _span_obj in span._objs:
-            span_obj_hash = md5(str(_span_obj).encode()).hexdigest()
-            if span_obj_hash in seen_span_objs:
-                continue
-            seen_span_objs.append(span_obj_hash)
-            unique_span_objs.append(_span_obj)
-        span._objs = unique_span_objs
-        return span
+    def __get_page_spans(self, page: LTPage) -> Generator[LTTextLine, None, None]:
+        element_stack = list(reversed(list(page)))
+        while element_stack:
+            obj = element_stack.pop()
+            if isinstance(obj, LTTextLine):
+                yield obj
+            elif isinstance(obj, LTTextContainer):
+                element_stack.extend(reversed(list(obj)))
 
     def load_memory_map(self, page: LTPage, drop_duplicate_spans: bool = True) -> None:
         """Load memory map data from an XML page.
@@ -60,37 +50,32 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[tuple[str, HotCharacter]] = []
-        spans: Generator[LTTextContainer[Any], None, None] = self.__get_page_spans(page)
+        spans: Generator[LTTextLine, None, None] = self.__get_page_spans(page)
         for span in spans:
-            if drop_duplicate_spans:
-                span = self.__deduplicate_span(span)
             span_id = generate_nano_id(size=10)
-            for line in span:
-                if not isinstance(line, LTTextLine):
-                    continue
-                for character in line:
-                    if isinstance(character, (LTChar, LTText)) and (
-                        hasattr(character, "x0")
-                        and hasattr(character, "x1")
-                        and hasattr(character, "y0")
-                        and hasattr(character, "y1")
-                    ):
-                        char_c = character.get_text()
-                        x0 = round(character.x0)
-                        x1 = round(character.x1)
-                        y0 = round(page.height - character.y0)
-                        hot_character = HotCharacter(
-                            value=char_c,
-                            x=x0,
-                            y=y0,
-                            x_end=x1,
-                            span_id=span_id,
-                        )
-                        self.memory_map.insert(value=char_c, row_idx=y0, column_idx=x0)
-                        char_hot_characters.append((
-                            char_c,
-                            hot_character,
-                        ))
+            for character in span:
+                if isinstance(character, (LTChar, LTText)) and (
+                    hasattr(character, "x0")
+                    and hasattr(character, "x1")
+                    and hasattr(character, "y0")
+                    and hasattr(character, "y1")
+                ):
+                    char_c = character.get_text()
+                    x0 = round(character.x0)
+                    x1 = round(character.x1)
+                    y0 = round(page.height - character.y0)
+                    hot_character = HotCharacter(
+                        value=char_c,
+                        x=x0,
+                        y=y0,
+                        x_end=x1,
+                        span_id=span_id,
+                    )
+                    self.memory_map.insert(value=char_c, row_idx=y0, column_idx=x0)
+                    char_hot_characters.append((
+                        char_c,
+                        hot_character,
+                    ))
         # Insert into Trie and Span Maps
         _hot_character: HotCharacter
         for char_c, _hot_character in char_hot_characters:
