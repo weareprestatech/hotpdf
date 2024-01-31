@@ -22,16 +22,18 @@ def find_neighbour_coord(
     """
     for hot_character in hot_characters:
         if (
-            0
-            <= (hot_character.x - reference_character.x_end)
-            <= (
-                (max_distance + span_tolerance)
-                if hot_character.span_id == reference_character.span_id
-                and (hot_character.span_id and reference_character.span_id)
-                else max_distance
+            (
+                0
+                <= (hot_character.x - reference_character.x_end)
+                <= (
+                    (max_distance + span_tolerance)
+                    if hot_character.span_id == reference_character.span_id
+                    and (hot_character.span_id and reference_character.span_id)
+                    else max_distance
+                )
             )
-            and reference_character.y == hot_character.y
-        ) or (reference_character.span_id == hot_character.span_id and reference_character.x < hot_character.x):
+            or (reference_character.span_id == hot_character.span_id and reference_character.x < hot_character.x)
+        ) and reference_character.y == hot_character.y:
             return hot_character
     return None
 
