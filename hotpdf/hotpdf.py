@@ -172,7 +172,7 @@ class HotPdf:
                     if chars_to_append:
                         if chars_to_append[0].span_id in seen_span_ids:
                             continue
-                        seen_span_ids.extend(list(set([ch.span_id for ch in chars_to_append])))
+                        seen_span_ids.extend(list(set(ch.span_id for ch in chars_to_append)))
                         if sort:
                             chars_to_append = sorted(chars_to_append, key=lambda ch: (ch.x, ch.y))
                     final_found_page_map[page_num].append(chars_to_append)
