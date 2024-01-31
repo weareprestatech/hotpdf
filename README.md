@@ -21,6 +21,14 @@ The latest version of hotpdf can be installed directly from [PyPI](https://pypi.
 pip install hotpdf
 ```
 
+## Local Setup
+
+First install the dependencies required by hotpdf
+
+```bash
+python3 -m pip install -e .
+```
+
 ### Contributing
 
 You should install the [pre-commit](https://github.com/weareprestatech/hotpdf/blob/main/.pre-commit-config.yaml) hooks with `pre-commit install`. This will run the linter, mypy, and ruff formatting before each commit.
