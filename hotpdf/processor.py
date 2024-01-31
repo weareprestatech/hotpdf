@@ -1,5 +1,4 @@
 import logging
-from enum import Enum
 from io import IOBase
 from pathlib import PurePath
 from typing import Union
@@ -9,13 +8,6 @@ from pdfminer.high_level import extract_pages
 from hotpdf.memory_map import MemoryMap
 
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
-
-
-class Result(Enum):
-    LOADED = 0
-    LOCKED = 1
-    WRONG_PASSWORD = 2
-    UNKNOWN_ERROR = 3
 
 
 def __process(

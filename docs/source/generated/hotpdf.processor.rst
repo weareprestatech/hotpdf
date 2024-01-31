@@ -14,13 +14,3 @@
    .. autosummary::
 
       process
-
-
-
-
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      Result
