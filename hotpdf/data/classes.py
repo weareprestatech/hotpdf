@@ -78,7 +78,7 @@ class Span:
         x0 = self.characters[0].x
         y0 = self.characters[0].y
         x1 = self.characters[-1].x_end
-        y1 = y0
+        y1 = self.characters[-1].y
         return ElementDimension(x0, y0, x1, y1, self.span_id)
 
 
