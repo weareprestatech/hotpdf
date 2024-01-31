@@ -115,10 +115,10 @@ class MemoryMap:
         extracted_text: str = ""
         for row in range(max(y0, 0), min(y1, self.memory_map.rows - 1) + 1):
             row_text: str = ""
-            row_text = "".join([
+            row_text = "".join(
                 self.memory_map.get(row_idx=row, column_idx=col)
                 for col in range(max(x0, 0), min(x1, self.memory_map.columns - 1) + 1)
-            ])
+            )
             if row_text:
                 extracted_text += row_text + "\n"
 
