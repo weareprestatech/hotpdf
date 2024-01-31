@@ -1,4 +1,3 @@
-import math
 from typing import Union
 
 from .data.classes import ElementDimension, HotCharacter, PageResult
@@ -82,10 +81,10 @@ def get_element_dimension(elem: list[HotCharacter]) -> ElementDimension:
     Returns:
         ElementDimension: ElementDimension object containing the dimensions (x0, x1, y0, y1, span_id).
     """
-    x0 = math.floor(min(elem, key=lambda item: item.x).x)
-    x1 = math.ceil(max(elem, key=lambda item: item.x_end).x_end)
-    y0 = math.floor(elem[0].y)
-    y1 = math.ceil(elem[0].y)
+    x0 = min(elem, key=lambda item: item.x).x
+    x1 = max(elem, key=lambda item: item.x_end).x_end
+    y0 = elem[0].y
+    y1 = elem[0].y
     span = elem[0].span_id
     return ElementDimension(x0=x0, x1=x1, y0=y0, y1=y1, span_id=span)
 
@@ -112,4 +111,4 @@ def to_text(el: list[HotCharacter]) -> str:
     Returns:
         str: The text.
     """
-    return "".join([char.value for char in el])
+    return "".join(char.value for char in el)

@@ -62,7 +62,7 @@ class Span:
         Returns:
             str: text representation of the span.
         """
-        return "".join([char.value for char in self.characters])
+        return "".join(char.value for char in self.characters)
 
     def get_element_dimension(self) -> ElementDimension:
         """Get the element dimension of the span.
