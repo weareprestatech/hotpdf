@@ -21,6 +21,8 @@ def find_neighbour_coord(
         HotCharacter: The neighbouring HotCharacter if found, else None.
     """
     for hot_character in hot_characters:
+        if hot_character == reference_character:
+            continue
         if (
             (
                 0
