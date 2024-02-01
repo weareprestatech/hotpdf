@@ -54,6 +54,10 @@ class HotPdf:
         if page < 0 or page >= len(self.pages):
             raise ValueError("Invalid page number")
 
+    def __check_page_numbers(self, pages: list[int]) -> None:
+        for page in pages:
+            self.__check_page_number(page)
+
     def __check_page_range(self, first_page: int, last_page: int) -> None:
         if first_page > last_page or first_page < 0 or last_page < 0:
             raise ValueError("Invalid page range")
@@ -110,7 +114,6 @@ class HotPdf:
         self,
         query: str,
         pages: Optional[list[int]] = None,
-        validate: bool = True,
         take_span: bool = False,
         sort: bool = True,
     ) -> SearchResult:
@@ -119,7 +122,6 @@ class HotPdf:
         Args:
             query (str): The text to search for.
             pages (list[int], optional): List of page numbers to search.
-            validate (bool, optional): Double check the extracted bounding boxes with the query string.
             take_span (bool, optional): Take the full span of the text that it is a part of.
             sort (bool, Optional): Return elements sorted by their positions.
         Raises:
@@ -128,11 +130,9 @@ class HotPdf:
         Returns:
             SearchResult: A dictionary mapping page numbers to found text coordinates.
         """
-        if pages is None:
-            pages = []
+        pages = pages or []
 
-        for page in pages:
-            self.__check_page_number(page)
+        self.__check_page_numbers(pages)
 
         query_pages = (
             {i: self.pages[i] for i in range(len(self.pages))} if len(pages) == 0 else {i: self.pages[i] for i in pages}
@@ -151,27 +151,33 @@ class HotPdf:
             seen_span_ids: list[str] = []
             for hot_characters in hot_character_page_occurences:
                 text = "".join(hc.value for hc in hot_characters)
-                if (query in text) or not validate:
-                    full_span_dimension_hot_characters: Union[list[HotCharacter], None] = (
-                        self.__extract_full_text_span(
-                            hot_characters=hot_characters,
-                            page_num=page_num,
-                        )
-                        if take_span
-                        else None
+                if query not in text:
+                    continue
+                full_span_dimension_hot_characters: Union[list[HotCharacter], None] = (
+                    self.__extract_full_text_span(
+                        hot_characters=hot_characters,
+                        page_num=page_num,
                     )
-                    chars_to_append = (
-                        full_span_dimension_hot_characters
-                        if (take_span and full_span_dimension_hot_characters)
-                        else hot_characters
-                    )
-                    if chars_to_append:
-                        if chars_to_append[0].span_id in seen_span_ids:
-                            continue
-                        seen_span_ids.extend(list(set(ch.span_id for ch in chars_to_append)))
-                        if sort:
-                            chars_to_append = sorted(chars_to_append, key=lambda ch: (ch.y, ch.x))
-                    final_found_page_map[page_num].append(chars_to_append)
+                    if take_span
+                    else None
+                )
+                chars_to_append = (
+                    full_span_dimension_hot_characters
+                    if (take_span and full_span_dimension_hot_characters)
+                    else hot_characters
+                )
+                if chars_to_append:
+                    if chars_to_append[0].span_id in seen_span_ids:
+                        continue
+                    seen_span_ids.extend(list(set(ch.span_id for ch in chars_to_append)))
+                    if sort:
+                        chars_to_append = sorted(chars_to_append, key=lambda ch: (ch.y, ch.x))
+                final_found_page_map[page_num].append(chars_to_append)
+        if sort:
+            for _page in final_found_page_map:
+                final_found_page_map[_page] = sorted(
+                    final_found_page_map[_page], key=lambda element: (element[0].y, element[0].x)
+                )
         return final_found_page_map
 
     def extract_spans(self, x0: int, y0: int, x1: int, y1: int, page: int = 0, sort: bool = True) -> list[Span]:
