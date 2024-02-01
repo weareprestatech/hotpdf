@@ -16,6 +16,12 @@ def test_load(valid_file_name):
     hot_pdf_object.load(valid_file_name)
 
 
+def test_load_first_page(valid_file_name):
+    hot_pdf_object = HotPdf()
+    hot_pdf_object.load(valid_file_name, page_numbers=[0])
+    assert "HOTPDF" in hot_pdf_object.extract_page_text(page=0)
+
+
 def test_load_constructor(valid_file_name):
     hotpdf_obj = HotPdf(valid_file_name)
     assert len(hotpdf_obj.pages) > 0
