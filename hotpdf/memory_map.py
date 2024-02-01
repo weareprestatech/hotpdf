@@ -1,7 +1,7 @@
 import math
 from collections.abc import Generator
 
-from pdfminer.layout import LTChar, LTComponent, LTPage, LTText, LTTextContainer, LTTextLine
+from pdfminer.layout import LTAnno, LTChar, LTComponent, LTPage, LTText, LTTextContainer, LTTextLine
 
 from .data.classes import HotCharacter, PageResult
 from .helpers.nanoid import generate_nano_id
@@ -55,6 +55,7 @@ class MemoryMap:
         spans: Generator[LTTextLine, None, None] = self.__get_page_spans(page)
         for span in spans:
             span_id = generate_nano_id(size=10)
+            prev_char_inserted = False
             for character in span:
                 if isinstance(character, (LTChar, LTText)) and (
                     hasattr(character, "x0")
@@ -78,6 +79,15 @@ class MemoryMap:
                         char_c,
                         hot_character,
                     ))
+                    prev_char_inserted = char_c != " "
+                elif isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
+                    space_char = self.__insert_spacing(y0, x1, span_id)
+                    char_hot_characters.append((
+                        " ",
+                        space_char,
+                    ))
+                    prev_char_inserted = False
+
         # Insert into Trie and Span Maps
         _hot_character: HotCharacter
         for char_c, _hot_character in char_hot_characters:
@@ -86,6 +96,29 @@ class MemoryMap:
                 self.span_map[_hot_character.span_id] = _hot_character
         self.width = math.ceil(page.width)
         self.height = math.ceil(page.height)
+
+    def __insert_spacing(
+        self, row_idx: int, column_idx: int, span_id: str, space_offset_value: int = 1
+    ) -> HotCharacter:
+        """Insert whitespace into memory map with of.
+
+        Args:
+            row_idx (int): row index of the memort map.
+            column_idx (int): starting column index of the memort map.
+            span_id (str): span id of the memory map.
+            space_offset_value (int): offset value of the whitespace.
+
+        Returns:
+            HotCharacter: HotCharacter object of the whitespace.
+        """
+        self.memory_map.insert(value=" ", row_idx=row_idx, column_idx=column_idx)
+        return HotCharacter(
+            value=" ",
+            x=column_idx,
+            y=row_idx,
+            x_end=column_idx + space_offset_value,
+            span_id=span_id,
+        )
 
     def extract_text_from_bbox(self, x0: int, x1: int, y0: int, y1: int) -> str:
         """Extract text within a specified bounding box.
