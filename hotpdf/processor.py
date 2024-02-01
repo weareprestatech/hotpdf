@@ -13,7 +13,6 @@ logging.getLogger("pdfminer").setLevel(logging.ERROR)
 def __process(
     source: Union[PurePath, str, IOBase],
     password: str = "",
-    drop_duplicate_spans: bool = True,
     first_page: int = 0,
     last_page: int = 0,
 ) -> list[MemoryMap]:
@@ -23,7 +22,7 @@ def __process(
     for page_layout in hl_page_layouts:
         parsed_page: MemoryMap = MemoryMap()
         parsed_page.build_memory_map()
-        parsed_page.load_memory_map(page=page_layout, drop_duplicate_spans=drop_duplicate_spans)
+        parsed_page.load_memory_map(page=page_layout)
         pages.append(parsed_page)
     return pages
 
@@ -31,14 +30,12 @@ def __process(
 def process(
     source: Union[PurePath, str, IOBase],
     password: str = "",
-    drop_duplicate_spans: bool = True,
     first_page: int = 0,
     last_page: int = 0,
 ) -> list[MemoryMap]:
     return __process(
         source=source,
         password=password,
-        drop_duplicate_spans=drop_duplicate_spans,
         first_page=first_page,
         last_page=last_page,
     )
