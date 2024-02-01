@@ -1,7 +1,7 @@
 import math
 from collections.abc import Generator
 
-from pdfminer.layout import LTChar, LTPage, LTText, LTTextContainer, LTTextLine
+from pdfminer.layout import LTChar, LTComponent, LTPage, LTText, LTTextContainer, LTTextLine
 
 from .data.classes import HotCharacter, PageResult
 from .helpers.nanoid import generate_nano_id
@@ -30,14 +30,17 @@ class MemoryMap:
         """
         self.memory_map = SparseMatrix()
 
+    def __reverse_page_objs(self, page_objs: list[LTComponent]) -> Generator[LTComponent, None, None]:
+        yield from reversed(page_objs)
+
     def __get_page_spans(self, page: LTPage) -> Generator[LTTextLine, None, None]:
-        element_stack = list(reversed(list(page)))
-        while element_stack:
-            obj = element_stack.pop()
+        element_stack = self.__reverse_page_objs(page._objs)
+        for obj in element_stack:
             if isinstance(obj, LTTextLine):
                 yield obj
             elif isinstance(obj, LTTextContainer):
-                element_stack.extend(reversed(list(obj)))
+                element_stack = self.__reverse_page_objs(list(obj))
+                yield from (em for em in element_stack if isinstance(em, LTTextLine))
 
     def load_memory_map(self, page: LTPage) -> None:
         """Load memory map data from an XML page.
