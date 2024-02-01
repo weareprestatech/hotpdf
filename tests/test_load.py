@@ -273,19 +273,27 @@ def test_get_spans(valid_file_name):
     assert occurences == {0: []}
 
 
-@pytest.mark.parametrize("first_page, last_page", [(1, 1), (1, 2)])
-def test_extract_page_range(multiple_pages_file_name, first_page, last_page):
+@pytest.mark.parametrize("page_numbers", [[]])
+def test_extract_all_pages(multiple_pages_file_name, page_numbers):
     hot_pdf_object = HotPdf()
-    hot_pdf_object.load(multiple_pages_file_name, first_page=first_page, last_page=last_page)
+    hot_pdf_object.load(multiple_pages_file_name, page_numbers=page_numbers)
     pages = hot_pdf_object.pages
-    assert len(pages) == last_page - first_page + 1
+    assert len(pages) == 20
 
 
-@pytest.mark.parametrize("first_page, last_page", [(-1, 1), (20, 10)])
-def test_extract_page_range_exception(multiple_pages_file_name, first_page, last_page):
+@pytest.mark.parametrize("page_numbers", [[1, 2], [1, 2, 3]])
+def test_extract_page_range(multiple_pages_file_name, page_numbers):
+    hot_pdf_object = HotPdf()
+    hot_pdf_object.load(multiple_pages_file_name, page_numbers=page_numbers)
+    pages = hot_pdf_object.pages
+    assert len(pages) == len(page_numbers)
+
+
+@pytest.mark.parametrize("page_numbers", [[-1, 1], [1, -1], [-1, -1, 0]])
+def test_extract_page_range_exception(multiple_pages_file_name, page_numbers):
     hot_pdf_object = HotPdf()
     with pytest.raises(ValueError, match="Invalid page range"):
-        hot_pdf_object.load(multiple_pages_file_name, first_page=first_page, last_page=last_page)
+        hot_pdf_object.load(multiple_pages_file_name, page_numbers=page_numbers)
 
 
 def test_no_spans_in_xml_file_extract_spans(valid_file_name):
@@ -362,15 +370,6 @@ def test_CONSISTENCY(valid_file_name):
     page_text = hot_pdf_object.extract_page_text(0)
     bbox_text = hot_pdf_object.extract_text(0, 0, 1000, 1000)
     assert page_text == bbox_text
-
-
-def test_load_pages_defined(multiple_pages_file_name):
-    hotpdf_object = HotPdf()
-    hotpdf_object.load(multiple_pages_file_name, first_page=1, last_page=1)
-    assert len(hotpdf_object.pages) == 1
-
-    hotpdf_object_1 = HotPdf(multiple_pages_file_name, first_page=1, last_page=3)
-    assert len(hotpdf_object_1.pages) == 3
 
 
 def test_no_duplicate_span(duplicate_span_file_name):
