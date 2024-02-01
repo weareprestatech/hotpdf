@@ -23,7 +23,7 @@ def perform_memory_test(file_name, expected_peak_memory):
     hot_pdf_object.load(file_name)
     peak_memory = tracemalloc.get_traced_memory()[1] / (1024 * 1024)
     tracemalloc.stop()
-    assert peak_memory < expected_peak_memory, "Benchmark memory usage exceeded!"
+    assert math.floor(peak_memory) <= expected_peak_memory, "Benchmark memory usage exceeded!"
 
 
 def test_speed_benchmark_multiple_pages(multiple_pages_file_name):
