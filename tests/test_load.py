@@ -109,6 +109,7 @@ def test_extraction(valid_file_name):
     assert len(occurences) == 1
     for page_num, _ in occurences.items():
         assert page_num == 0
+        assert len(occurences[page_num]) == 1
 
     element = get_element_dimension(occurences[0][0])
     extracted_text = hot_pdf_object.extract_text(
@@ -138,6 +139,7 @@ def test_full_span_extraction(valid_file_name):
     # Should be page 0
     for page_num, _ in occurences.items():
         assert page_num == 0
+        assert len(occurences[page_num]) == 2
 
     for occurence in occurences[0]:
         dimension = get_element_dimension(occurence)
@@ -169,6 +171,8 @@ def test_full_span_extraction_sorted(valid_file_name):
     # Should be page 0
     for page_num, _ in occurences.items():
         assert page_num == 0
+        assert len(occurences[page_num]) == 2
+
     for i in range(len(checks)):
         occurence = occurences[0][i]
         dimension = get_element_dimension(occurence)
