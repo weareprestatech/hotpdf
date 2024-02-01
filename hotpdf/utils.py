@@ -33,6 +33,7 @@ def find_neighbour_coord(
                 )
             )
             or (reference_character.span_id == hot_character.span_id and reference_character.x < hot_character.x)
+            and (hot_character.x <= reference_character.x_end)
         ) and reference_character.y == hot_character.y:
             return hot_character
     return None
