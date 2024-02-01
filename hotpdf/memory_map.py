@@ -85,8 +85,6 @@ class MemoryMap:
                         space_char,
                     ))
                     prev_char_inserted = False
-                else:
-                    prev_char_inserted = False
 
         # Insert into Trie and Span Maps
         _hot_character: HotCharacter
@@ -97,13 +95,26 @@ class MemoryMap:
         self.width = math.ceil(page.width)
         self.height = math.ceil(page.height)
 
-    def __insert_spacing(self, row_idx: int, column_idx: int, span_id: str, spacing: int = 1) -> HotCharacter:
+    def __insert_spacing(
+        self, row_idx: int, column_idx: int, span_id: str, space_offset_value: int = 1
+    ) -> HotCharacter:
+        """Insert whitespace into memory map with of.
+
+        Args:
+            row_idx (int): row index of the memort map.
+            column_idx (int): starting column index of the memort map.
+            span_id (str): span id of the memory map.
+            space_offset_value (int): offset value of the whitespace.
+
+        Returns:
+            HotCharacter: HotCharacter object of the whitespace.
+        """
         self.memory_map.insert(value=" ", row_idx=row_idx, column_idx=column_idx)
         return HotCharacter(
             value=" ",
             x=column_idx,
             y=row_idx,
-            x_end=column_idx + spacing,
+            x_end=column_idx + space_offset_value,
             span_id=span_id,
         )
 
