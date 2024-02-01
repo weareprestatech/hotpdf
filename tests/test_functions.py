@@ -137,3 +137,15 @@ def test_len_memory_map_magic_function(valid_file_name):
     hotpdf_object = HotPdf()
     hotpdf_object.load(valid_file_name)
     assert len(hotpdf_object.pages[0].span_map) > 10
+
+
+def test_span_map_get_span_none(valid_file_name):
+    hotpdf_object = HotPdf(valid_file_name)
+    assert hotpdf_object.pages[0].span_map.get_span("xyz") is None
+    assert hotpdf_object.pages[0].span_map["xyz"] is None
+
+
+@pytest.mark.skip(reason="Not implemented")
+def test_span_map_set_none_error(valid_file_name):
+    # Setting non span object in spanmap should throw error
+    pass

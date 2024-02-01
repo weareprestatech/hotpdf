@@ -39,12 +39,11 @@ class MemoryMap:
             elif isinstance(obj, LTTextContainer):
                 element_stack.extend(reversed(list(obj)))
 
-    def load_memory_map(self, page: LTPage, drop_duplicate_spans: bool = True) -> None:
+    def load_memory_map(self, page: LTPage) -> None:
         """Load memory map data from an XML page.
 
         Args:
-            page (str): The XML page data.
-            drop_duplicate_spans (bool): Drop spans that are duplicates (example: on top of each other)
+            page (str): LTPage Element returned by pdfminer
 
         Returns:
             None

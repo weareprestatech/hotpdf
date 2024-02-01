@@ -17,7 +17,6 @@ class HotPdf:
         self,
         pdf_file: Union[PurePath, str, IOBase, None] = None,
         password: str = "",
-        drop_duplicate_spans: bool = True,
         first_page: int = 0,
         last_page: int = 0,
         extraction_tolerance: int = 4,
@@ -27,7 +26,6 @@ class HotPdf:
         Args:
             pdf_file (PurePath | str | IOBytes): The path to the PDF file to be loaded, or a bytes object.
             password (str, optional): Password to use to unlock the pdf
-            drop_duplicate_spans (bool, optional): Drop duplicate spans when loading. Defaults to True.
             first_page (int, optional): The first page to load (1-indexed). Defaults to 0 (will load full PDF).
             last_page (int, optional): The last page to load (1-indexed). Defaults to 0 (will load full PDF).
             extraction_tolerance (int, optional): Tolerance value used during text extraction
@@ -42,7 +40,7 @@ class HotPdf:
         self.pages: list[MemoryMap] = []
         self.extraction_tolerance: int = extraction_tolerance
         if pdf_file:
-            self.load(pdf_file, password, drop_duplicate_spans, first_page, last_page)
+            self.load(pdf_file, password, first_page, last_page)
 
     def __check_file_exists(self, pdf_file: str) -> None:
         if not os.path.exists(pdf_file):
@@ -69,7 +67,6 @@ class HotPdf:
         self,
         pdf_file: Union[PurePath, str, IOBase],
         password: str = "",
-        drop_duplicate_spans: bool = True,
         first_page: int = 0,
         last_page: int = 0,
     ) -> None:
@@ -78,7 +75,6 @@ class HotPdf:
         Args:
             pdf_file (str | Bytes): The path to the PDF file to be loaded, or a bytes object.
             password (str, optional): Password to use to unlock the pdf
-            drop_duplicate_spans (bool, optional): Drop duplicate spans when loading. Defaults to True.
             first_page (int, optional): The first page to load. Defaults to 0.
             last_page (int, optional): The last page to load. Defaults to 0.
 
@@ -87,7 +83,7 @@ class HotPdf:
         """
         self.__prechecks(pdf_file, first_page, last_page)
         try:
-            self.pages = processor.process(pdf_file, password, drop_duplicate_spans, first_page, last_page)
+            self.pages = processor.process(pdf_file, password, first_page, last_page)
         except Exception as e:
             raise e
 
