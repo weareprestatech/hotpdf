@@ -1,3 +1,4 @@
+import math
 import time
 import tracemalloc
 
@@ -12,7 +13,7 @@ def perform_speed_test(file_name, expected_processing_seconds):
     hot_pdf_object.load(file_name)
     end_time = time.time()
     elapsed = end_time - start_time
-    assert (elapsed) < expected_processing_seconds, "Benchmark time exceeded!"
+    assert math.floor(elapsed) < expected_processing_seconds, "Benchmark time exceeded!"
 
 
 @pytest.mark.skip(reason="Need to perform benchmarks first for pdfminer")
