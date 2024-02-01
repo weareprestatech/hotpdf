@@ -77,7 +77,7 @@ class MemoryMap:
                         char_c,
                         hot_character,
                     ))
-                    prev_char_inserted = True
+                    prev_char_inserted = char_c != " "
                 elif isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
                     space_char = self.__insert_spacing(y0, x1, span_id)
                     char_hot_characters.append((
