@@ -399,6 +399,12 @@ def test_load_lt_figure_file_find_text(document_lt_figure_file_name):
     occurrences = hotpdf_object.find_text("automatov")
     assert "".join(char.value for char in occurrences[0][0]) == "automatov"
 
+    occurrences_full_span = hotpdf_object.find_text("automatov", take_span=True)
+    assert (
+        "".join(char.value for char in occurrences_full_span[0][0]).strip("\n").strip()
+        == "výroba kovových spojov do automatov v rozsahu voľnej živnosti"
+    )
+
 
 def test_load_lt_figure_file_extract_page_text(document_lt_figure_file_name):
     hotpdf_object = HotPdf(document_lt_figure_file_name)
