@@ -62,64 +62,81 @@ class MemoryMap:
         Returns:
             None
         """
-        char_hot_characters: list[tuple[str, HotCharacter]] = []
+        char_hot_characters: list[HotCharacter] = []
         page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
         for component in page_components:
             span_id = generate_nano_id(size=10)
             prev_char_inserted = False
             if isinstance(component, LTChar):
-                char_c = component.get_text()
                 x0 = round(component.x0)
                 x1 = round(component.x1)
                 y0 = round(page.height - component.y0)
-                hot_character: HotCharacter = self.__insert_element_memory_map(
-                    value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id
+                hot_character: HotCharacter = self.__get_hot_character_of(
+                    value=component.get_text(), x=x0, y=y0, x_end=x1, span_id=span_id
                 )
-                char_hot_characters.append((
-                    char_c,
+                char_hot_characters.append(
                     hot_character,
-                ))
+                )
                 continue
             for character in component:
-                if isinstance(character, (LTChar, LTText)) and (
-                    hasattr(character, "x0")
-                    and hasattr(character, "x1")
-                    and hasattr(character, "y0")
-                    and hasattr(character, "y1")
+                if isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
+                    _elem_width: int = 1
+                    space_char: HotCharacter = self.__get_hot_character_of(
+                        value=" ", x=x0, y=y0, x_end=x0 + _elem_width, span_id=span_id, is_anno=True
+                    )
+                    char_hot_characters.append(
+                        space_char,
+                    )
+                    prev_char_inserted = False
+                elif (
+                    isinstance(character, (LTChar, LTText))
+                    and (
+                        hasattr(character, "x0")
+                        and hasattr(character, "x1")
+                        and hasattr(character, "y0")
+                        and hasattr(character, "y1")
+                    )
+                    and not isinstance(character, LTAnno)
                 ):
                     char_c = character.get_text()
                     x0 = round(character.x0)
                     x1 = round(character.x1)
                     y0 = round(page.height - character.y0)
-                    hot_character = self.__insert_element_memory_map(
-                        value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id
-                    )
-                    char_hot_characters.append((
-                        char_c,
+                    hot_character = self.__get_hot_character_of(value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id)
+                    char_hot_characters.append(
                         hot_character,
-                    ))
-                    prev_char_inserted = char_c != " "
-                elif isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
-                    _elem_width: int = 1
-                    space_char: HotCharacter = self.__insert_element_memory_map(
-                        value=" ", x=x0, y=y0, x_end=x0 + _elem_width, span_id=span_id
                     )
-                    char_hot_characters.append((
-                        " ",
-                        space_char,
-                    ))
-                    prev_char_inserted = False
-
+                    prev_char_inserted = char_c != " "
         # Insert into Trie and Span Maps
-        _hot_character: HotCharacter
-        for char_c, _hot_character in char_hot_characters:
-            self.text_trie.insert(char_c, _hot_character)
-            if _hot_character.span_id:
-                self.span_map[_hot_character.span_id] = _hot_character
+        average_text_distance: int = 0
+        for i in range(len(char_hot_characters)):
+            _current_character: HotCharacter = char_hot_characters[i]
+            # Determine if annotation spaces should be added
+            if i > 0 and i < len(char_hot_characters) - 1:
+                prev_char: HotCharacter = char_hot_characters[i - 1]
+                next_char: HotCharacter = char_hot_characters[i + 1]
+                if _current_character.is_anno and (not (next_char.x - prev_char.x_end) >= average_text_distance):
+                    continue
+                elif not (next_char.is_anno or prev_char.is_anno):
+                    average_text_distance += next_char.x - prev_char.x_end
+                    average_text_distance //= 2
+            self.__insert_hotcharacter_to_memory(_current_character)
         self.width = math.ceil(page.width)
         self.height = math.ceil(page.height)
 
-    def __insert_element_memory_map(self, value: str, x: int, y: int, x_end: int, span_id: str) -> HotCharacter:
+    def __insert_hotcharacter_to_memory(
+        self,
+        hot_character: HotCharacter,
+    ) -> None:
+        """Insert hotcharacter into memory map & trie"""
+        self.memory_map.insert(value=hot_character.value, row_idx=hot_character.y, column_idx=hot_character.x)
+        self.text_trie.insert(word=hot_character.value, hot_character=hot_character)
+        if hot_character.span_id:
+            self.span_map[hot_character.span_id] = hot_character
+
+    def __get_hot_character_of(
+        self, value: str, x: int, y: int, x_end: int, span_id: str, is_anno: bool = False
+    ) -> HotCharacter:
         """Insert element into memory map.
 
         Args:
@@ -132,13 +149,13 @@ class MemoryMap:
         Returns:
             HotCharacter: HotCharacter object of the whitespace.
         """
-        self.memory_map.insert(value=value, row_idx=y, column_idx=x)
         return HotCharacter(
             value=value,
             x=x,
             y=y,
             x_end=x_end,
             span_id=span_id,
+            is_anno=is_anno,
         )
 
     def extract_text_from_bbox(self, x0: int, x1: int, y0: int, y1: int) -> str:
