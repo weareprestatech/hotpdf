@@ -64,6 +64,7 @@ class MemoryMap:
         """
         char_hot_characters_font_size: list[tuple[HotCharacter, int]] = []
         page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
+        average_text_width: int = 0
         for component in page_components:
             span_id = generate_nano_id(size=10)
             prev_char_inserted = False
@@ -78,6 +79,8 @@ class MemoryMap:
                     hot_character,
                     round(component.size),
                 ))
+                average_text_width += round(component.size)
+                average_text_width //= 2
                 continue
             for character in component:
                 if isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
@@ -87,35 +90,40 @@ class MemoryMap:
                     )
                     char_hot_characters_font_size.append((
                         space_char,
-                        1,
+                        average_text_width if average_text_width != 0 else 1,
                     ))
                     prev_char_inserted = False
-                elif isinstance(character, (LTChar, LTText)) and (
-                    hasattr(character, "x0")
-                    and hasattr(character, "x1")
-                    and hasattr(character, "y0")
-                    and hasattr(character, "y1")
+                elif (
+                    isinstance(character, (LTChar, LTText))
+                    and (
+                        hasattr(character, "x0")
+                        and hasattr(character, "x1")
+                        and hasattr(character, "y0")
+                        and hasattr(character, "y1")
+                    )
+                    and not isinstance(character, LTAnno)
                 ):
                     char_c = character.get_text()
                     x0 = round(character.x0)
                     x1 = round(character.x1)
                     y0 = round(page.height - character.y0)
                     hot_character = self.__get_hot_character_of(value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id)
-                    font_size: int = round(character.size) if hasattr(character, "size") else x1 - x0
                     char_hot_characters_font_size.append((
                         hot_character,
-                        font_size,
+                        round(character.size),
                     ))
                     prev_char_inserted = char_c != " "
+                    average_text_width += round(character.size)
+                    average_text_width //= 2
         # Insert into Trie and Span Maps
         for i in range(len(char_hot_characters_font_size)):
             _current_character: HotCharacter = char_hot_characters_font_size[i][0]
-            _font_size: int = char_hot_characters_font_size[i][1]
             if _current_character.is_anno and (i > 0 and i < len(char_hot_characters_font_size) - 1):
                 prev_char: HotCharacter = char_hot_characters_font_size[i - 1][0]
                 next_char: HotCharacter = char_hot_characters_font_size[i + 1][0]
+                average_text_width = (prev_char.x_end - prev_char.x) if average_text_width == 0 else average_text_width
                 if not (_current_character.x_end - _current_character.x) >= (
-                    (next_char.x - prev_char.x_end) - _font_size
+                    (next_char.x - prev_char.x_end) - average_text_width
                 ):
                     continue
             self.memory_map.insert(
