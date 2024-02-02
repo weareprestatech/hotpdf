@@ -1,5 +1,6 @@
 import math
 from collections.abc import Generator
+from typing import Union
 
 from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
 
@@ -33,7 +34,7 @@ class MemoryMap:
     def __reverse_page_objs(self, page_objs: list[LTComponent]) -> Generator[LTComponent, None, None]:
         yield from reversed(page_objs)
 
-    def __extract_from_ltfigure(self, lt_figure_obj: LTFigure) -> Generator[LTComponent, None, None]:
+    def __extract_from_ltfigure(self, lt_figure_obj: LTFigure) -> Generator[Union[LTTextLine, LTChar], None, None]:
         for element in lt_figure_obj:
             if isinstance(element, (LTTextLine, LTChar)):
                 yield element
@@ -41,7 +42,7 @@ class MemoryMap:
                 element_stack = self.__reverse_page_objs(list(element))
                 yield from (em for em in element_stack if isinstance(em, LTTextLine))
 
-    def __get_page_spans(self, page: LTPage) -> Generator[LTComponent, None, None]:
+    def __get_page_spans(self, page: LTPage) -> Generator[Union[LTTextLine, LTChar], None, None]:
         element_stack = self.__reverse_page_objs(page._objs)
         for obj in element_stack:
             if isinstance(obj, LTTextLine):
@@ -62,10 +63,8 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[tuple[str, HotCharacter]] = []
-        page_components: Generator[LTComponent, None, None] = self.__get_page_spans(page)
+        page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
         for component in page_components:
-            if not isinstance(component, (LTTextLine, LTChar)):
-                continue
             span_id = generate_nano_id(size=10)
             prev_char_inserted = False
             if isinstance(component, LTChar):
