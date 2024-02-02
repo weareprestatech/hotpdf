@@ -37,7 +37,7 @@ class MemoryMap:
         for element in lt_figure_obj:
             if isinstance(element, (LTTextLine, LTChar)):
                 yield element
-            elif isinstance(element, (LTTextContainer)):
+            elif isinstance(element, LTTextContainer):
                 element_stack = self.__reverse_page_objs(list(element))
                 yield from (em for em in element_stack if isinstance(em, LTTextLine))
 
