@@ -392,3 +392,17 @@ def test_no_duplicate_span(duplicate_span_file_name):
     for span in occurences[0]:
         text = "".join(ch.value for ch in span).strip().strip("\n")
     assert text == "SPAN"
+
+
+def test_load_lt_figure_file_find_text(document_lt_figure_file_name):
+    hotpdf_object = HotPdf(document_lt_figure_file_name)
+    occurrences = hotpdf_object.find_text("automatov")
+    assert "".join(char.value for char in occurrences[0][0]) == "automatov"
+
+
+def test_load_lt_figure_file_extract_page_text(document_lt_figure_file_name):
+    hotpdf_object = HotPdf(document_lt_figure_file_name)
+    page_text = hotpdf_object.extract_page_text(0)
+    assert len(page_text) > 500
+
+    assert "C. INFORMÁCIE O SPOLOČNÍKOCH ÚČTOVNEJ JEDNOTKY" in page_text
