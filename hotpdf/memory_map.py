@@ -1,7 +1,7 @@
 import math
 from collections.abc import Generator
 
-from pdfminer.layout import LTAnno, LTChar, LTComponent, LTPage, LTText, LTTextContainer, LTTextLine
+from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
 
 from .data.classes import HotCharacter, PageResult
 from .helpers.nanoid import generate_nano_id
@@ -33,14 +33,24 @@ class MemoryMap:
     def __reverse_page_objs(self, page_objs: list[LTComponent]) -> Generator[LTComponent, None, None]:
         yield from reversed(page_objs)
 
-    def __get_page_spans(self, page: LTPage) -> Generator[LTTextLine, None, None]:
+    def __extract_from_ltfigure(self, lt_figure_obj: LTFigure) -> Generator[LTComponent, None, None]:
+        for element in lt_figure_obj:
+            if isinstance(element, (LTTextLine, LTChar)):
+                yield element
+            elif isinstance(element, (LTTextContainer)):
+                element_stack = self.__reverse_page_objs(list(element))
+                yield from (em for em in element_stack if isinstance(em, LTTextLine))
+
+    def __get_page_spans(self, page: LTPage) -> Generator[LTComponent, None, None]:
         element_stack = self.__reverse_page_objs(page._objs)
         for obj in element_stack:
             if isinstance(obj, LTTextLine):
                 yield obj
-            elif isinstance(obj, LTTextContainer):
+            elif isinstance(obj, (LTTextContainer)):
                 element_stack = self.__reverse_page_objs(list(obj))
                 yield from (em for em in element_stack if isinstance(em, LTTextLine))
+            elif isinstance(obj, (LTFigure)):
+                yield from self.__extract_from_ltfigure(obj)
 
     def load_memory_map(self, page: LTPage) -> None:
         """Load memory map data from an XML page.
@@ -52,11 +62,26 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[tuple[str, HotCharacter]] = []
-        spans: Generator[LTTextLine, None, None] = self.__get_page_spans(page)
-        for span in spans:
+        page_components: Generator[LTComponent, None, None] = self.__get_page_spans(page)
+        for component in page_components:
+            if not isinstance(component, (LTTextLine, LTChar)):
+                continue
             span_id = generate_nano_id(size=10)
             prev_char_inserted = False
-            for character in span:
+            if isinstance(component, LTChar):
+                char_c = component.get_text()
+                x0 = round(component.x0)
+                x1 = round(component.x1)
+                y0 = round(page.height - component.y0)
+                hot_character: HotCharacter = self.__insert_element_memory_map(
+                    value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id
+                )
+                char_hot_characters.append((
+                    char_c,
+                    hot_character,
+                ))
+                continue
+            for character in component:
                 if isinstance(character, (LTChar, LTText)) and (
                     hasattr(character, "x0")
                     and hasattr(character, "x1")
@@ -67,7 +92,7 @@ class MemoryMap:
                     x0 = round(character.x0)
                     x1 = round(character.x1)
                     y0 = round(page.height - character.y0)
-                    hot_character: HotCharacter = self.__insert_element_memory_map(
+                    hot_character = self.__insert_element_memory_map(
                         value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id
                     )
                     char_hot_characters.append((
