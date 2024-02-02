@@ -20,6 +20,7 @@ class HotCharacter:
     y: int
     x_end: int
     span_id: str
+    is_anno: Optional[bool] = False
 
 
 @dataclass
