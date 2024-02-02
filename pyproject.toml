@@ -8,8 +8,10 @@ version="0.4.4"
 authors = [
   {name = "Krishnasis Mandal", email = "krishnasis.mandal@prestatech.com"}]
 maintainers = [
-  {name = "Mattia Callegari" , email = "callegari.mattia@protonmail.com"},
-  {name = "Alex Ptakhin" , email = "alex.ptakhin@prestatech.com"}]
+  {name = "Alex Ptakhin" , email = "alex.ptakhin@prestatech.com"},
+  {name = "Izel Odabasi" , email = "izel.odabasi@prestatech.com"},
+  {name = "Mattia Callegari" , email = "callegari.mattia@protonmail.com"}]
+
 description = "Fast PDF Data Extraction library"
 readme = "README.md"
 license = {file = "LICENSE"}
