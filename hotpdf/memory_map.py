@@ -100,8 +100,8 @@ class MemoryMap:
 
         Args:
             value (str): Value of the object to be inserted.
-            x (int): row index (y0-coordinate) of the element.
-            y (int): column index (x0-coordinate) of the element.
+            x (int): column index (x0-coordinate) of the element.
+            y (int): row index (y0-coordinate) of the element.
             x_end (int): end column index (x1-coordinate) of element. x_end - x = width of element.
             span_id (str): id of parent span.
 
