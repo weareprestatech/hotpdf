@@ -76,9 +76,9 @@ class MemoryMap:
                     ))
                     prev_char_inserted = char_c != " "
                 elif isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
-                    width: int = 1
+                    _elem_width: int = 1
                     space_char: HotCharacter = self.__insert_element(
-                        value=" ", x=x0, y=y0, x_end=x0 + width, span_id=span_id
+                        value=" ", x=x0, y=y0, x_end=x0 + _elem_width, span_id=span_id
                     )
                     char_hot_characters.append((
                         " ",
