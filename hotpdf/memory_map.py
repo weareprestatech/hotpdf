@@ -67,7 +67,7 @@ class MemoryMap:
                     x0 = round(character.x0)
                     x1 = round(character.x1)
                     y0 = round(page.height - character.y0)
-                    hot_character: HotCharacter = self.__insert_element(
+                    hot_character: HotCharacter = self.__insert_element_memory_map(
                         value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id
                     )
                     char_hot_characters.append((
@@ -77,7 +77,7 @@ class MemoryMap:
                     prev_char_inserted = char_c != " "
                 elif isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
                     _elem_width: int = 1
-                    space_char: HotCharacter = self.__insert_element(
+                    space_char: HotCharacter = self.__insert_element_memory_map(
                         value=" ", x=x0, y=y0, x_end=x0 + _elem_width, span_id=span_id
                     )
                     char_hot_characters.append((
@@ -95,7 +95,7 @@ class MemoryMap:
         self.width = math.ceil(page.width)
         self.height = math.ceil(page.height)
 
-    def __insert_element(self, value: str, x: int, y: int, x_end: int, span_id: str) -> HotCharacter:
+    def __insert_element_memory_map(self, value: str, x: int, y: int, x_end: int, span_id: str) -> HotCharacter:
         """Insert element into memory map.
 
         Args:
