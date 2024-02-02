@@ -103,10 +103,10 @@ class MemoryMap:
         """Insert whitespace into memory map with of.
 
         Args:
-            row_idx (int): row index of the memort map.
-            column_idx (int): starting column index of the memort map.
-            span_id (str): span id of the memory map.
-            space_offset_value (int): offset value of the whitespace.
+            row_idx (int): row index (y0-coordinate) of the element.
+            column_idx (int): column index (x0-coordinate) of the element.
+            span_id (str): id of parent span.
+            space_offset_value (int): width of the object default: 1.
 
         Returns:
             HotCharacter: HotCharacter object of the whitespace.
