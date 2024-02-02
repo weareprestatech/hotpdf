@@ -44,3 +44,9 @@ def mock_hotpdf_bank_file_name():
 @pytest.fixture()
 def duplicate_span_file_name():
     return "tests/resources/dup_span.pdf"
+
+
+@pytest.fixture
+def document_lt_figure_file_name():
+    # File sourced from: https://github.com/druskacik/ltfigure-pdfminer
+    return "tests/doc_lt_figure.pdf"
