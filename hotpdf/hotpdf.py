@@ -146,7 +146,6 @@ class HotPdf:
         for page_num in found_page_map:
             hot_character_page_occurences: PageResult = found_page_map[page_num]
             final_found_page_map[page_num] = []
-            seen_span_ids: list[str] = []
             for hot_characters in hot_character_page_occurences:
                 text = "".join(hc.value for hc in hot_characters)
                 if query not in text:
@@ -164,12 +163,8 @@ class HotPdf:
                     if (take_span and full_span_dimension_hot_characters)
                     else hot_characters
                 )
-                if chars_to_append:
-                    if chars_to_append[0].span_id in seen_span_ids:
-                        continue
-                    seen_span_ids.extend(list(set(ch.span_id for ch in chars_to_append)))
-                    if sort:
-                        chars_to_append = sorted(chars_to_append, key=lambda ch: (ch.y, ch.x))
+                if chars_to_append and sort:
+                    chars_to_append = sorted(chars_to_append, key=lambda ch: (ch.y, ch.x))
                 final_found_page_map[page_num].append(chars_to_append)
         if sort:
             for _page in final_found_page_map:

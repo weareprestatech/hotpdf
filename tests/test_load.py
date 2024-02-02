@@ -136,7 +136,11 @@ def test_full_span_extraction(valid_file_name):
 
     # Only 1 page
     assert len(occurences) == 1
-    # Should be page 0
+
+    # Only 2 elements on page 0
+    assert len(occurences[0]) == 2
+
+    # Should be page 0 (test iteration)
     for page_num, _ in occurences.items():
         assert page_num == 0
         assert len(occurences[page_num]) == 2

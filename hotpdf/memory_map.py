@@ -67,21 +67,19 @@ class MemoryMap:
                     x0 = round(character.x0)
                     x1 = round(character.x1)
                     y0 = round(page.height - character.y0)
-                    hot_character = HotCharacter(
-                        value=char_c,
-                        x=x0,
-                        y=y0,
-                        x_end=x1,
-                        span_id=span_id,
+                    hot_character: HotCharacter = self.__insert_element_memory_map(
+                        value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id
                     )
-                    self.memory_map.insert(value=char_c, row_idx=y0, column_idx=x0)
                     char_hot_characters.append((
                         char_c,
                         hot_character,
                     ))
                     prev_char_inserted = char_c != " "
                 elif isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
-                    space_char = self.__insert_spacing(y0, x1, span_id)
+                    _elem_width: int = 1
+                    space_char: HotCharacter = self.__insert_element_memory_map(
+                        value=" ", x=x0, y=y0, x_end=x0 + _elem_width, span_id=span_id
+                    )
                     char_hot_characters.append((
                         " ",
                         space_char,
@@ -97,26 +95,25 @@ class MemoryMap:
         self.width = math.ceil(page.width)
         self.height = math.ceil(page.height)
 
-    def __insert_spacing(
-        self, row_idx: int, column_idx: int, span_id: str, space_offset_value: int = 1
-    ) -> HotCharacter:
-        """Insert whitespace into memory map with of.
+    def __insert_element_memory_map(self, value: str, x: int, y: int, x_end: int, span_id: str) -> HotCharacter:
+        """Insert element into memory map.
 
         Args:
-            row_idx (int): row index (y0-coordinate) of the element.
-            column_idx (int): column index (x0-coordinate) of the element.
+            value (str): Value of the object to be inserted.
+            x (int): column index (x0-coordinate) of the element.
+            y (int): row index (y0-coordinate) of the element.
+            x_end (int): end column index (x1-coordinate) of element. x_end - x = width of element.
             span_id (str): id of parent span.
-            space_offset_value (int): width of the object default: 1.
 
         Returns:
             HotCharacter: HotCharacter object of the whitespace.
         """
-        self.memory_map.insert(value=" ", row_idx=row_idx, column_idx=column_idx)
+        self.memory_map.insert(value=value, row_idx=y, column_idx=x)
         return HotCharacter(
-            value=" ",
-            x=column_idx,
-            y=row_idx,
-            x_end=column_idx + space_offset_value,
+            value=value,
+            x=x,
+            y=y,
+            x_end=x_end,
             span_id=span_id,
         )
 
