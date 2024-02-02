@@ -62,9 +62,8 @@ class MemoryMap:
         Returns:
             None
         """
-        char_hot_characters_font_size: list[tuple[HotCharacter, int]] = []
+        char_hot_characters: list[HotCharacter] = []
         page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
-        average_text_width: int = 0
         for component in page_components:
             span_id = generate_nano_id(size=10)
             prev_char_inserted = False
@@ -75,12 +74,9 @@ class MemoryMap:
                 hot_character: HotCharacter = self.__get_hot_character_of(
                     value=component.get_text(), x=x0, y=y0, x_end=x1, span_id=span_id
                 )
-                char_hot_characters_font_size.append((
+                char_hot_characters.append(
                     hot_character,
-                    round(component.size),
-                ))
-                average_text_width += round(component.size)
-                average_text_width //= 2
+                )
                 continue
             for character in component:
                 if isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
@@ -88,10 +84,9 @@ class MemoryMap:
                     space_char: HotCharacter = self.__get_hot_character_of(
                         value=" ", x=x0, y=y0, x_end=x0 + _elem_width, span_id=span_id, is_anno=True
                     )
-                    char_hot_characters_font_size.append((
+                    char_hot_characters.append(
                         space_char,
-                        average_text_width if average_text_width != 0 else 1,
-                    ))
+                    )
                     prev_char_inserted = False
                 elif (
                     isinstance(character, (LTChar, LTText))
@@ -108,32 +103,36 @@ class MemoryMap:
                     x1 = round(character.x1)
                     y0 = round(page.height - character.y0)
                     hot_character = self.__get_hot_character_of(value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id)
-                    char_hot_characters_font_size.append((
+                    char_hot_characters.append(
                         hot_character,
-                        round(character.size),
-                    ))
+                    )
                     prev_char_inserted = char_c != " "
-                    average_text_width += round(character.size)
-                    average_text_width //= 2
         # Insert into Trie and Span Maps
-        for i in range(len(char_hot_characters_font_size)):
-            _current_character: HotCharacter = char_hot_characters_font_size[i][0]
-            if _current_character.is_anno and (i > 0 and i < len(char_hot_characters_font_size) - 1):
-                prev_char: HotCharacter = char_hot_characters_font_size[i - 1][0]
-                next_char: HotCharacter = char_hot_characters_font_size[i + 1][0]
-                average_text_width = (prev_char.x_end - prev_char.x) if average_text_width == 0 else average_text_width
-                if not (_current_character.x_end - _current_character.x) >= (
-                    (next_char.x - prev_char.x_end) - average_text_width
-                ):
+        average_text_distance: int = 0
+        for i in range(len(char_hot_characters)):
+            _current_character: HotCharacter = char_hot_characters[i]
+            # Determine if annotation spaces should be added
+            if i > 0 and i < len(char_hot_characters) - 1:
+                prev_char: HotCharacter = char_hot_characters[i - 1]
+                next_char: HotCharacter = char_hot_characters[i + 1]
+                if _current_character.is_anno and (not (next_char.x - prev_char.x_end) >= average_text_distance):
                     continue
-            self.memory_map.insert(
-                value=_current_character.value, row_idx=_current_character.y, column_idx=_current_character.x
-            )
-            self.text_trie.insert(word=_current_character.value, hot_character=_current_character)
-            if _current_character.span_id:
-                self.span_map[_current_character.span_id] = _current_character
+                elif not (next_char.is_anno or prev_char.is_anno):
+                    average_text_distance += next_char.x - prev_char.x_end
+                    average_text_distance //= 2
+            self.__insert_hotcharacter_to_memory(_current_character)
         self.width = math.ceil(page.width)
         self.height = math.ceil(page.height)
+
+    def __insert_hotcharacter_to_memory(
+        self,
+        hot_character: HotCharacter,
+    ) -> None:
+        """Insert hotcharacter into memory map & trie"""
+        self.memory_map.insert(value=hot_character.value, row_idx=hot_character.y, column_idx=hot_character.x)
+        self.text_trie.insert(word=hot_character.value, hot_character=hot_character)
+        if hot_character.span_id:
+            self.span_map[hot_character.span_id] = hot_character
 
     def __get_hot_character_of(
         self, value: str, x: int, y: int, x_end: int, span_id: str, is_anno: bool = False
