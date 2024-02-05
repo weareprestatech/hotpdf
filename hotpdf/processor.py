@@ -16,6 +16,7 @@ def __process(
     password: str = "",
     page_numbers: Optional[list[int]] = None,
     laparams: Optional[dict[str, Union[float, bool]]] = None,
+    add_anno: bool = False,
 ) -> list[MemoryMap]:
     pages: list[MemoryMap] = []
     page_numbers = sorted(page_numbers) if page_numbers else []
@@ -28,7 +29,7 @@ def __process(
     for page_layout in hl_page_layouts:
         parsed_page: MemoryMap = MemoryMap()
         parsed_page.build_memory_map()
-        parsed_page.load_memory_map(page=page_layout)
+        parsed_page.load_memory_map(page=page_layout, add_anno=add_anno)
         pages.append(parsed_page)
     return pages
 
@@ -38,10 +39,12 @@ def process(
     password: str = "",
     page_numbers: Optional[list[int]] = None,
     laparams: Optional[dict[str, Union[float, bool]]] = None,
+    add_anno: bool = False,
 ) -> list[MemoryMap]:
     return __process(
         source=source,
         password=password,
         page_numbers=page_numbers,
         laparams=laparams,
+        add_anno=add_anno,
     )
