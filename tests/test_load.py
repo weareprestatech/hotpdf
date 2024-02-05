@@ -425,3 +425,9 @@ def test_load_lt_figure_file_all_text(document_lt_figure_file_name):
     hotpdf_object_with_param = HotPdf(document_lt_figure_file_name, laparams={"all_texts": True})
     assert hotpdf_object_with_param.extract_spans_text(**position) == WORD_GROUP
     assert len(hotpdf_object_with_param.extract_spans(**position)) == 1  # one line for whole span
+
+
+def test_add_anno_flag(valid_file_name):
+    hotpdf_object = HotPdf(valid_file_name, add_anno=True)
+    page_text = hotpdf_object.extract_page_text(0)
+    assert len(page_text) > 500
