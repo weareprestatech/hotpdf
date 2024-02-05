@@ -412,3 +412,16 @@ def test_load_lt_figure_file_extract_page_text(document_lt_figure_file_name):
     assert len(page_text) > 500
 
     assert "C. INFORMÁCIE O SPOLOČNÍKOCH ÚČTOVNEJ JEDNOTKY" in page_text
+
+
+def test_load_lt_figure_file_all_text(document_lt_figure_file_name):
+    WORD_GROUP = "Spoločník, akcionár"
+    position = dict(x0=60, x1=130, y0=675, y1=676)
+
+    hotpdf_object_no_param = HotPdf(document_lt_figure_file_name)
+    assert hotpdf_object_no_param.extract_spans_text(**position) == WORD_GROUP
+    assert len(hotpdf_object_no_param.extract_spans(**position)) == len(WORD_GROUP)  # one character per span
+
+    hotpdf_object_with_param = HotPdf(document_lt_figure_file_name, laparams={"all_texts": True})
+    assert hotpdf_object_with_param.extract_spans_text(**position) == WORD_GROUP
+    assert len(hotpdf_object_with_param.extract_spans(**position)) == 1  # one line for whole span

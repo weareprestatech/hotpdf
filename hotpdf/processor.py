@@ -4,6 +4,7 @@ from pathlib import PurePath
 from typing import Optional, Union
 
 from pdfminer.high_level import extract_pages
+from pdfminer.layout import LAParams
 
 from hotpdf.memory_map import MemoryMap
 
@@ -14,10 +15,16 @@ def __process(
     source: Union[PurePath, str, IOBase],
     password: str = "",
     page_numbers: Optional[list[int]] = None,
+    laparams: Optional[dict[str, Union[float, bool]]] = None,
 ) -> list[MemoryMap]:
     pages: list[MemoryMap] = []
     page_numbers = sorted(page_numbers) if page_numbers else []
-    hl_page_layouts = extract_pages(source, password=password, page_numbers=page_numbers, caching=False)
+
+    laparams_obj = LAParams(**laparams if laparams else {})  # type: ignore
+
+    hl_page_layouts = extract_pages(
+        source, password=password, page_numbers=page_numbers, caching=False, laparams=laparams_obj
+    )
     for page_layout in hl_page_layouts:
         parsed_page: MemoryMap = MemoryMap()
         parsed_page.build_memory_map()
@@ -30,9 +37,11 @@ def process(
     source: Union[PurePath, str, IOBase],
     password: str = "",
     page_numbers: Optional[list[int]] = None,
+    laparams: Optional[dict[str, Union[float, bool]]] = None,
 ) -> list[MemoryMap]:
     return __process(
         source=source,
         password=password,
         page_numbers=page_numbers,
+        laparams=laparams,
     )
