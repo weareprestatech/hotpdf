@@ -427,7 +427,7 @@ def test_load_lt_figure_file_all_text(document_lt_figure_file_name):
     assert len(hotpdf_object_with_param.extract_spans(**position)) == 1  # one line for whole span
 
 
-def test_add_anno_flag(valid_file_name):
-    hotpdf_object = HotPdf(valid_file_name, add_anno=True)
+def test_include_annotation_spaces_flag(valid_file_name):
+    hotpdf_object = HotPdf(valid_file_name, include_annotation_spaces=True)
     page_text = hotpdf_object.extract_page_text(0)
     assert len(page_text) > 500
