@@ -53,12 +53,12 @@ class MemoryMap:
             elif isinstance(obj, (LTFigure)):
                 yield from self.__extract_from_ltfigure(obj)
 
-    def load_memory_map(self, page: LTPage, add_anno: bool = False) -> None:
+    def load_memory_map(self, page: LTPage, include_annotation_spaces: bool = False) -> None:
         """Load memory map data from an XML page.
 
         Args:
             page (str): LTPage Element returned by pdfminer
-            add_anno (bool): Add annotation spaces to the memory map.
+            include_annotation_spaces (bool): Add annotation spaces to the memory map.
 
         Returns:
             None
@@ -80,7 +80,12 @@ class MemoryMap:
                 )
                 continue
             for character in component:
-                if add_anno and isinstance(character, LTAnno) and (character._text == " ") and prev_char_inserted:
+                if (
+                    include_annotation_spaces
+                    and isinstance(character, LTAnno)
+                    and (character._text == " ")
+                    and prev_char_inserted
+                ):
                     _elem_width: int = 1
                     space_char: HotCharacter = self.__get_hot_character_of(
                         value=" ", x=x0, y=y0, x_end=x0 + _elem_width, span_id=span_id, is_anno=True
@@ -113,7 +118,7 @@ class MemoryMap:
         for i in range(len(char_hot_characters)):
             _current_character: HotCharacter = char_hot_characters[i]
             # Determine if annotation spaces should be added
-            if add_anno and i > 0 and i < len(char_hot_characters) - 1:
+            if include_annotation_spaces and i > 0 and i < len(char_hot_characters) - 1:
                 prev_char: HotCharacter = char_hot_characters[i - 1]
                 next_char: HotCharacter = char_hot_characters[i + 1]
                 if _current_character.is_anno and (not (next_char.x - prev_char.x_end) >= average_text_distance):
