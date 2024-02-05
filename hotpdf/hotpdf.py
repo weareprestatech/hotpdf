@@ -19,6 +19,7 @@ class HotPdf:
         password: str = "",
         page_numbers: Optional[list[int]] = None,
         extraction_tolerance: int = 4,
+        laparams: Optional[dict[str, Union[float, bool]]] = None,
     ) -> None:
         """Initialize the HotPdf class.
 
@@ -39,7 +40,7 @@ class HotPdf:
         self.pages: list[MemoryMap] = []
         self.extraction_tolerance: int = extraction_tolerance
         if pdf_file:
-            self.load(pdf_file, password, page_numbers)
+            self.load(pdf_file, password, page_numbers, laparams=laparams)
 
     def __check_file_exists(self, pdf_file: str) -> None:
         if not os.path.exists(pdf_file):
@@ -71,6 +72,7 @@ class HotPdf:
         pdf_file: Union[PurePath, str, IOBase],
         password: str = "",
         page_numbers: Optional[list[int]] = None,
+        laparams: Optional[dict[str, Union[float, bool]]] = None,
     ) -> None:
         """Load a PDF file into memory.
 
@@ -85,7 +87,7 @@ class HotPdf:
         page_numbers = page_numbers or []
         self.__prechecks(pdf_file, page_numbers)
         try:
-            self.pages = processor.process(pdf_file, password, page_numbers)
+            self.pages = processor.process(pdf_file, password, page_numbers, laparams)
         except Exception as e:
             raise e
 
