@@ -18,7 +18,7 @@ def __make_custom_laparams_object(
     if not laparams:
         return laparams_obj
     for key in laparams:
-        if getattr(laparams_obj, key):
+        if hasattr(laparams_obj, key):
             laparams_obj.__setattr__(key, laparams[key])
     return laparams_obj
 
