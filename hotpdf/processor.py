@@ -11,6 +11,18 @@ from hotpdf.memory_map import MemoryMap
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 
 
+def __make_custom_laparams_object(
+    laparams: Optional[dict[str, Union[float, bool]]] = None,
+) -> LAParams:
+    laparams_obj = LAParams()
+    if not laparams:
+        return laparams_obj
+    for key in laparams:
+        if hasattr(laparams_obj, key):
+            laparams_obj.__setattr__(key, laparams[key])
+    return laparams_obj
+
+
 def __process(
     source: Union[PurePath, str, IOBase],
     password: str = "",
@@ -21,7 +33,7 @@ def __process(
     pages: list[MemoryMap] = []
     page_numbers = sorted(page_numbers) if page_numbers else []
 
-    laparams_obj = LAParams(**laparams if laparams else {})  # type: ignore
+    laparams_obj = __make_custom_laparams_object(laparams)
 
     hl_page_layouts = extract_pages(
         source, password=password, page_numbers=page_numbers, caching=False, laparams=laparams_obj
