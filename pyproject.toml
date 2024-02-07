@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 
 [project]
 name="hotpdf"
-version="0.4.5.2"
+version="0.4.5.2.dev"
 authors = [
   {name = "Krishnasis Mandal", email = "krishnasis.mandal@prestatech.com"}]
 maintainers = [
@@ -40,7 +40,7 @@ keywords = [
 ]
 
 dependencies = [
-    "pdfminer.six==20231228",
+    "pdfminer==20191125",
 ]
 
 [tool.setuptools]
