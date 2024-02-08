@@ -13,6 +13,7 @@ class HotCharacter:
         y (int): y position of the character - row number.
         x_end (int): end x position of the character. x_end - x = width of character.
         span_id (str, Optional): hash of parent span the character lies in.
+        is_anno (bool, Optional): specify if a character is an annotation (default: False).
     """
 
     value: str
