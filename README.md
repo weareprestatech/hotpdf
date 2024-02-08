@@ -4,6 +4,7 @@
 [![latest](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/python-publish.yml)
 [![build](https://github.com/weareprestatech/hotpdf/actions/workflows/build-badge.yml/badge.svg)](https://github.com/weareprestatech/hotpdf/actions/workflows/build-badge.yml)
 [![Coverage Status](https://coveralls.io/repos/github/weareprestatech/hotpdf/badge.svg?branch=main)](https://coveralls.io/github/weareprestatech/hotpdf?branch=main)
+[![Unit tests](https://github.com/weareprestatech/hotpdf/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/weareprestatech/hotpdf/actions/workflows/test.yml)
 
 
 This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery).
