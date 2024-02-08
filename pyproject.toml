@@ -52,6 +52,7 @@ exclude = ["docs*", "tests*"]
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov", "pytest-xdist", "pylint", "mypy", "typing-extensions", "pre-commit", "ruff"]
+docs = ["pdfminer.six"]
 
 [tool.ruff]
 indent-width = 4

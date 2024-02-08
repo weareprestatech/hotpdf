@@ -23,6 +23,7 @@
 
    .. autosummary::
 
+      ~HotCharacter.is_anno
       ~HotCharacter.value
       ~HotCharacter.x
       ~HotCharacter.y
