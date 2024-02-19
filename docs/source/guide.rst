@@ -46,6 +46,7 @@ Sometimes pdfminer.six will not replace (cid:x) values with their corresponding 
 In that case, send the charset Encoder.
 
 .. code-block:: python
+
    from hotpdf.encodings.encodings import EncodingType
    hotpdf_cid_removal_object = HotPdf(f, cid_overwrite_charset=EncodingType.LATIN)
 
