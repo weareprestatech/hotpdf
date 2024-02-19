@@ -7,7 +7,7 @@ from pdfminer.pdfparser import PDFSyntaxError
 
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
-from hotpdf.encodings.encoder import EncodingType
+from hotpdf.encodings.types import EncodingTypes
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 
@@ -449,7 +449,7 @@ def test_cid_replacement(only_euro_no_embedded_font):
     assert "(cid:" in all_span_text
     assert "€" not in all_span_text
 
-    hotpdf_object_cid_replacement = HotPdf(only_euro_no_embedded_font, cid_overwrite_charset=EncodingType.LATIN)
+    hotpdf_object_cid_replacement = HotPdf(only_euro_no_embedded_font, cid_overwrite_charset=EncodingTypes.LATIN)
     spans_2 = hotpdf_object_cid_replacement.extract_spans(x0=0, x1=300, y0=25, y1=30)
     # Replace cid:128 notation to eur symbol
     all_span_text_2 = "".join(span.to_text() for span in spans_2)

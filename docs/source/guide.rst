@@ -47,8 +47,8 @@ In that case, send the charset Encoder.
 
 .. code-block:: python
 
-   from hotpdf.encodings.encoder import EncodingType
-   hotpdf_cid_removal_object = HotPdf(f, cid_overwrite_charset=EncodingType.LATIN)
+   from hotpdf.encodings.types import EncodingTypes
+   hotpdf_cid_removal_object = HotPdf(f, cid_overwrite_charset=EncodingTypes.LATIN)
 
 
 The `HotPdf` object has many attributes that you can use to solve your problems. One of them is `pages`, representing each page of the PDF stored in data structures (trie & sparse matrix) to help with text operations.

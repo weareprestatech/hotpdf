@@ -1,13 +1,10 @@
 import re
-from enum import Enum
 from typing import Optional
 
-
-class EncodingType(Enum):
-    LATIN = "latin"
+from .types import EncodingTypes
 
 
-class Encoder:
+class Decoder:
     """If there are no embedded fonts, pdfminer.six has issues with
     mapping cid values to their specific unicode characters.
     In that case, we manually override the (cid:int) values
@@ -16,12 +13,12 @@ class Encoder:
     __cid_mapping: dict[int, str] = {}
     initialised: bool = False
 
-    def __init__(self, charset: Optional[EncodingType] = None) -> None:
+    def __init__(self, charset: Optional[EncodingTypes] = None) -> None:
         if not charset:
             return
-        if charset.value in EncodingType._value2member_map_:
+        if charset.value in EncodingTypes._value2member_map_:
             self.initialised = True
-        if charset == EncodingType.LATIN:
+        if charset == EncodingTypes.LATIN:
             from .mappings.latin import CID_TO_STR
 
             self.__cid_mapping = CID_TO_STR
