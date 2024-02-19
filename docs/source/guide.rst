@@ -47,7 +47,7 @@ In that case, send the charset Encoder.
 
 .. code-block:: python
 
-   from hotpdf.encodings.encodings import EncodingType
+   from hotpdf.encodings.encoder import EncodingType
    hotpdf_cid_removal_object = HotPdf(f, cid_overwrite_charset=EncodingType.LATIN)
 
 
