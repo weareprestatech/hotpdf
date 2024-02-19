@@ -6,7 +6,7 @@ from typing import Optional, Union
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LAParams
 
-from hotpdf.encodings.encodings import EncodingType
+from hotpdf.encodings.encoder import EncodingType
 from hotpdf.memory_map import MemoryMap
 
 logging.getLogger("pdfminer").setLevel(logging.ERROR)

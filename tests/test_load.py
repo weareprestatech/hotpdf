@@ -7,7 +7,7 @@ from pdfminer.pdfparser import PDFSyntaxError
 
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
-from hotpdf.encodings.encodings import EncodingType
+from hotpdf.encodings.encoder import EncodingType
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 

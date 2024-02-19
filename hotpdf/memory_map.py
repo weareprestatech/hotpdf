@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
 
-from hotpdf.encodings.encodings import Encoder, EncodingType
+from hotpdf.encodings.encoder import Encoder, EncodingType
 
 from .data.classes import HotCharacter, PageResult
 from .helpers.nanoid import generate_nano_id
