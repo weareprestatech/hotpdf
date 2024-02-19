@@ -451,7 +451,7 @@ def test_cid_replacement(only_euro_no_embedded_font):
 
     hotpdf_object_cid_replacement = HotPdf(only_euro_no_embedded_font, cid_overwrite_charset=EncodingType.LATIN)
     spans_2 = hotpdf_object_cid_replacement.extract_spans(x0=0, x1=300, y0=25, y1=30)
-    # No replacement
+    # Replace cid:128 notation to eur symbol
     all_span_text_2 = "".join(span.to_text() for span in spans_2)
     assert "(cid:" not in all_span_text_2
     assert "€" in all_span_text_2
