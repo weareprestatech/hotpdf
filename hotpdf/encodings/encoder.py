@@ -27,9 +27,10 @@ class Encoder:
             self.__cid_mapping = CID_TO_STR
 
     def cid_str_to_str(self, cid_str: str) -> str:
-        """Converts a (cid:int) notation to it's corresponding charset unicode"""
+        """Converts a (cid:int) notation to it's corresponding charset unicode
+        In case there's no mapping, return a blank string
+        """
         cid_digit = re.search(r"\d+", cid_str)
         if not cid_digit:
             return cid_str
-        unicode_repr = self.__cid_mapping.get(int(cid_digit.group()))
-        return unicode_repr if unicode_repr else cid_str
+        return self.__cid_mapping.get(int(cid_digit.group()), "")

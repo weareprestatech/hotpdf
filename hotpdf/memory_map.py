@@ -150,6 +150,8 @@ class MemoryMap:
         hot_character: HotCharacter,
     ) -> None:
         """Insert hotcharacter into memory map & trie"""
+        if hot_character.value == "":
+            return None
         self.memory_map.insert(value=hot_character.value, row_idx=hot_character.y, column_idx=hot_character.x)
         self.text_trie.insert(word=hot_character.value, hot_character=hot_character)
         if hot_character.span_id:

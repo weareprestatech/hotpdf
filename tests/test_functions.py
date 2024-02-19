@@ -5,6 +5,7 @@ import pytest
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension as El
 from hotpdf.data.classes import HotCharacter
+from hotpdf.encodings.encoder import Encoder, EncodingType
 from hotpdf.sparse_matrix import SparseMatrix
 from hotpdf.utils import filter_adjacent_coords, intersect, to_text
 
@@ -149,3 +150,12 @@ def test_span_map_get_span_none(valid_file_name):
 def test_span_map_set_none_error(valid_file_name):
     # Setting non span object in spanmap should throw error
     pass
+
+
+def test_cid_str_to_str_with_mapping():
+    # Test with a cid value that has a mapping
+    encoder = Encoder(EncodingType.LATIN)
+    assert encoder.cid_str_to_str("(cid:65)") == "A"
+    assert encoder.cid_str_to_str("(cid:128)") == "€"
+    assert encoder.cid_str_to_str("(cid:999)") == ""
+    assert encoder.cid_str_to_str("(cid:x)") == "(cid:x)"
