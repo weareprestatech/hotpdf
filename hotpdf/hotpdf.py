@@ -6,7 +6,7 @@ from pathlib import PurePath
 from typing import Optional, Union
 
 from hotpdf import processor
-from hotpdf.encodings.encodings import EncodingType
+from hotpdf.encodings.encoder import EncodingType
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, intersect
 
