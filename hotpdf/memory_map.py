@@ -4,7 +4,8 @@ from typing import Optional, Union
 
 from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
 
-from hotpdf.encodings.encoder import Encoder, EncodingType
+from hotpdf.encodings.decoder import Decoder
+from hotpdf.encodings.types import EncodingTypes
 
 from .data.classes import HotCharacter, PageResult
 from .helpers.nanoid import generate_nano_id
@@ -59,7 +60,7 @@ class MemoryMap:
         self,
         page: LTPage,
         include_annotation_spaces: bool = False,
-        cid_overwrite_charset: Optional[EncodingType] = None,
+        cid_overwrite_charset: Optional[EncodingTypes] = None,
     ) -> None:
         """Load memory map data from an XML page.
 
@@ -71,7 +72,7 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[HotCharacter] = []
-        char_encoder = Encoder(cid_overwrite_charset)
+        char_encoder = Decoder(cid_overwrite_charset)
         page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
         for component in page_components:
             span_id = generate_nano_id(size=10)
@@ -165,7 +166,7 @@ class MemoryMap:
         x_end: int,
         span_id: str,
         is_anno: bool = False,
-        encoder: Optional[Encoder] = None,
+        encoder: Optional[Decoder] = None,
     ) -> HotCharacter:
         """Insert element into memory map.
 
@@ -175,7 +176,7 @@ class MemoryMap:
             y (int): row index (y0-coordinate) of the element.
             x_end (int): end column index (x1-coordinate) of element. x_end - x = width of element.
             span_id (str): id of parent span.
-            encoder (Encoder): Encoder to convert (cid:x) values
+            encoder (Decoder): Decoder to convert (cid:x) values
 
         Returns:
             HotCharacter: HotCharacter object of the whitespace.
