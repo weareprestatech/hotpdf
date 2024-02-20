@@ -467,3 +467,9 @@ def test_invalid_decoder(valid_file_name):
 
     with pytest.raises(DecoderNotInitalised, match="Decoder not initialised"):
         _ = HotPdf(valid_file_name, cid_overwrite_charset=EncodingTypes.BATIN)
+
+
+def test_multi_load(valid_file_name, multiple_pages_file_name):
+    big_pdf = HotPdf(hotpdfs=[HotPdf(valid_file_name), HotPdf(multiple_pages_file_name)])
+    assert "HOTPDF" in big_pdf.extract_page_text(page=0)
+    assert "BIBLE" in big_pdf.extract_page_text(page=1)

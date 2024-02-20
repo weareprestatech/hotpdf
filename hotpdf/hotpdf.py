@@ -23,6 +23,7 @@ class HotPdf:
         laparams: Optional[dict[str, Union[float, bool]]] = None,
         include_annotation_spaces: bool = False,
         cid_overwrite_charset: Optional[EncodingTypes] = None,
+        hotpdfs: Optional[list["HotPdf"]] = None,
     ) -> None:
         """Initialize the HotPdf class.
 
@@ -37,7 +38,8 @@ class HotPdf:
             include_annotation_spaces (bool, optional): Add annotation spaces to the memory map.
             cid_overwrite_charset (EncodingTypes, optional): Overwrite encode charset for (cid:x) values
                 that haven't been converted. Default None, will return cid values as is without conversion
-
+            hotpdfs (list[HotPdf], optional): List of HotPdf objects that will be combined
+                to form one single HotPdf object. All other params will be ignored in this case.
         Raises:
             ValueError: If the page range is invalid.
             FileNotFoundError: If the file is not found.
@@ -46,6 +48,10 @@ class HotPdf:
         """
         self.pages: list[MemoryMap] = []
         self.extraction_tolerance: int = extraction_tolerance
+        if hotpdfs:
+            for _hotpdf in hotpdfs:
+                self.pages.extend(_hotpdf.pages)
+            return
         if pdf_file:
             self.load(
                 pdf_file,
