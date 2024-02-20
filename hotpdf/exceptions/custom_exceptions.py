@@ -1,2 +1,2 @@
-class InvalidDecoderException(Exception):
+class DecoderNotInitalised(Exception):
     pass

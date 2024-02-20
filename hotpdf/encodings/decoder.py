@@ -1,7 +1,7 @@
 import re
 from typing import Optional
 
-from ..exceptions.custom_exceptions import InvalidDecoderException
+from ..exceptions.custom_exceptions import DecoderNotInitalised
 from .types import EncodingTypes
 
 
@@ -24,7 +24,7 @@ class Decoder:
 
             self.__cid_mapping = CID_TO_STR
         if not self.initialised:
-            raise InvalidDecoderException("Invalid Decoder")
+            raise DecoderNotInitalised("Decoder not initialised")
 
     def cid_str_to_str(self, cid_str: str) -> str:
         """Converts a (cid:int) notation to it's corresponding charset unicode

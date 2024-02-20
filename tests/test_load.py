@@ -9,7 +9,7 @@ from pdfminer.pdfparser import PDFSyntaxError
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
 from hotpdf.encodings.types import EncodingTypes
-from hotpdf.exceptions.custom_exceptions import InvalidDecoderException
+from hotpdf.exceptions.custom_exceptions import DecoderNotInitalised
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 
@@ -464,5 +464,5 @@ def test_invalid_decoder(valid_file_name):
         LATIN = "latin"
         BATIN = "batin"
 
-    with pytest.raises(InvalidDecoderException, match="Invalid Decoder"):
+    with pytest.raises(DecoderNotInitalised, match="Decoder not initialised"):
         _ = HotPdf(valid_file_name, cid_overwrite_charset=EncodingTypes.BATIN)
