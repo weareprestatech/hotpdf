@@ -436,11 +436,9 @@ def test_include_annotation_spaces_flag_sanity_check(valid_file_name):
     assert len(page_text) > 500
 
 
-@pytest.mark.skip(reason="Test is not implemented properly. Need to rewrite.")
-def test_include_annotation_spaces_flag_(valid_file_name):
-    hotpdf_object = HotPdf(valid_file_name, include_annotation_spaces=True)
-    page_text = hotpdf_object.extract_page_text(0)
-    assert len(page_text) > 500
+def test_include_annotation_spaces_flag(multiple_pages_file_name):
+    hotpdf_obj = HotPdf(multiple_pages_file_name, include_annotation_spaces=True)
+    assert "THE HOLY BIBLE" in hotpdf_obj.extract_page_text(page=0)
 
 
 @pytest.mark.skip(reason="Test this internally.")
@@ -470,6 +468,8 @@ def test_invalid_decoder(valid_file_name):
 
 
 def test_multi_load(valid_file_name, multiple_pages_file_name):
-    big_pdf = HotPdf(hotpdfs=[HotPdf(valid_file_name), HotPdf(multiple_pages_file_name)])
+    big_pdf = HotPdf(
+        hotpdfs=[HotPdf(valid_file_name), HotPdf(multiple_pages_file_name, include_annotation_spaces=True)]
+    )
     assert "HOTPDF" in big_pdf.extract_page_text(page=0)
-    assert "BIBLE" in big_pdf.extract_page_text(page=1)
+    assert "THE HOLY BIBLE" in big_pdf.extract_page_text(page=1)
