@@ -15,10 +15,9 @@ logging.getLogger("pdfminer").setLevel(logging.ERROR)
 def __make_custom_laparams_object(
     laparams: Optional[dict[str, Union[float, bool]]] = None,
 ) -> Union[LAParams, None]:
-    laparams_obj = None
     if not laparams:
-        return laparams_obj
-    laparams_obj = LAParams()
+        return None
+    laparams_obj: LAParams = LAParams()
     for key in laparams:
         if hasattr(laparams_obj, key):
             laparams_obj.__setattr__(key, laparams[key])
