@@ -439,6 +439,12 @@ def test_include_annotation_spaces_flag_sanity_check(valid_file_name):
 def test_include_annotation_spaces_flag(multiple_pages_file_name):
     hotpdf_obj = HotPdf(multiple_pages_file_name, include_annotation_spaces=True)
     assert "THE HOLY BIBLE" in hotpdf_obj.extract_page_text(page=0)
+    assert "THEHOLYBIBLE" not in hotpdf_obj.extract_page_text(page=0)
+
+    # Inverse
+    hotpdf_obj_no_space = HotPdf(multiple_pages_file_name)
+    assert "THE HOLY BIBLE" not in hotpdf_obj_no_space.extract_page_text(page=0)
+    assert "THEHOLYBIBLE" in hotpdf_obj_no_space.extract_page_text(page=0)
 
 
 @pytest.mark.skip(reason="Test this internally.")
