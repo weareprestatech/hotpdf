@@ -1,8 +1,11 @@
 import math
 from collections.abc import Generator
-from typing import Union
+from typing import Optional, Union
 
 from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
+
+from hotpdf.encodings.decoder import Decoder
+from hotpdf.encodings.types import EncodingTypes
 
 from .data.classes import HotCharacter, PageResult
 from .helpers.nanoid import generate_nano_id
@@ -53,7 +56,12 @@ class MemoryMap:
             elif isinstance(obj, (LTFigure)):
                 yield from self.__extract_from_ltfigure(obj)
 
-    def load_memory_map(self, page: LTPage, include_annotation_spaces: bool = False) -> None:
+    def load_memory_map(
+        self,
+        page: LTPage,
+        include_annotation_spaces: bool = False,
+        cid_overwrite_charset: Optional[EncodingTypes] = None,
+    ) -> None:
         """Load memory map data from an XML page.
 
         Args:
@@ -64,6 +72,7 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[HotCharacter] = []
+        char_encoder = Decoder(cid_overwrite_charset)
         page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
         for component in page_components:
             span_id = generate_nano_id(size=10)
@@ -73,7 +82,12 @@ class MemoryMap:
                 x1 = round(component.x1)
                 y0 = round(page.height - component.y0)
                 hot_character: HotCharacter = self.__get_hot_character_of(
-                    value=component.get_text(), x=x0, y=y0, x_end=x1, span_id=span_id
+                    value=component.get_text(),
+                    x=x0,
+                    y=y0,
+                    x_end=x1,
+                    span_id=span_id,
+                    encoder=char_encoder,
                 )
                 char_hot_characters.append(
                     hot_character,
@@ -108,7 +122,9 @@ class MemoryMap:
                     x0 = round(character.x0)
                     x1 = round(character.x1)
                     y0 = round(page.height - character.y0)
-                    hot_character = self.__get_hot_character_of(value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id)
+                    hot_character = self.__get_hot_character_of(
+                        value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id, encoder=char_encoder
+                    )
                     char_hot_characters.append(
                         hot_character,
                     )
@@ -135,13 +151,22 @@ class MemoryMap:
         hot_character: HotCharacter,
     ) -> None:
         """Insert hotcharacter into memory map & trie"""
+        if hot_character.value == "":
+            return None
         self.memory_map.insert(value=hot_character.value, row_idx=hot_character.y, column_idx=hot_character.x)
         self.text_trie.insert(word=hot_character.value, hot_character=hot_character)
         if hot_character.span_id:
             self.span_map[hot_character.span_id] = hot_character
 
     def __get_hot_character_of(
-        self, value: str, x: int, y: int, x_end: int, span_id: str, is_anno: bool = False
+        self,
+        value: str,
+        x: int,
+        y: int,
+        x_end: int,
+        span_id: str,
+        is_anno: bool = False,
+        encoder: Optional[Decoder] = None,
     ) -> HotCharacter:
         """Insert element into memory map.
 
@@ -151,10 +176,13 @@ class MemoryMap:
             y (int): row index (y0-coordinate) of the element.
             x_end (int): end column index (x1-coordinate) of element. x_end - x = width of element.
             span_id (str): id of parent span.
+            encoder (Decoder): Decoder to convert (cid:x) values
 
         Returns:
             HotCharacter: HotCharacter object of the whitespace.
         """
+        if "(cid:" in value and encoder and encoder.initialised:
+            value = encoder.cid_str_to_str(cid_str=value)
         return HotCharacter(
             value=value,
             x=x,
