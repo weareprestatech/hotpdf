@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 from unittest.mock import patch
 
 import pytest
@@ -7,6 +8,8 @@ from pdfminer.pdfparser import PDFSyntaxError
 
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
+from hotpdf.encodings.types import EncodingTypes
+from hotpdf.exceptions.custom_exceptions import DecoderNotInitalised
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 
@@ -438,3 +441,28 @@ def test_include_annotation_spaces_flag_(valid_file_name):
     hotpdf_object = HotPdf(valid_file_name, include_annotation_spaces=True)
     page_text = hotpdf_object.extract_page_text(0)
     assert len(page_text) > 500
+
+
+def test_cid_replacement(only_euro_no_embedded_font):
+    hotpdf_object = HotPdf(only_euro_no_embedded_font)
+    spans = hotpdf_object.extract_spans(x0=0, x1=300, y0=25, y1=30)
+    # No replacement
+    all_span_text = "".join(span.to_text() for span in spans)
+    assert "(cid:" in all_span_text
+    assert "€" not in all_span_text
+
+    hotpdf_object_cid_replacement = HotPdf(only_euro_no_embedded_font, cid_overwrite_charset=EncodingTypes.LATIN)
+    spans_2 = hotpdf_object_cid_replacement.extract_spans(x0=0, x1=300, y0=25, y1=30)
+    # Replace cid:128 notation to eur symbol
+    all_span_text_2 = "".join(span.to_text() for span in spans_2)
+    assert "(cid:" not in all_span_text_2
+    assert "€" in all_span_text_2
+
+
+def test_invalid_decoder(valid_file_name):
+    class EncodingTypes(Enum):
+        LATIN = "latin"
+        BATIN = "batin"
+
+    with pytest.raises(DecoderNotInitalised, match="Decoder not initialised"):
+        _ = HotPdf(valid_file_name, cid_overwrite_charset=EncodingTypes.BATIN)
