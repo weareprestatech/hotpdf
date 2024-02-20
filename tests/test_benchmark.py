@@ -8,10 +8,10 @@ from hotpdf import HotPdf
 
 
 def perform_speed_test(file_name, expected_processing_seconds):
-    start_time = time.time()
+    start_time = time.perf_counter()
     hot_pdf_object = HotPdf()
     hot_pdf_object.load(file_name)
-    end_time = time.time()
+    end_time = time.perf_counter()
     elapsed = end_time - start_time
     assert math.floor(elapsed) < expected_processing_seconds, "Benchmark time exceeded!"
 
