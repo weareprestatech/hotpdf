@@ -14,14 +14,19 @@ logging.getLogger("pdfminer").setLevel(logging.ERROR)
 
 def __make_custom_laparams_object(
     laparams: Optional[dict[str, Union[float, bool]]] = None,
-) -> LAParams:
-    laparams_obj = LAParams()
+) -> Union[LAParams, None]:
+    laparams_obj = None
     if not laparams:
         return laparams_obj
+    laparams_obj = LAParams()
     for key in laparams:
         if hasattr(laparams_obj, key):
             laparams_obj.__setattr__(key, laparams[key])
     return laparams_obj
+
+
+def __supress_pdfminer_logs() -> None:
+    logging.getLogger("pdfminer").setLevel(logging.ERROR)
 
 
 def __process(
@@ -33,8 +38,8 @@ def __process(
     cid_overwrite_charset: Optional[EncodingTypes] = None,
 ) -> list[MemoryMap]:
     pages: list[MemoryMap] = []
+    __supress_pdfminer_logs()
     page_numbers = sorted(page_numbers) if page_numbers else []
-
     laparams_obj = __make_custom_laparams_object(laparams)
 
     hl_page_layouts = extract_pages(
