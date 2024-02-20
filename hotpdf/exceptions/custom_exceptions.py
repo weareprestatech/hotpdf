@@ -1,0 +1,2 @@
+class InvalidDecoderException(Exception):
+    pass

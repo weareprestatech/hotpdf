@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 from unittest.mock import patch
 
 import pytest
@@ -8,6 +9,7 @@ from pdfminer.pdfparser import PDFSyntaxError
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
 from hotpdf.encodings.types import EncodingTypes
+from hotpdf.exceptions.custom_exceptions import InvalidDecoderException
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 
@@ -455,3 +457,12 @@ def test_cid_replacement(only_euro_no_embedded_font):
     all_span_text_2 = "".join(span.to_text() for span in spans_2)
     assert "(cid:" not in all_span_text_2
     assert "€" in all_span_text_2
+
+
+def test_invalid_decoder(valid_file_name):
+    class EncodingTypes(Enum):
+        LATIN = "latin"
+        BATIN = "batin"
+
+    with pytest.raises(InvalidDecoderException, match="Invalid Decoder"):
+        _ = HotPdf(valid_file_name, cid_overwrite_charset=EncodingTypes.BATIN)
