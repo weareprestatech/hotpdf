@@ -38,7 +38,7 @@ Rembember to run `pip install -e '.[dev]'` to install the extra dependencies for
 
 For more examples of how to run the full test suite please refer to the [CI workflow](https://github.com/weareprestatech/hotpdf/blob/main/.github/workflows/test.yml).
 
-We strive to keep the test coverage at 100%: if you want your contributions accepted please write tests for them :D
+We strive to keep the test coverage at 100% (but can't due to certain reasons - e.g., test file not available): if you want your contributions accepted please write tests for them :D
 
 Some examples of running tests locally:
 
@@ -46,7 +46,7 @@ Some examples of running tests locally:
 python3 -m pip install -e '.[dev]'               # install extra deps for testing
 python3 -m pytest -n=auto tests/                      # run the test suite
 # run tests with coverage
-python3 -m pytest --cov-fail-under=98 -n=auto --cov=hotpdf --cov-report term-missing
+python3 -m pytest --cov-fail-under=90 -n=auto --cov=hotpdf --cov-report term-missing
 ```
 
 ### Documentation

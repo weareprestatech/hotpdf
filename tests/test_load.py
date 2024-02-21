@@ -443,6 +443,7 @@ def test_include_annotation_spaces_flag_(valid_file_name):
     assert len(page_text) > 500
 
 
+@pytest.mark.skip(reason="Test this internally.")
 def test_cid_replacement(only_euro_no_embedded_font):
     hotpdf_object = HotPdf(only_euro_no_embedded_font)
     spans = hotpdf_object.extract_spans(x0=0, x1=300, y0=25, y1=30)
