@@ -42,7 +42,7 @@ def __process(
     laparams_obj = __make_custom_laparams_object(laparams)
 
     hl_page_layouts = extract_pages(
-        source, password=password, page_numbers=page_numbers, caching=False, laparams=laparams_obj
+        source, password=password, page_numbers=page_numbers, caching=True, laparams=laparams_obj
     )
     for page_layout in hl_page_layouts:
         parsed_page: MemoryMap = MemoryMap()
