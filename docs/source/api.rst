@@ -12,7 +12,6 @@ API
    hotpdf.trie.Trie
    hotpdf.utils
    hotpdf.processor
-   hotpdf.helpers.nanoid
    hotpdf.data.classes.HotCharacter
    hotpdf.data.classes.Span
    hotpdf.data.classes.ElementDimension

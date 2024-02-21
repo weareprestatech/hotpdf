@@ -166,4 +166,6 @@ cython_debug/
 # MACOS
 .DS_Store
 
+# Project specific
 main.py
+memray-*

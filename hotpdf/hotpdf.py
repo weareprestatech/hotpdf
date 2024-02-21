@@ -248,7 +248,7 @@ class HotPdf:
         self.__check_page_number(page)
 
         for _, span in self.pages[page].span_map.items():
-            if intersect(ElementDimension(x0, y0, x1, y1, ""), span.get_element_dimension()):
+            if intersect(ElementDimension(x0, y0, x1, y1, None), span.get_element_dimension()):
                 span.characters = sorted(span.characters, key=lambda ch: (ch.y, ch.x))
                 spans.append(span)
                 if sort:
