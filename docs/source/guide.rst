@@ -41,6 +41,15 @@ Alternatively, to load a file, you can also defer loading from the constructor a
     with open(pdf_file_path, "rb") as f:
         hotpdf_document_2.load(f)
 
+You can also merge multiple HotPdf objects to get one single HotPdf object!
+
+.. code-block:: python
+
+    merged_hotpdf_object = HotPdf.merge_multiple(hotpdfs=[
+        hotpdf_document,
+        hotpdf_document2,
+    ])
+
 
 Sometimes pdfminer.six will not replace (cid:x) values with their corresponding Unicode values.
 In that case, send the charset Encoder.

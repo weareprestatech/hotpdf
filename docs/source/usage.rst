@@ -42,6 +42,18 @@ Alternatively you can defer loading, and use the `.load()` function instead. The
 
 .. autofunction:: hotpdf.HotPdf.load
 
+You can also merge multiple HotPdf objects to get one single HotPdf object!
+
+.. code-block:: python
+
+    merged_hotpdf_object = HotPdf.merge_multiple(hotpdfs=[
+        hotpdf_document,
+        hotpdf_document2,
+    ])
+
+
+.. autofunction:: hotpdf.HotPdf.merge_multiple
+
 Sometimes pdfminer.six will not replace (cid:x) values with their corresponding Unicode values.
 In that case, send the charset Encoder.
 

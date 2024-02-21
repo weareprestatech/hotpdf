@@ -474,7 +474,7 @@ def test_invalid_decoder(valid_file_name):
 
 
 def test_multi_load(valid_file_name, multiple_pages_file_name):
-    big_pdf = HotPdf(
+    big_pdf = HotPdf.merge_multiple(
         hotpdfs=[HotPdf(valid_file_name), HotPdf(multiple_pages_file_name, include_annotation_spaces=True)]
     )
     assert "HOTPDF" in big_pdf.extract_page_text(page=0)
@@ -483,4 +483,4 @@ def test_multi_load(valid_file_name, multiple_pages_file_name):
 
 def test_multi_load_none(multiple_pages_file_name):
     with pytest.raises(HotPdfIsNoneError, match="HotPdf object cannot be None"):
-        _ = HotPdf(hotpdfs=[None, HotPdf(multiple_pages_file_name, include_annotation_spaces=True)])
+        _ = HotPdf.merge_multiple(hotpdfs=[None, HotPdf(multiple_pages_file_name, include_annotation_spaces=True)])
