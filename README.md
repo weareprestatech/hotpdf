@@ -89,6 +89,9 @@ with open(pdf_file_path, "rb") as f:
 from hotpdf.encodings.types import EncodingTypes
 hotpdf_cid_removal_object = HotPdf(f, cid_overwrite_charset=EncodingTypes.LATIN)
 
+# You can also merge multiple HotPdf objects to get one single HotPdf object
+merged_hotpdf_object = HotPdf.merge_multiple(hotpdfs=[hotpdf1, hotpdf2])
+
 # Get number of pages
 print(len(hotpdf_document.pages))
 

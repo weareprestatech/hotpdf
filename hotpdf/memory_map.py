@@ -1,4 +1,5 @@
 import math
+from collections import defaultdict
 from collections.abc import Generator
 from typing import Optional, Union
 
@@ -56,6 +57,20 @@ class MemoryMap:
             elif isinstance(obj, (LTFigure)):
                 yield from self.__extract_from_ltfigure(obj)
 
+    def __get_right_shifted_hot_character(self, hot_character: HotCharacter, shift: int) -> HotCharacter:
+        """Shift a hotcharacter on the x-coordinate
+
+        Args:
+            hot_character (HotCharacter): HotCharacter object to be shifted
+            shift (int): shift offset on the x-coordinate
+
+        Returns:
+            HotCharacter: HotCharacter object with new coords
+        """
+        hot_character.x += shift
+        hot_character.x_end += shift
+        return hot_character
+
     def load_memory_map(
         self,
         page: LTPage,
@@ -74,6 +89,7 @@ class MemoryMap:
         char_hot_characters: list[HotCharacter] = []
         char_encoder = Decoder(cid_overwrite_charset)
         page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
+        line_shift: defaultdict[int, int] = defaultdict(int)
         for component in page_components:
             span_id = generate_nano_id(size=10)
             prev_char_inserted = False
@@ -130,18 +146,26 @@ class MemoryMap:
                     )
                     prev_char_inserted = char_c != " "
         # Insert into Trie and Span Maps
-        average_text_distance: int = 0
+        last_inserted_x_y: tuple[int, int] = (-1, -1)
         for i in range(len(char_hot_characters)):
             _current_character: HotCharacter = char_hot_characters[i]
             # Determine if annotation spaces should be added
             if include_annotation_spaces and i > 0 and i < len(char_hot_characters) - 1:
                 prev_char: HotCharacter = char_hot_characters[i - 1]
                 next_char: HotCharacter = char_hot_characters[i + 1]
-                if _current_character.is_anno and (not (next_char.x - prev_char.x_end) >= average_text_distance):
+                if _current_character.is_anno and (not (next_char.x - prev_char.x_end) >= 5):
                     continue
-                elif not (next_char.is_anno or prev_char.is_anno):
-                    average_text_distance += next_char.x - prev_char.x_end
-                    average_text_distance //= 2
+
+            # Prevent characters from overlapping
+            if (last_inserted_x_y[0] > 0 and last_inserted_x_y[1] > 0) and (
+                _current_character.x == last_inserted_x_y[0] and _current_character.y == last_inserted_x_y[1]
+            ):
+                line_shift[_current_character.y] += 1
+            last_inserted_x_y = (_current_character.x, _current_character.y)
+            _current_character = self.__get_right_shifted_hot_character(
+                _current_character, line_shift[_current_character.y]
+            )
+
             self.__insert_hotcharacter_to_memory(_current_character)
         self.width = math.ceil(page.width)
         self.height = math.ceil(page.height)

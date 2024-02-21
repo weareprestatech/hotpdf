@@ -20,3 +20,4 @@
       ~HotPdf.extract_text
       ~HotPdf.find_text
       ~HotPdf.load
+      ~HotPdf.merge_multiple

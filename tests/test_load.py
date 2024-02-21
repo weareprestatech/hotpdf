@@ -9,7 +9,7 @@ from pdfminer.pdfparser import PDFSyntaxError
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
 from hotpdf.encodings.types import EncodingTypes
-from hotpdf.exceptions.custom_exceptions import DecoderNotInitalised
+from hotpdf.exceptions.custom_exceptions import DecoderNotInitalised, HotPdfIsNoneError
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 
@@ -436,11 +436,15 @@ def test_include_annotation_spaces_flag_sanity_check(valid_file_name):
     assert len(page_text) > 500
 
 
-@pytest.mark.skip(reason="Test is not implemented properly. Need to rewrite.")
-def test_include_annotation_spaces_flag_(valid_file_name):
-    hotpdf_object = HotPdf(valid_file_name, include_annotation_spaces=True)
-    page_text = hotpdf_object.extract_page_text(0)
-    assert len(page_text) > 500
+def test_include_annotation_spaces_flag(multiple_pages_file_name):
+    hotpdf_obj = HotPdf(multiple_pages_file_name, include_annotation_spaces=True)
+    assert "THE HOLY BIBLE" in hotpdf_obj.extract_page_text(page=0)
+    assert "THEHOLYBIBLE" not in hotpdf_obj.extract_page_text(page=0)
+
+    # Inverse
+    hotpdf_obj_no_space = HotPdf(multiple_pages_file_name)
+    assert "THE HOLY BIBLE" not in hotpdf_obj_no_space.extract_page_text(page=0)
+    assert "THEHOLYBIBLE" in hotpdf_obj_no_space.extract_page_text(page=0)
 
 
 @pytest.mark.skip(reason="Test this internally.")
@@ -467,3 +471,16 @@ def test_invalid_decoder(valid_file_name):
 
     with pytest.raises(DecoderNotInitalised, match="Decoder not initialised"):
         _ = HotPdf(valid_file_name, cid_overwrite_charset=EncodingTypes.BATIN)
+
+
+def test_multi_load(valid_file_name, multiple_pages_file_name):
+    big_pdf = HotPdf.merge_multiple(
+        hotpdfs=[HotPdf(valid_file_name), HotPdf(multiple_pages_file_name, include_annotation_spaces=True)]
+    )
+    assert "HOTPDF" in big_pdf.extract_page_text(page=0)
+    assert "THE HOLY BIBLE" in big_pdf.extract_page_text(page=1)
+
+
+def test_multi_load_none(multiple_pages_file_name):
+    with pytest.raises(HotPdfIsNoneError, match="HotPdf object cannot be None"):
+        _ = HotPdf.merge_multiple(hotpdfs=[None, HotPdf(multiple_pages_file_name, include_annotation_spaces=True)])

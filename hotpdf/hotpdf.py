@@ -7,6 +7,7 @@ from typing import Optional, Union
 
 from hotpdf import processor
 from hotpdf.encodings.types import EncodingTypes
+from hotpdf.exceptions.custom_exceptions import HotPdfIsNoneError
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, intersect
 
@@ -37,7 +38,6 @@ class HotPdf:
             include_annotation_spaces (bool, optional): Add annotation spaces to the memory map.
             cid_overwrite_charset (EncodingTypes, optional): Overwrite encode charset for (cid:x) values
                 that haven't been converted. Default None, will return cid values as is without conversion
-
         Raises:
             ValueError: If the page range is invalid.
             FileNotFoundError: If the file is not found.
@@ -80,6 +80,28 @@ class HotPdf:
         if type(pdf_file) is str:
             self.__check_file_exists(pdf_file)
         self.__check_page_range(page_numbers)
+
+    @staticmethod
+    def merge_multiple(
+        hotpdfs: list["HotPdf"],
+    ) -> "HotPdf":
+        """Merge multiple HotPdf objects and return a single HotPdf object consisting of all pages
+
+        Args:
+            hotpdfs (list[HotPdf]): List of HotPdf objects that will be combined
+                to form one single HotPdf object. All other params will be ignored in this case.
+        Raises:
+            HotPdfIsNoneError: If any of the HotPdf objects in the hotpdfs list is None
+
+        Returns:
+            HotPdf: Merged HotPdf object
+        """
+        if any(_hotpdf is None for _hotpdf in hotpdfs):
+            raise HotPdfIsNoneError("HotPdf object cannot be None")
+        merged_hotpdf = HotPdf()
+        for _hotpdf in hotpdfs:
+            merged_hotpdf.pages.extend(_hotpdf.pages)
+        return merged_hotpdf
 
     def load(
         self,
