@@ -7,6 +7,7 @@ from typing import Optional, Union
 
 from hotpdf import processor
 from hotpdf.encodings.types import EncodingTypes
+from hotpdf.exceptions.custom_exceptions import HotPdfIsNoneError
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import filter_adjacent_coords, intersect
 
@@ -50,6 +51,8 @@ class HotPdf:
         self.extraction_tolerance: int = extraction_tolerance
         if hotpdfs:
             for _hotpdf in hotpdfs:
+                if not _hotpdf:
+                    raise HotPdfIsNoneError("HotPdf object cannot be None")
                 self.pages.extend(_hotpdf.pages)
             return
         if pdf_file:

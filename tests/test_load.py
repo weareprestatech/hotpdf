@@ -9,7 +9,7 @@ from pdfminer.pdfparser import PDFSyntaxError
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
 from hotpdf.encodings.types import EncodingTypes
-from hotpdf.exceptions.custom_exceptions import DecoderNotInitalised
+from hotpdf.exceptions.custom_exceptions import DecoderNotInitalised, HotPdfIsNoneError
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 
@@ -479,3 +479,8 @@ def test_multi_load(valid_file_name, multiple_pages_file_name):
     )
     assert "HOTPDF" in big_pdf.extract_page_text(page=0)
     assert "THE HOLY BIBLE" in big_pdf.extract_page_text(page=1)
+
+
+def test_multi_load_none(multiple_pages_file_name):
+    with pytest.raises(HotPdfIsNoneError, match="HotPdf object cannot be None"):
+        _ = HotPdf(hotpdfs=[None, HotPdf(multiple_pages_file_name, include_annotation_spaces=True)])
