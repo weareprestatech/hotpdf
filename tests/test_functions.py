@@ -1,4 +1,5 @@
 import shutil
+from uuid import uuid4
 
 import pytest
 
@@ -9,6 +10,11 @@ from hotpdf.encodings.decoder import Decoder
 from hotpdf.encodings.types import EncodingTypes
 from hotpdf.sparse_matrix import SparseMatrix
 from hotpdf.utils import filter_adjacent_coords, intersect, to_text
+
+
+@pytest.fixture()
+def test_uuid():
+    return uuid4()
 
 
 def xml_copy_file_name(xml_file_name: str):
@@ -95,30 +101,30 @@ def test_intersect(bbox1, bbox2, expected):
 @pytest.mark.parametrize(
     "hot_characters, expected",
     [
-        ([HotCharacter(value="H", x=0, y=0, x_end=10, span_id="x")], "H"),
+        ([HotCharacter(value="H", x=0, y=0, x_end=10, span_id=test_uuid)], "H"),
         (
             [
-                HotCharacter(value="H", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="e", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="o", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="H", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="e", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="o", x=0, y=0, x_end=10, span_id=test_uuid),
             ],
             "Hello",
         ),
         (
             [
-                HotCharacter(value="H", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="e", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="o", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value=" ", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="W", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="o", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="r", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="l", x=0, y=0, x_end=10, span_id="x"),
-                HotCharacter(value="d", x=0, y=0, x_end=10, span_id="x"),
+                HotCharacter(value="H", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="e", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="o", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value=" ", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="W", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="o", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="r", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="l", x=0, y=0, x_end=10, span_id=test_uuid),
+                HotCharacter(value="d", x=0, y=0, x_end=10, span_id=test_uuid),
             ],
             "Hello World",
         ),

@@ -2,6 +2,7 @@ import math
 from collections import defaultdict
 from collections.abc import Generator
 from typing import Optional, Union
+from uuid import UUID, uuid4
 
 from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
 
@@ -9,7 +10,6 @@ from hotpdf.encodings.decoder import Decoder
 from hotpdf.encodings.types import EncodingTypes
 
 from .data.classes import HotCharacter, PageResult
-from .helpers.nanoid import generate_nano_id
 from .span_map import SpanMap
 from .sparse_matrix import SparseMatrix
 from .trie import Trie
@@ -91,7 +91,7 @@ class MemoryMap:
         page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
         line_shift: defaultdict[int, int] = defaultdict(int)
         for component in page_components:
-            span_id = generate_nano_id(size=10)
+            span_id = uuid4()
             prev_char_inserted = False
             if isinstance(component, LTChar):
                 x0 = round(component.x0)
@@ -188,7 +188,7 @@ class MemoryMap:
         x: int,
         y: int,
         x_end: int,
-        span_id: str,
+        span_id: UUID,
         is_anno: bool = False,
         encoder: Optional[Decoder] = None,
     ) -> HotCharacter:
@@ -199,7 +199,7 @@ class MemoryMap:
             x (int): column index (x0-coordinate) of the element.
             y (int): row index (y0-coordinate) of the element.
             x_end (int): end column index (x1-coordinate) of element. x_end - x = width of element.
-            span_id (str): id of parent span.
+            span_id (UUID): id of parent span.
             encoder (Decoder): Decoder to convert (cid:x) values
 
         Returns:
