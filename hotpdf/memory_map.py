@@ -57,6 +57,20 @@ class MemoryMap:
             elif isinstance(obj, (LTFigure)):
                 yield from self.__extract_from_ltfigure(obj)
 
+    def __get_right_shifted_hot_character(self, hot_character: HotCharacter, shift: int) -> HotCharacter:
+        """Shift a hotcharacter on the x-coordinate
+
+        Args:
+            hot_character (HotCharacter): HotCharacter object to be shifted
+            shift (int): shift offset on the x-coordinate
+
+        Returns:
+            HotCharacter: HotCharacter object with new coords
+        """
+        hot_character.x += shift
+        hot_character.x_end += shift
+        return hot_character
+
     def load_memory_map(
         self,
         page: LTPage,
@@ -148,8 +162,9 @@ class MemoryMap:
             ):
                 line_shift[_current_character.y] += 1
             last_inserted_x_y = (_current_character.x, _current_character.y)
-            _current_character.x += line_shift[_current_character.y]
-            _current_character.x_end += line_shift[_current_character.y]
+            _current_character = self.__get_right_shifted_hot_character(
+                _current_character, line_shift[_current_character.y]
+            )
 
             self.__insert_hotcharacter_to_memory(_current_character)
         self.width = math.ceil(page.width)
