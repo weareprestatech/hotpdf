@@ -40,7 +40,7 @@ keywords = [
 ]
 
 dependencies = [
-    "pdfminer.six==20231228",
+    "pdfminer.six>=20231228",
 ]
 
 [tool.setuptools]
