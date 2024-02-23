@@ -1,13 +1,10 @@
 import math
 from collections import defaultdict
 from collections.abc import Generator
-from typing import Optional, Union
+from typing import Union
 from uuid import UUID, uuid4
 
 from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
-
-from hotpdf.encodings.decoder import Decoder
-from hotpdf.encodings.types import EncodingTypes
 
 from .data.classes import HotCharacter, PageResult
 from .span_map import SpanMap
@@ -75,7 +72,6 @@ class MemoryMap:
         self,
         page: LTPage,
         include_annotation_spaces: bool = False,
-        cid_overwrite_charset: Optional[EncodingTypes] = None,
     ) -> None:
         """Load memory map data from an XML page.
 
@@ -87,7 +83,6 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[HotCharacter] = []
-        char_encoder = Decoder(cid_overwrite_charset)
         page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
         line_shift: defaultdict[int, int] = defaultdict(int)
         for component in page_components:
@@ -103,7 +98,6 @@ class MemoryMap:
                     y=y0,
                     x_end=x1,
                     span_id=span_id,
-                    encoder=char_encoder,
                 )
                 char_hot_characters.append(
                     hot_character,
@@ -139,7 +133,11 @@ class MemoryMap:
                     x1 = round(character.x1)
                     y0 = round(page.height - character.y0)
                     hot_character = self.__get_hot_character_of(
-                        value=char_c, x=x0, y=y0, x_end=x1, span_id=span_id, encoder=char_encoder
+                        value=char_c,
+                        x=x0,
+                        y=y0,
+                        x_end=x1,
+                        span_id=span_id,
                     )
                     char_hot_characters.append(
                         hot_character,
@@ -190,7 +188,6 @@ class MemoryMap:
         x_end: int,
         span_id: UUID,
         is_anno: bool = False,
-        encoder: Optional[Decoder] = None,
     ) -> HotCharacter:
         """Insert element into memory map.
 
@@ -200,13 +197,10 @@ class MemoryMap:
             y (int): row index (y0-coordinate) of the element.
             x_end (int): end column index (x1-coordinate) of element. x_end - x = width of element.
             span_id (UUID): id of parent span.
-            encoder (Decoder): Decoder to convert (cid:x) values
 
         Returns:
             HotCharacter: HotCharacter object of the whitespace.
         """
-        if "(cid:" in value and encoder and encoder.initialised:
-            value = encoder.cid_str_to_str(cid_str=value)
         return HotCharacter(
             value=value,
             x=x,
