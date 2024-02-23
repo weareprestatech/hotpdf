@@ -1,5 +1,4 @@
 from hotpdf import HotPdf
-from hotpdf.encodings.types import EncodingTypes
 
 pdf_file_path = "test.pdf"
 
@@ -9,11 +8,6 @@ hotpdf_document = HotPdf(pdf_file_path)
 # Alternatively, you can also pass an opened pdf stream to be loaded
 with open(pdf_file_path, "rb") as f:
     hotpdf_document_2 = HotPdf(f)
-
-# Sometimes pdfminer will not replace (cid:x) values properly
-# In that case pass EncodingTypes
-
-hotpdf_cid_removal_object = HotPdf(f, cid_overwrite_charset=EncodingTypes.LATIN)
 
 # Get number of pages
 print(len(hotpdf_document.pages))

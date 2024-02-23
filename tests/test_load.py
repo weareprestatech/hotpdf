@@ -1,5 +1,4 @@
 import os
-from enum import Enum
 from unittest.mock import patch
 
 import pytest
@@ -8,8 +7,7 @@ from pdfminer.pdfparser import PDFSyntaxError
 
 from hotpdf import HotPdf
 from hotpdf.data.classes import ElementDimension
-from hotpdf.encodings.types import EncodingTypes
-from hotpdf.exceptions.custom_exceptions import DecoderNotInitalised, HotPdfIsNoneError
+from hotpdf.exceptions.custom_exceptions import HotPdfIsNoneError
 from hotpdf.memory_map import MemoryMap
 from hotpdf.utils import get_element_dimension
 
@@ -445,32 +443,6 @@ def test_include_annotation_spaces_flag(multiple_pages_file_name):
     hotpdf_obj_no_space = HotPdf(multiple_pages_file_name)
     assert "THE HOLY BIBLE" not in hotpdf_obj_no_space.extract_page_text(page=0)
     assert "THEHOLYBIBLE" in hotpdf_obj_no_space.extract_page_text(page=0)
-
-
-@pytest.mark.skip(reason="Test this internally.")
-def test_cid_replacement(only_euro_no_embedded_font):
-    hotpdf_object = HotPdf(only_euro_no_embedded_font)
-    spans = hotpdf_object.extract_spans(x0=0, x1=300, y0=25, y1=30)
-    # No replacement
-    all_span_text = "".join(span.to_text() for span in spans)
-    assert "(cid:" in all_span_text
-    assert "€" not in all_span_text
-
-    hotpdf_object_cid_replacement = HotPdf(only_euro_no_embedded_font, cid_overwrite_charset=EncodingTypes.LATIN)
-    spans_2 = hotpdf_object_cid_replacement.extract_spans(x0=0, x1=300, y0=25, y1=30)
-    # Replace cid:128 notation to eur symbol
-    all_span_text_2 = "".join(span.to_text() for span in spans_2)
-    assert "(cid:" not in all_span_text_2
-    assert "€" in all_span_text_2
-
-
-def test_invalid_decoder(valid_file_name):
-    class EncodingTypes(Enum):
-        LATIN = "latin"
-        BATIN = "batin"
-
-    with pytest.raises(DecoderNotInitalised, match="Decoder not initialised"):
-        _ = HotPdf(valid_file_name, cid_overwrite_charset=EncodingTypes.BATIN)
 
 
 def test_multi_load(valid_file_name, multiple_pages_file_name):

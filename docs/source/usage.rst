@@ -54,15 +54,6 @@ You can also merge multiple HotPdf objects to get one single HotPdf object!
 
 .. autofunction:: hotpdf.HotPdf.merge_multiple
 
-Sometimes pdfminer.six will not replace (cid:x) values with their corresponding Unicode values.
-In that case, send the charset Encoder.
-
-.. code-block:: python
-
-   from hotpdf.encodings.types import EncodingTypes
-   hotpdf_cid_removal_object = HotPdf(f, cid_overwrite_charset=EncodingTypes.LATIN)
-
-
 File Operations
 ------------------------------------------
 

@@ -6,7 +6,6 @@ from typing import Optional, Union
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LAParams
 
-from hotpdf.encodings.types import EncodingTypes
 from hotpdf.memory_map import MemoryMap
 
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
@@ -34,7 +33,6 @@ def __process(
     page_numbers: Optional[list[int]] = None,
     laparams: Optional[dict[str, Union[float, bool]]] = None,
     include_annotation_spaces: bool = False,
-    cid_overwrite_charset: Optional[EncodingTypes] = None,
 ) -> list[MemoryMap]:
     pages: list[MemoryMap] = []
     __supress_pdfminer_logs()
@@ -50,7 +48,6 @@ def __process(
         parsed_page.load_memory_map(
             page=page_layout,
             include_annotation_spaces=include_annotation_spaces,
-            cid_overwrite_charset=cid_overwrite_charset,
         )
         pages.append(parsed_page)
     return pages
@@ -62,7 +59,6 @@ def process(
     page_numbers: Optional[list[int]] = None,
     laparams: Optional[dict[str, Union[float, bool]]] = None,
     include_annotation_spaces: bool = False,
-    cid_overwrite_charset: Optional[EncodingTypes] = None,
 ) -> list[MemoryMap]:
     return __process(
         source=source,
@@ -70,5 +66,4 @@ def process(
         page_numbers=page_numbers,
         laparams=laparams,
         include_annotation_spaces=include_annotation_spaces,
-        cid_overwrite_charset=cid_overwrite_charset,
     )
