@@ -145,13 +145,15 @@ class MemoryMap:
                     prev_char_inserted = char_c != " "
         # Insert into Trie and Span Maps
         last_inserted_x_y: tuple[int, int] = (-1, -1)
+        # TODO: Constant distance for now - needs research
+        ANNOTATION_DISTANCE_THRESHOLD = 5
         for i in range(len(char_hot_characters)):
             _current_character: HotCharacter = char_hot_characters[i]
             # Determine if annotation spaces should be added
             if include_annotation_spaces and i > 0 and i < len(char_hot_characters) - 1:
                 prev_char: HotCharacter = char_hot_characters[i - 1]
                 next_char: HotCharacter = char_hot_characters[i + 1]
-                if _current_character.is_anno and (not (next_char.x - prev_char.x_end) >= 5):
+                if _current_character.is_anno and (not (next_char.x - prev_char.x) >= ANNOTATION_DISTANCE_THRESHOLD):
                     continue
 
             # Prevent characters from overlapping
