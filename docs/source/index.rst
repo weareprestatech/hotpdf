@@ -46,6 +46,18 @@ Some examples of running tests locally:
    python3 -m pytest --cov-fail-under=90 -n=auto --cov=hotpdf --cov-report term-missing
 
 
+Known Issues
+--------------
+
+1. (cid:x) characters in text - Some pdfs when extracted, some symbols like `€` might not be properly decoded, and instead be extracted as `(cid:128)`.
+
+   This is a problem with the `pdfminer.six` library. We have fixed it from our side on our `fork <https://github.com/weareprestatech/pdfminer.six>`, and you can install it using pip. Until we are able to merge it to pdfminer.six repo and it gets released, we recommend that you install our fork with the fixes manually.
+
+   .. code-block:: bash
+   
+      pip install --no-cache-dir git+https://github.com/weareprestatech/pdfminer.six.git@20240222#egg=pdfminer-six
+
+
 
 Documentation
 --------------
