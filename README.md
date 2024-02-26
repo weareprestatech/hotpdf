@@ -127,6 +127,18 @@ spans_text_in_bbox = hotpdf_document.extract_spans_text(
 full_page_text = hotpdf_document.extract_page_text(page=0)
 ```
 
+## Known Issues
+
+1. (cid:x) characters in text - Some pdfs when extracted, some symbols like `€` might not be properly decoded, and instead be extracted as `(cid:128)`. 
+
+This is a problem with the `pdfminer.six` library. We have fixed it from our side on our [fork](https://github.com/weareprestatech/pdfminer.six), and you can install it using pip. Until we are able to merge it to pdfminer.six repo and it gets released, we recommend that you install our fork with the fixes manually.
+
+
+
+```bash
+pip install --no-cache-dir git+https://github.com/weareprestatech/pdfminer.six.git@20240222#egg=pdfminer-six
+```
+
 ## License
 
 This project is licensed under the terms of the MIT license.
