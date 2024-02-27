@@ -43,7 +43,7 @@ Some examples of running tests locally:
    python3 -m pip install -e '.[testing]'               # install extra deps for testing
    python3 -m pytest -n=auto test/                      # run the test suite
    # run tests with coverage
-   python3 -m pytest --cov-fail-under=90 -n=auto --cov=hotpdf --cov-report term-missing
+   python3 -m pytest --cov-fail-under=96 -n=auto --cov=hotpdf --cov-report term-missing
 
 
 Known Issues
