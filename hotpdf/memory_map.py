@@ -72,13 +72,14 @@ class MemoryMap:
         self,
         page: LTPage,
         include_annotation_spaces: bool = False,
+        preserve_pdfminer_coordinates: bool = False,
     ) -> None:
         """Load memory map data from an XML page.
 
         Args:
             page (str): LTPage Element returned by pdfminer
-            include_annotation_spaces (bool): Add annotation spaces to the memory map.
-
+            include_annotation_spaces (bool, optional): Add annotation spaces to the memory map.
+            preserve_pdfminer_coordinates(bool, optional): Preserve pdfminer y-coordinate values.
         Returns:
             None
         """
@@ -91,7 +92,7 @@ class MemoryMap:
             if isinstance(component, LTChar):
                 x0 = round(component.x0)
                 x1 = round(component.x1)
-                y0 = round(page.height - component.y0)
+                y0 = round(component.y0) if preserve_pdfminer_coordinates else round(page.height - component.y0)
                 hot_character: HotCharacter = self.__get_hot_character_of(
                     value=component.get_text(),
                     x=x0,
@@ -131,7 +132,7 @@ class MemoryMap:
                     char_c = character.get_text()
                     x0 = round(character.x0)
                     x1 = round(character.x1)
-                    y0 = round(page.height - character.y0)
+                    y0 = round(component.y0) if preserve_pdfminer_coordinates else round(page.height - component.y0)
                     hot_character = self.__get_hot_character_of(
                         value=char_c,
                         x=x0,

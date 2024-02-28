@@ -456,3 +456,11 @@ def test_multi_load(valid_file_name, multiple_pages_file_name):
 def test_multi_load_none(multiple_pages_file_name):
     with pytest.raises(HotPdfIsNoneError, match="HotPdf object cannot be None"):
         _ = HotPdf.merge_multiple(hotpdfs=[None, HotPdf(multiple_pages_file_name, include_annotation_spaces=True)])
+
+
+def test_extract_spans_pdfminer_y_preserved(valid_file_name):
+    hot_pdf_object = HotPdf()
+    hot_pdf_object.load(valid_file_name, preserve_pdfminer_coordinates=True)
+    # extract from the bottom left of file
+    spans = hot_pdf_object.extract_spans(x0=0, y0=0, x1=300, y1=200)
+    assert "EMAIL" in spans[0].to_text()

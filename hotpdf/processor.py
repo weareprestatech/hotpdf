@@ -33,6 +33,7 @@ def __process(
     page_numbers: Optional[list[int]] = None,
     laparams: Optional[dict[str, Union[float, bool]]] = None,
     include_annotation_spaces: bool = False,
+    preserve_pdfminer_coordinates: bool = False,
 ) -> list[MemoryMap]:
     pages: list[MemoryMap] = []
     __supress_pdfminer_logs()
@@ -48,6 +49,7 @@ def __process(
         parsed_page.load_memory_map(
             page=page_layout,
             include_annotation_spaces=include_annotation_spaces,
+            preserve_pdfminer_coordinates=preserve_pdfminer_coordinates,
         )
         pages.append(parsed_page)
     return pages
@@ -59,6 +61,7 @@ def process(
     page_numbers: Optional[list[int]] = None,
     laparams: Optional[dict[str, Union[float, bool]]] = None,
     include_annotation_spaces: bool = False,
+    preserve_pdfminer_coordinates: bool = False,
 ) -> list[MemoryMap]:
     return __process(
         source=source,
@@ -66,4 +69,5 @@ def process(
         page_numbers=page_numbers,
         laparams=laparams,
         include_annotation_spaces=include_annotation_spaces,
+        preserve_pdfminer_coordinates=preserve_pdfminer_coordinates,
     )
