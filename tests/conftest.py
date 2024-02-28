@@ -49,7 +49,7 @@ def duplicate_span_file_name():
 @pytest.fixture
 def document_lt_figure_file_name():
     # File sourced from: https://github.com/druskacik/ltfigure-pdfminer
-    return "tests/doc_lt_figure.pdf"
+    return "tests/resources/doc_lt_figure.pdf"
 
 
 def only_euro_no_embedded_font():
