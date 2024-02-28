@@ -7,7 +7,7 @@
 [![Unit tests](https://github.com/weareprestatech/hotpdf/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/weareprestatech/hotpdf/actions/workflows/test.yml)
 
 
-This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery) [ [Comparison](https://imgur.com/a/5XuwEqq) ].
+This project was started as an internal project @ [Prestatech](http://prestatech.com/) to parse PDF files in a fast and memory-efficient way to overcome the difficulties we were having while parsing big PDF files using libraries such as [pdfquery](https://github.com/jcushman/pdfquery) [[Comparison](https://imgur.com/a/5XuwEqq)].
 
 hotpdf is a wrapper around [pdfminer.six](https://github.com/pdfminer/pdfminer.six) focusing on text extraction and text search operations on PDFs.
 
