@@ -24,7 +24,7 @@ pip install hotpdf
 
 ## Local Setup
 
-First install the dependencies required by hotpdf
+First, install the dependencies required by hotpdf
 
 ```bash
 python3 -m pip install -e .
@@ -34,7 +34,7 @@ python3 -m pip install -e .
 
 You should install the [pre-commit](https://github.com/weareprestatech/hotpdf/blob/main/.pre-commit-config.yaml) hooks with `pre-commit install`. This will run the linter, mypy, and ruff formatting before each commit.
 
-Rembember to run `pip install -e '.[dev]'` to install the extra dependencies for development.
+Remember to run `pip install -e '.[dev]'` to install the extra dependencies for development.
 
 For more examples of how to run the full test suite please refer to the [CI workflow](https://github.com/weareprestatech/hotpdf/blob/main/.github/workflows/test.yml).
 
@@ -80,14 +80,14 @@ pdf_file_path = "test.pdf"
 # Load pdf file into memory
 hotpdf_document = HotPdf(pdf_file_path)
 
-# Alternatively, you can also pass an opened pdf stream to be loaded
+# Alternatively, you can also pass an opened PDF stream to be loaded
 with open(pdf_file_path, "rb") as f:
    hotpdf_document_2 = HotPdf(f)
 
 # You can also merge multiple HotPdf objects to get one single HotPdf object
 merged_hotpdf_object = HotPdf.merge_multiple(hotpdfs=[hotpdf1, hotpdf2])
 
-# Get number of pages
+# Get the number of pages
 print(len(hotpdf_document.pages))
 
 # Find text
@@ -96,7 +96,7 @@ text_occurences = hotpdf_document.find_text("foo")
 # Find text and its full span
 text_occurences_full_span = hotpdf_document.find_text("foo", take_span=True)
 
-# Extract text in region
+# Extract text in the region
 text_in_bbox = hotpdf_document.extract_text(
    x0=0,
    y0=0,
@@ -105,7 +105,7 @@ text_in_bbox = hotpdf_document.extract_text(
    page=0,
 )
 
-# Extract spans in region
+# Extract spans in the region
 spans_in_bbox = hotpdf_document.extract_spans(
    x0=0,
    y0=0,
@@ -114,7 +114,7 @@ spans_in_bbox = hotpdf_document.extract_spans(
    page=0,
 )
 
-# Extract spans text in region
+# Extract spans text in the region
 spans_text_in_bbox = hotpdf_document.extract_spans_text(
    x0=0,
    y0=0,
@@ -123,15 +123,15 @@ spans_text_in_bbox = hotpdf_document.extract_spans_text(
    page=0,
 )
 
-# Extract full page text
+# Extract full-page text
 full_page_text = hotpdf_document.extract_page_text(page=0)
 ```
 
 ## Known Issues
 
-1. (cid:x) characters in text - Some pdfs when extracted, some symbols like `€` might not be properly decoded, and instead be extracted as `(cid:128)`. 
+1. (cid:x) characters in text - In some pdfs when extracted, some symbols like `€` might not be properly decoded, and instead be extracted as `(cid:128)`. 
 
-This is a problem with the `pdfminer.six` library. We have fixed it from our side on our [fork](https://github.com/weareprestatech/pdfminer.six), and you can install it using pip. Until we are able to merge it to pdfminer.six repo and it gets released, we recommend that you install our fork with the fixes manually.
+This is a problem with the `pdfminer.six` library. We have fixed it from our side on our [fork](https://github.com/weareprestatech/pdfminer.six), and you can install it using pip. Until we can merge it to pdfminer.six repo and it gets released, we recommend that you install our fork with the fixes manually.
 
 
 
