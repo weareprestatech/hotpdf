@@ -17,8 +17,8 @@ class MemoryMap:
         """Initialize the MemoryMap. 2D Matrix representation of a PDF Page.
 
         Args:
-            width (int): The width (max columns) of a page.
-            height (int) The height (max rows) of a page.
+            width (int): The width of a page.
+            height (int) The height of a page.
         """
         self.text_trie = Trie()
         self.span_map = SpanMap()
