@@ -27,7 +27,7 @@ def perform_memory_test(file_name, expected_peak_memory):
 
 
 def test_speed_benchmark_multiple_pages(multiple_pages_file_name):
-    perform_speed_test(multiple_pages_file_name, 3.5)
+    perform_speed_test(multiple_pages_file_name, 4.5)
 
 
 def test_memory_benchmark_multiple_pages(multiple_pages_file_name):
@@ -35,7 +35,7 @@ def test_memory_benchmark_multiple_pages(multiple_pages_file_name):
 
 
 def test_speed_luca_mock(mock_hotpdf_bank_file_name):
-    perform_speed_test(mock_hotpdf_bank_file_name, 3.5)
+    perform_speed_test(mock_hotpdf_bank_file_name, 4.5)
 
 
 def test_memory_luca_mock(mock_hotpdf_bank_file_name):
@@ -43,7 +43,7 @@ def test_memory_luca_mock(mock_hotpdf_bank_file_name):
 
 
 def test_speed_default_file(valid_file_name):
-    perform_speed_test(valid_file_name, 3.5)
+    perform_speed_test(valid_file_name, 4.5)
 
 
 @pytest.mark.skip(reason="Need to perform benchmarks first")

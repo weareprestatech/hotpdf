@@ -42,7 +42,7 @@ jobs:
     needs: linter
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     env:
       Python3_ROOT_DIR:
     name: Tests
