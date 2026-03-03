@@ -35,11 +35,12 @@ class Trie:
         node.is_end_of_word = True
         node.hot_characters = node.hot_characters + [hot_character]
 
-    def search_all(self, text: str) -> tuple[list[str], PageResult]:
+    def search_all(self, text: str, case_sensitive: bool = True) -> tuple[list[str], PageResult]:
         """Search for words in the Trie that match a given text.
 
         Args:
             text (str): The text to search for.
+            case_sensitive (bool): Whether the search should be case-sensitive. Defaults to True.
 
         Returns:
             tuple: A tuple containing a list of the target characters found and corresponding PageResult.
@@ -48,9 +49,18 @@ class Trie:
         found: list[str] = []
         hot_characters: PageResult = []
         for char in text:
-            if char in node.children and node.children[char].is_end_of_word:
-                found.append(char)
-                if node.children[char].hot_characters:
-                    hot_characters.append(node.children[char].hot_characters)
+            if case_sensitive:
+                if char in node.children and node.children[char].is_end_of_word:
+                    found.append(char)
+                    if node.children[char].hot_characters:
+                        hot_characters.append(node.children[char].hot_characters)
+            else:
+                combined_hot_chars = []
+                for candidate in {char, char.lower(), char.upper()}:
+                    if candidate in node.children and node.children[candidate].is_end_of_word:
+                        combined_hot_chars.extend(node.children[candidate].hot_characters)
+                if combined_hot_chars:
+                    found.append(char)
+                    hot_characters.append(combined_hot_chars)
             node = self.root
         return found, hot_characters

@@ -236,14 +236,15 @@ class MemoryMap:
 
         return extracted_text
 
-    def find_text(self, query: str) -> tuple[list[str], PageResult]:
+    def find_text(self, query: str, case_sensitive: bool = True) -> tuple[list[str], PageResult]:
         """Find text within the memory map.
 
         Args:
             query (str): The text to search for.
+            case_sensitive (bool): Whether the search should be case-sensitive. Defaults to True.
 
         Returns:
             list: List of found text coordinates.
         """
-        found_text = self.text_trie.search_all(query)
+        found_text = self.text_trie.search_all(query, case_sensitive=case_sensitive)
         return found_text
