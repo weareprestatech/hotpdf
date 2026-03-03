@@ -193,7 +193,9 @@ class HotPdf:
         normalized_query = query if case_sensitive else query.lower()
 
         for page_num in query_pages:
-            found_page_map[page_num] = filter_adjacent_coords(*query_pages[page_num].find_text(query, case_sensitive=case_sensitive))
+            found_page_map[page_num] = filter_adjacent_coords(
+                *query_pages[page_num].find_text(query, case_sensitive=case_sensitive)
+            )
 
         final_found_page_map: SearchResult = defaultdict(PageResult)
 

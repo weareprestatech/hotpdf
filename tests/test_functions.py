@@ -169,12 +169,8 @@ def test_find_text_case_sensitive_no_match(variations_simple_file_name):
     assert any(len(matches) > 0 for matches in results.values())
     results_upper = hotpdf_object.find_text("TEST", case_sensitive=True)
     # Both "test" and "TEST" exist in the PDF, so each should only match its own casing
-    test_text = "".join(
-        hc.value for page_matches in results.values() for match in page_matches for hc in match
-    )
-    upper_text = "".join(
-        hc.value for page_matches in results_upper.values() for match in page_matches for hc in match
-    )
+    test_text = "".join(hc.value for page_matches in results.values() for match in page_matches for hc in match)
+    upper_text = "".join(hc.value for page_matches in results_upper.values() for match in page_matches for hc in match)
     assert test_text == "test"
     assert upper_text == "TEST"
 
