@@ -164,6 +164,7 @@ class HotPdf:
         pages: Optional[list[int]] = None,
         take_span: bool = False,
         sort: bool = True,
+        case_sensitive: bool = True,
     ) -> SearchResult:
         """Find text within the loaded PDF pages.
 
@@ -172,6 +173,7 @@ class HotPdf:
             pages (list[int], optional): List of page numbers to search.
             take_span (bool, optional): Take the full span of the text that it is a part of.
             sort (bool, Optional): Return elements sorted by their positions.
+            case_sensitive (bool, optional): Whether the search should be case-sensitive. Defaults to True.
         Raises:
             ValueError: If the page number is invalid.
 
@@ -188,8 +190,12 @@ class HotPdf:
 
         found_page_map = {}
 
+        normalized_query = query if case_sensitive else query.lower()
+
         for page_num in query_pages:
-            found_page_map[page_num] = filter_adjacent_coords(*query_pages[page_num].find_text(query))
+            found_page_map[page_num] = filter_adjacent_coords(
+                *query_pages[page_num].find_text(query, case_sensitive=case_sensitive)
+            )
 
         final_found_page_map: SearchResult = defaultdict(PageResult)
 
@@ -198,7 +204,8 @@ class HotPdf:
             final_found_page_map[page_num] = []
             for hot_characters in hot_character_page_occurences:
                 text = "".join(hc.value for hc in hot_characters)
-                if query not in text:
+                comparable_text = text if case_sensitive else text.lower()
+                if normalized_query not in comparable_text:
                     continue
                 full_span_dimension_hot_characters: Union[list[HotCharacter], None] = (
                     self.__extract_full_text_span(
