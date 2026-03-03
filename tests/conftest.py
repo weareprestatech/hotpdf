@@ -52,5 +52,6 @@ def document_lt_figure_file_name():
     return "tests/resources/doc_lt_figure.pdf"
 
 
-def only_euro_no_embedded_font():
-    return "tests/resources/only_eur_font_notembedded.pdf"
+@pytest.fixture()
+def variations_simple_file_name():
+    return "tests/resources/test_variations_simple.pdf"
