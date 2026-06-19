@@ -93,15 +93,14 @@ class MemoryMap:
                 x0 = round(component.x0)
                 x1 = round(component.x1)
                 y0 = round(component.y0) if preserve_pdfminer_coordinates else round(page.height - component.y0)
-                hot_character: HotCharacter = self.__get_hot_character_of(
-                    value=component.get_text(),
-                    x=x0,
-                    y=y0,
-                    x_end=x1,
-                    span_id=span_id,
-                )
-                char_hot_characters.append(
-                    hot_character,
+                char_hot_characters.extend(
+                    self.__get_hot_characters_of(
+                        value=component.get_text(),
+                        x=x0,
+                        y=y0,
+                        x_end=x1,
+                        span_id=span_id,
+                    )
                 )
                 continue
             for character in component:
@@ -133,15 +132,14 @@ class MemoryMap:
                     x0 = round(character.x0)
                     x1 = round(character.x1)
                     y0 = round(component.y0) if preserve_pdfminer_coordinates else round(page.height - component.y0)
-                    hot_character = self.__get_hot_character_of(
-                        value=char_c,
-                        x=x0,
-                        y=y0,
-                        x_end=x1,
-                        span_id=span_id,
-                    )
-                    char_hot_characters.append(
-                        hot_character,
+                    char_hot_characters.extend(
+                        self.__get_hot_characters_of(
+                            value=char_c,
+                            x=x0,
+                            y=y0,
+                            x_end=x1,
+                            span_id=span_id,
+                        )
                     )
                     prev_char_inserted = char_c != " "
         # Insert into Trie and Span Maps
@@ -211,6 +209,35 @@ class MemoryMap:
             span_id=span_id,
             is_anno=is_anno,
         )
+
+    def __get_hot_characters_of(
+        self,
+        value: str,
+        x: int,
+        y: int,
+        x_end: int,
+        span_id: UUID,
+        is_anno: bool = False,
+    ) -> list[HotCharacter]:
+        # pdfminer emits ligatures (e.g. "fi", "ffi") as a single glyph. The trie matches the
+        # query one char at a time, so an un-split ligature makes find_text miss any text crossing
+        # it. Split into single chars with proportional x so trie/find_text see real characters.
+        if len(value) <= 1:
+            return [self.__get_hot_character_of(value=value, x=x, y=y, x_end=x_end, span_id=span_id, is_anno=is_anno)]
+
+        n = len(value)
+        width = x_end - x
+        return [
+            self.__get_hot_character_of(
+                value=char,
+                x=round(x + width * i / n),
+                y=y,
+                x_end=round(x + width * (i + 1) / n),
+                span_id=span_id,
+                is_anno=is_anno,
+            )
+            for i, char in enumerate(value)
+        ]
 
     def extract_text_from_bbox(self, x0: int, x1: int, y0: int, y1: int) -> str:
         """Extract text within a specified bounding box.
