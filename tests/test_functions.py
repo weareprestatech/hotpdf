@@ -188,3 +188,25 @@ def test_find_text_case_insensitive_uppercase_query(variations_simple_file_name)
     results = hotpdf_object.find_text("TEST", case_sensitive=False)
     all_matches = [match for page_matches in results.values() for match in page_matches]
     assert len(all_matches) == 3
+
+
+def test_ligature_glyph_is_split_into_single_characters():
+    from hotpdf.memory_map import MemoryMap
+
+    mm = MemoryMap()
+    chars = mm._MemoryMap__get_hot_characters_of(value="fi", x=64, y=220, x_end=68, span_id=uuid4())
+    assert [c.value for c in chars] == ["f", "i"]
+    assert chars[0].x == 64
+    assert chars[-1].x_end == 68
+    # contiguous, no gap/overlap between split glyphs
+    assert chars[0].x_end == chars[1].x
+
+
+def test_single_character_glyph_is_not_split():
+    from hotpdf.memory_map import MemoryMap
+
+    mm = MemoryMap()
+    chars = mm._MemoryMap__get_hot_characters_of(value="o", x=57, y=220, x_end=62, span_id=uuid4())
+    assert len(chars) == 1
+    assert chars[0].value == "o"
+    assert (chars[0].x, chars[0].x_end) == (57, 62)
