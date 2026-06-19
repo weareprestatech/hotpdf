@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta:__legacy__"
 
 [project]
 name="hotpdf"
-version="0.5.3"
+dynamic = ["version"]
 authors = [
   {name = "Krishnasis Mandal", email = "krishnasis@hotmail.com"}]
 maintainers = [
@@ -44,6 +44,8 @@ keywords = [
 dependencies = [
     "pdfminer.six>=20231228",
 ]
+
+[tool.setuptools_scm]
 
 [tool.setuptools]
 include-package-data = false
