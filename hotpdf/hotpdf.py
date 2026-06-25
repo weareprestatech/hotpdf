@@ -303,11 +303,15 @@ class HotPdf:
     def extract_page_text(
         self,
         page: int,
+        segment: bool = False,
     ) -> str:
         """Extract text from a specified page.
 
         Args:
             page (int): The page number.
+            segment (bool): Group text into layout blocks (recursive XY-cut) before reading, so
+                side-by-side columns are not interleaved row by row. Best-effort; dense forms may
+                over-segment. Defaults to False.
 
         Raises:
             ValueError: If the page number is invalid.
@@ -323,6 +327,7 @@ class HotPdf:
             x1=page_to_search.width,
             y0=0,
             y1=page_to_search.height,
+            segment=segment,
         )
         return extracted_text
 

@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import math
 from collections import defaultdict
 from collections.abc import Generator
-from typing import Union
 from uuid import UUID, uuid4
 
 from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
@@ -13,6 +14,10 @@ from .trie import Trie
 
 
 class MemoryMap:
+    # Horizontal gap (in columns) between one glyph's end and the next glyph's start above which a
+    # space is synthesised. Within-word kerning is ~0-2 columns; separate text groups gap far wider.
+    __GAP_SPACE_THRESHOLD = 2
+
     def __init__(self) -> None:
         """Initialize the MemoryMap. 2D Matrix representation of a PDF Page.
 
@@ -35,7 +40,7 @@ class MemoryMap:
     def __reverse_page_objs(self, page_objs: list[LTComponent]) -> Generator[LTComponent, None, None]:
         yield from reversed(page_objs)
 
-    def __extract_from_ltfigure(self, lt_figure_obj: LTFigure) -> Generator[Union[LTTextLine, LTChar], None, None]:
+    def __extract_from_ltfigure(self, lt_figure_obj: LTFigure) -> Generator[LTTextLine | LTChar, None, None]:
         for element in lt_figure_obj:
             if isinstance(element, (LTTextLine, LTChar)):
                 yield element
@@ -43,7 +48,7 @@ class MemoryMap:
                 element_stack = self.__reverse_page_objs(list(element))
                 yield from (em for em in element_stack if isinstance(em, LTTextLine))
 
-    def __get_page_spans(self, page: LTPage) -> Generator[Union[LTTextLine, LTChar], None, None]:
+    def __get_page_spans(self, page: LTPage) -> Generator[LTTextLine | LTChar, None, None]:
         element_stack = self.__reverse_page_objs(page._objs)
         for obj in element_stack:
             if isinstance(obj, LTTextLine):
@@ -84,7 +89,7 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[HotCharacter] = []
-        page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
+        page_components: Generator[LTTextLine | LTChar, None, None] = self.__get_page_spans(page)
         line_shift: defaultdict[int, int] = defaultdict(int)
         for component in page_components:
             span_id = uuid4()
@@ -142,8 +147,12 @@ class MemoryMap:
                         )
                     )
                     prev_char_inserted = char_c != " "
-        # Insert into Trie and Span Maps
+        # Insert into Trie and Span Maps. Sort by row then x so gap detection sees glyphs in
+        # left-to-right order even when pdfminer emits side-by-side containers out of order.
+        char_hot_characters.sort(key=lambda hc: (hc.y, hc.x))
         last_inserted_x_y: tuple[int, int] = (-1, -1)
+        row_last_x_end: dict[int, int] = {}
+        row_prev_space: dict[int, bool] = {}
         for i in range(len(char_hot_characters)):
             _current_character: HotCharacter = char_hot_characters[i]
             # Determine if annotation spaces should be added
@@ -164,9 +173,33 @@ class MemoryMap:
                 _current_character, line_shift[_current_character.y]
             )
 
+            self.__insert_gap_space(_current_character, row_last_x_end, row_prev_space)
             self.__insert_hotcharacter_to_memory(_current_character)
         self.width = math.ceil(page.width)
         self.height = math.ceil(page.height)
+
+    def __insert_gap_space(
+        self,
+        hot_character: HotCharacter,
+        row_last_x_end: dict[int, int],
+        row_prev_space: dict[int, bool],
+    ) -> None:
+        """Insert a single space cell when a glyph starts well past the previous glyph's end on the
+        same row. Separate text groups (form fields, table cells) carry no space character across
+        the gap, so this restores word separation without a per-glyph side structure."""
+        y = hot_character.y
+        if hot_character.value in ("", " "):
+            row_last_x_end[y] = max(row_last_x_end.get(y, -1), hot_character.x_end)
+            row_prev_space[y] = hot_character.value == " "
+
+            return
+
+        last_x_end = row_last_x_end.get(y, -1)
+        gap = 0 <= last_x_end < hot_character.x and hot_character.x - last_x_end > self.__GAP_SPACE_THRESHOLD
+        if gap and not row_prev_space.get(y, False) and self.memory_map.get(row_idx=y, column_idx=last_x_end) == "":
+            self.memory_map.insert(value=" ", row_idx=y, column_idx=last_x_end)
+        row_last_x_end[y] = max(last_x_end, hot_character.x_end)
+        row_prev_space[y] = False
 
     def __insert_hotcharacter_to_memory(
         self,
@@ -239,7 +272,79 @@ class MemoryMap:
             for i, char in enumerate(value)
         ]
 
-    def extract_text_from_bbox(self, x0: int, x1: int, y0: int, y1: int) -> str:
+    def __render_lines(self, cells: list[tuple[int, int, str]]) -> str:
+        """Render cells top-to-bottom, one grid row per line, columns left-to-right.
+
+        Word separation already lives in the grid as synthesised space cells (see
+        __insert_gap_space), so this is a plain positional join.
+        """
+        by_row: dict[int, list[tuple[int, str]]] = defaultdict(list)
+        for row, col, char in cells:
+            by_row[row].append((col, char))
+
+        lines: list[str] = []
+        for row in sorted(by_row):
+            line = "".join(char for _, char in sorted(by_row[row]))
+            if line:
+                lines.append(line)
+
+        return "\n".join(lines)
+
+    @staticmethod
+    def __widest_empty_run(occupied: set[int], lo: int, hi: int, min_gap: int) -> int | None:
+        """Return the start column/row of the widest empty run >= min_gap within [lo, hi], else None."""
+        best_len = 0
+        best_start: int | None = None
+        run_len = 0
+        run_start: int | None = None
+        for i in range(lo, hi + 1):
+            if i in occupied:
+                if run_len > best_len:
+                    best_len, best_start = run_len, run_start
+                run_len = 0
+                run_start = None
+            else:
+                if run_start is None:
+                    run_start = i
+                run_len += 1
+        if run_len > best_len:
+            best_len, best_start = run_len, run_start
+
+        return best_start if best_len >= min_gap else None
+
+    def __xy_cut(self, cells: list[tuple[int, int, str]], gap_x: int, gap_y: int) -> str:
+        """Recursive XY-cut: split the region at its widest gutter, read blocks in order."""
+        if not cells:
+            return ""
+
+        cols_used = {c[1] for c in cells}
+        rows_used = {c[0] for c in cells}
+        v_cut = self.__widest_empty_run(cols_used, min(cols_used), max(cols_used), gap_x)
+        h_cut = self.__widest_empty_run(rows_used, min(rows_used), max(rows_used), gap_y)
+        if v_cut is None and h_cut is None:
+            return self.__render_lines(cells)
+
+        # Prefer the vertical cut (column split) when present; it preserves reading order of rows.
+        if v_cut is not None and (h_cut is None or v_cut >= h_cut):
+            left = [c for c in cells if c[1] < v_cut]
+            right = [c for c in cells if c[1] >= v_cut]
+            return self.__xy_cut(left, gap_x, gap_y) + "\n" + self.__xy_cut(right, gap_x, gap_y)
+
+        assert h_cut is not None
+        top = [c for c in cells if c[0] < h_cut]
+        bottom = [c for c in cells if c[0] >= h_cut]
+        return self.__xy_cut(top, gap_x, gap_y) + "\n" + self.__xy_cut(bottom, gap_x, gap_y)
+
+    def extract_text_from_bbox(
+        self,
+        x0: int,
+        x1: int,
+        y0: int,
+        y1: int,
+        segment: bool = False,
+        segment_gap_x: int = 12,
+        segment_gap_y: int = 6,
+    ) -> str:
         """Extract text within a specified bounding box.
 
         Args:
@@ -247,21 +352,33 @@ class MemoryMap:
             x1 (int): Right x-coordinate of the bounding box.
             y0 (int): Bottom y-coordinate of the bounding box.
             y1 (int): Top y-coordinate of the bounding box.
+            segment (bool): Group text into layout blocks via recursive XY-cut before reading, so
+                side-by-side columns (e.g. a left-margin label next to a table) are not interleaved
+                row by row. Best-effort; dense forms may over-segment. Defaults to False.
+            segment_gap_x (int): Minimum empty-column run treated as a vertical gutter when segment.
+            segment_gap_y (int): Minimum empty-row run treated as a horizontal gutter when segment.
 
         Returns:
             str: Extracted text within the bounding box.
         """
-        extracted_text: str = ""
-        for row in range(max(y0, 0), min(y1, self.memory_map.rows - 1) + 1):
-            row_text: str = ""
-            row_text = "".join(
-                self.memory_map.get(row_idx=row, column_idx=col)
-                for col in range(max(x0, 0), min(x1, self.memory_map.columns - 1) + 1)
-            )
-            if row_text:
-                extracted_text += row_text + "\n"
+        col_lo = max(x0, 0)
+        col_hi = min(x1, self.memory_map.columns - 1)
+        row_lo = max(y0, 0)
+        row_hi = min(y1, self.memory_map.rows - 1)
+        cells: list[tuple[int, int, str]] = []
+        for row in range(row_lo, row_hi + 1):
+            for col in range(col_lo, col_hi + 1):
+                char = self.memory_map.get(row_idx=row, column_idx=col)
+                if char:
+                    cells.append((row, col, char))
 
-        return extracted_text
+        if segment:
+            extracted_text = self.__xy_cut(cells, segment_gap_x, segment_gap_y)
+            extracted_text = "\n".join(line for line in extracted_text.split("\n") if line)
+        else:
+            extracted_text = self.__render_lines(cells)
+
+        return extracted_text + "\n" if extracted_text else ""
 
     def find_text(self, query: str, case_sensitive: bool = True) -> tuple[list[str], PageResult]:
         """Find text within the memory map.
