@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 from collections import defaultdict
 from collections.abc import Generator
@@ -31,6 +33,7 @@ class MemoryMap:
         The memory map is a SparseMatrix representation of the PDF.
         """
         self.memory_map = SparseMatrix()
+        self.char_x_end: dict[tuple[int, int], int] = {}
 
     def __reverse_page_objs(self, page_objs: list[LTComponent]) -> Generator[LTComponent, None, None]:
         yield from reversed(page_objs)
@@ -176,6 +179,7 @@ class MemoryMap:
         if hot_character.value == "":
             return None
         self.memory_map.insert(value=hot_character.value, row_idx=hot_character.y, column_idx=hot_character.x)
+        self.char_x_end[(hot_character.y, hot_character.x)] = hot_character.x_end
         self.text_trie.insert(word=hot_character.value, hot_character=hot_character)
         if hot_character.span_id:
             self.span_map[hot_character.span_id] = hot_character
@@ -239,7 +243,90 @@ class MemoryMap:
             for i, char in enumerate(value)
         ]
 
-    def extract_text_from_bbox(self, x0: int, x1: int, y0: int, y1: int) -> str:
+    def __render_lines(self, cells: list[tuple[int, int, int, str]], space_gap: int) -> str:
+        """Render cells top-to-bottom, one grid row per line, with gap-based spacing."""
+        by_row: dict[int, list[tuple[int, int, str]]] = defaultdict(list)
+        for row, col, x_end, char in cells:
+            by_row[row].append((col, x_end, char))
+
+        lines: list[str] = []
+        for row in sorted(by_row):
+            parts: list[str] = []
+            prev_x_end: int | None = None
+            for col, x_end, char in sorted(by_row[row]):
+                gap_break = prev_x_end is not None and col - prev_x_end > space_gap
+                if gap_break and char != " " and parts and parts[-1] != " ":
+                    parts.append(" ")
+                parts.append(char)
+                prev_x_end = x_end
+            if parts:
+                lines.append("".join(parts))
+
+        return "\n".join(lines)
+
+    @staticmethod
+    def __widest_empty_run(occupied: set[int], lo: int, hi: int, min_gap: int) -> int | None:
+        """Return the start column/row of the widest empty run >= min_gap within [lo, hi], else None."""
+        best_len = 0
+        best_start: int | None = None
+        run_len = 0
+        run_start: int | None = None
+        for i in range(lo, hi + 1):
+            if i in occupied:
+                if run_len > best_len:
+                    best_len, best_start = run_len, run_start
+                run_len = 0
+                run_start = None
+            else:
+                if run_start is None:
+                    run_start = i
+                run_len += 1
+        if run_len > best_len:
+            best_len, best_start = run_len, run_start
+
+        return best_start if best_len >= min_gap else None
+
+    def __xy_cut(self, cells: list[tuple[int, int, int, str]], gap_x: int, gap_y: int, space_gap: int) -> str:
+        """Recursive XY-cut: split the region at its widest gutter, read blocks in order."""
+        if not cells:
+            return ""
+
+        min_x = min(c[1] for c in cells)
+        max_x = max(c[2] for c in cells)
+        min_y = min(c[0] for c in cells)
+        max_y = max(c[0] for c in cells)
+        cols_used: set[int] = set()
+        rows_used: set[int] = set()
+        for row, col, x_end, _ in cells:
+            cols_used.update(range(col, x_end + 1))
+            rows_used.add(row)
+
+        v_cut = self.__widest_empty_run(cols_used, min_x, max_x, gap_x)
+        h_cut = self.__widest_empty_run(rows_used, min_y, max_y, gap_y)
+        if v_cut is None and h_cut is None:
+            return self.__render_lines(cells, space_gap)
+
+        # Prefer the vertical cut (column split) when present; it preserves reading order of rows.
+        if v_cut is not None and (h_cut is None or v_cut >= h_cut):
+            left = [c for c in cells if c[2] < v_cut]
+            right = [c for c in cells if c[2] >= v_cut]
+            return self.__xy_cut(left, gap_x, gap_y, space_gap) + "\n" + self.__xy_cut(right, gap_x, gap_y, space_gap)
+
+        top = [c for c in cells if c[0] < h_cut]
+        bottom = [c for c in cells if c[0] >= h_cut]
+        return self.__xy_cut(top, gap_x, gap_y, space_gap) + "\n" + self.__xy_cut(bottom, gap_x, gap_y, space_gap)
+
+    def extract_text_from_bbox(
+        self,
+        x0: int,
+        x1: int,
+        y0: int,
+        y1: int,
+        space_gap: int = 2,
+        segment: bool = False,
+        segment_gap_x: int = 12,
+        segment_gap_y: int = 6,
+    ) -> str:
         """Extract text within a specified bounding box.
 
         Args:
@@ -247,19 +334,36 @@ class MemoryMap:
             x1 (int): Right x-coordinate of the bounding box.
             y0 (int): Bottom y-coordinate of the bounding box.
             y1 (int): Top y-coordinate of the bounding box.
+            space_gap (int): Insert a space when the horizontal gap between a glyph's end and the
+                next glyph's start exceeds this many columns. Separate text groups (form fields,
+                table cells) carry no explicit space character, so the gap is the only signal.
+            segment (bool): Group text into layout blocks via recursive XY-cut before reading, so
+                side-by-side columns (e.g. a left-margin label next to a table) are not interleaved
+                row by row. Best-effort; dense forms may over-segment. Defaults to False.
+            segment_gap_x (int): Minimum empty-column run treated as a vertical gutter when segment.
+            segment_gap_y (int): Minimum empty-row run treated as a horizontal gutter when segment.
 
         Returns:
             str: Extracted text within the bounding box.
         """
-        extracted_text: str = ""
-        for row in range(max(y0, 0), min(y1, self.memory_map.rows - 1) + 1):
-            row_text: str = ""
-            row_text = "".join(
-                self.memory_map.get(row_idx=row, column_idx=col)
-                for col in range(max(x0, 0), min(x1, self.memory_map.columns - 1) + 1)
-            )
-            if row_text:
-                extracted_text += row_text + "\n"
+        col_lo = max(x0, 0)
+        col_hi = min(x1, self.memory_map.columns - 1)
+        row_lo = max(y0, 0)
+        row_hi = min(y1, self.memory_map.rows - 1)
+        cells: list[tuple[int, int, int, str]] = []
+        for row in range(row_lo, row_hi + 1):
+            for col in range(col_lo, col_hi + 1):
+                char = self.memory_map.get(row_idx=row, column_idx=col)
+                if char:
+                    cells.append((row, col, self.char_x_end.get((row, col), col + 1), char))
+
+        if segment:
+            extracted_text = self.__xy_cut(cells, segment_gap_x, segment_gap_y, space_gap)
+            extracted_text = "\n".join(line for line in extracted_text.split("\n") if line)
+            extracted_text = extracted_text + "\n" if extracted_text else ""
+        else:
+            extracted_text = self.__render_lines(cells, space_gap)
+            extracted_text = extracted_text + "\n" if extracted_text else ""
 
         return extracted_text
 

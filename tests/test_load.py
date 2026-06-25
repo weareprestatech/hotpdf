@@ -1,4 +1,5 @@
 import os
+from collections import Counter
 from unittest.mock import patch
 
 import pytest
@@ -439,10 +440,36 @@ def test_include_annotation_spaces_flag(multiple_pages_file_name):
     assert "THE HOLY BIBLE" in hotpdf_obj.extract_page_text(page=0)
     assert "THEHOLYBIBLE" not in hotpdf_obj.extract_page_text(page=0)
 
-    # Inverse
+    # Gap-based spacing is applied during extraction even without the flag.
     hotpdf_obj_no_space = HotPdf(multiple_pages_file_name)
-    assert "THE HOLY BIBLE" not in hotpdf_obj_no_space.extract_page_text(page=0)
-    assert "THEHOLYBIBLE" in hotpdf_obj_no_space.extract_page_text(page=0)
+    assert "THE HOLY BIBLE" in hotpdf_obj_no_space.extract_page_text(page=0)
+    assert "THEHOLYBIBLE" not in hotpdf_obj_no_space.extract_page_text(page=0)
+
+
+def test_segment_preserves_glyphs(multiple_pages_file_name):
+    hotpdf_obj = HotPdf(multiple_pages_file_name)
+    plain = hotpdf_obj.extract_page_text(page=0)
+    segmented = hotpdf_obj.extract_page_text(page=0, segment=True)
+
+    def glyphs(text: str) -> Counter:
+        return Counter(c for c in text if not c.isspace())
+
+    assert glyphs(plain) == glyphs(segmented)
+
+
+def test_segment_groups_columns(valid_file_name):
+    hotpdf_obj = HotPdf(valid_file_name)
+    plain = hotpdf_obj.extract_page_text(page=0)
+    segmented = hotpdf_obj.extract_page_text(page=0, segment=True)
+
+    # Side-by-side columns are read row by row without segmentation, so the right column's
+    # EXPERIENCE precedes the left column's SKILLS. Segmenting reads each column as a block.
+    assert plain.index("EXPERIENCE") < plain.index("SKILLS")
+    assert segmented.index("SKILLS") < segmented.index("EXPERIENCE")
+
+    # The footer columns are merged into one line plainly, split per column when segmented.
+    assert "EMAIL TWITTER HANDLE TELEPHONE LINKEDIN URL" in plain
+    assert "EMAIL TWITTER HANDLE TELEPHONE LINKEDIN URL" not in segmented
 
 
 def test_multi_load(valid_file_name, multiple_pages_file_name):
