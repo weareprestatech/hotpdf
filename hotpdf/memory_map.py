@@ -3,7 +3,6 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 from collections.abc import Generator
-from typing import Union
 from uuid import UUID, uuid4
 
 from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
@@ -38,7 +37,7 @@ class MemoryMap:
     def __reverse_page_objs(self, page_objs: list[LTComponent]) -> Generator[LTComponent, None, None]:
         yield from reversed(page_objs)
 
-    def __extract_from_ltfigure(self, lt_figure_obj: LTFigure) -> Generator[Union[LTTextLine, LTChar], None, None]:
+    def __extract_from_ltfigure(self, lt_figure_obj: LTFigure) -> Generator[LTTextLine | LTChar, None, None]:
         for element in lt_figure_obj:
             if isinstance(element, (LTTextLine, LTChar)):
                 yield element
@@ -46,7 +45,7 @@ class MemoryMap:
                 element_stack = self.__reverse_page_objs(list(element))
                 yield from (em for em in element_stack if isinstance(em, LTTextLine))
 
-    def __get_page_spans(self, page: LTPage) -> Generator[Union[LTTextLine, LTChar], None, None]:
+    def __get_page_spans(self, page: LTPage) -> Generator[LTTextLine | LTChar, None, None]:
         element_stack = self.__reverse_page_objs(page._objs)
         for obj in element_stack:
             if isinstance(obj, LTTextLine):
@@ -87,7 +86,7 @@ class MemoryMap:
             None
         """
         char_hot_characters: list[HotCharacter] = []
-        page_components: Generator[Union[LTTextLine, LTChar], None, None] = self.__get_page_spans(page)
+        page_components: Generator[LTTextLine | LTChar, None, None] = self.__get_page_spans(page)
         line_shift: defaultdict[int, int] = defaultdict(int)
         for component in page_components:
             span_id = uuid4()
