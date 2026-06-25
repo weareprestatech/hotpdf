@@ -311,6 +311,7 @@ class MemoryMap:
             right = [c for c in cells if c[2] >= v_cut]
             return self.__xy_cut(left, gap_x, gap_y, space_gap) + "\n" + self.__xy_cut(right, gap_x, gap_y, space_gap)
 
+        assert h_cut is not None
         top = [c for c in cells if c[0] < h_cut]
         bottom = [c for c in cells if c[0] >= h_cut]
         return self.__xy_cut(top, gap_x, gap_y, space_gap) + "\n" + self.__xy_cut(bottom, gap_x, gap_y, space_gap)
