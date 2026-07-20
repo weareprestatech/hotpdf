@@ -416,6 +416,27 @@ def test_load_lt_figure_file_extract_page_text(document_lt_figure_file_name):
     assert "C. INFORMÁCIE O SPOLOČNÍKOCH ÚČTOVNEJ JEDNOTKY" in page_text
 
 
+def test_extract_from_ltfigure_recurses_into_nested_figures():
+    from pdfminer.layout import LTChar, LTFigure
+
+    class FakeChar(LTChar):
+        def __init__(self):
+            pass
+
+    class FakeFigure(LTFigure):
+        def __init__(self, kids):
+            self._kids = kids
+
+        def __iter__(self):
+            return iter(self._kids)
+
+    leaf = FakeChar()
+    nested = FakeFigure([FakeFigure([leaf])])
+
+    mm = MemoryMap()
+    assert list(mm._MemoryMap__extract_from_ltfigure(nested)) == [leaf]
+
+
 def test_load_lt_figure_file_all_text(document_lt_figure_file_name):
     WORD_GROUP = "Spoločník, akcionár"
     position = dict(x0=60, x1=130, y0=675, y1=676)
