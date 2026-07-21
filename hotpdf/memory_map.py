@@ -204,7 +204,13 @@ class MemoryMap:
         last_x_end = row_last_x_end.get(y, -1)
         gap = 0 <= last_x_end < hot_character.x and hot_character.x - last_x_end > self.__GAP_SPACE_THRESHOLD
         if gap and not row_prev_space.get(y, False) and self.memory_map.get(row_idx=y, column_idx=last_x_end) == "":
+            space_char = self.__get_hot_character_of(
+                value=" ", x=last_x_end, y=y, x_end=last_x_end + 1, span_id=hot_character.span_id
+            )
             self.memory_map.insert(value=" ", row_idx=y, column_idx=last_x_end)
+            self.text_trie.insert(word=" ", hot_character=space_char)
+            if space_char.span_id:
+                self.span_map[space_char.span_id] = space_char
         row_last_x_end[y] = max(last_x_end, hot_character.x_end)
         row_prev_space[y] = False
 

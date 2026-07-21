@@ -60,3 +60,8 @@ def variations_simple_file_name():
 @pytest.fixture()
 def tight_kern_space_file_name():
     return "tests/resources/tight_kern_space.pdf"
+
+
+@pytest.fixture()
+def gap_space_search_file_name():
+    return "tests/resources/gap_space_search.pdf"
