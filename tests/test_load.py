@@ -520,3 +520,13 @@ def test_tight_kern_annotation_space_preserved(tight_kern_space_file_name):
 
     assert "DI CATALANO" in text
     assert "DICATALANO" not in text
+
+
+def test_synthesised_gap_space_is_searchable(gap_space_search_file_name):
+    hotpdf_obj = HotPdf(
+        gap_space_search_file_name, include_annotation_spaces=True, laparams={"char_margin": 0.05}
+    )
+
+    assert hotpdf_obj.extract_page_text(page=0).strip() == "FOO BAR"
+    assert len(hotpdf_obj.find_text("FOO BAR")[0]) == 1
+    assert len(hotpdf_obj.find_text("FOOBAR")[0]) == 1

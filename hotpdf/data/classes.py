@@ -4,7 +4,6 @@ from typing import Optional
 from uuid import UUID
 
 
-@dataclass
 class HotCharacter:
     """A hot character is a character on a page with certain attributes.
 
@@ -17,12 +16,39 @@ class HotCharacter:
         is_anno (bool, Optional): specify if a character is an annotation (default: False).
     """
 
-    value: str
-    x: int
-    y: int
-    x_end: int
-    span_id: UUID
-    is_anno: Optional[bool] = False
+    __slots__ = ("value", "x", "y", "x_end", "span_id", "is_anno")
+
+    def __init__(
+        self,
+        value: str,
+        x: int,
+        y: int,
+        x_end: int,
+        span_id: UUID,
+        is_anno: Optional[bool] = False,
+    ) -> None:
+        self.value = value
+        self.x = x
+        self.y = y
+        self.x_end = x_end
+        self.span_id = span_id
+        self.is_anno = is_anno
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, HotCharacter) and (
+            self.value,
+            self.x,
+            self.y,
+            self.x_end,
+            self.span_id,
+            self.is_anno,
+        ) == (other.value, other.x, other.y, other.x_end, other.span_id, other.is_anno)
+
+    def __repr__(self) -> str:
+        return (
+            f"HotCharacter(value={self.value!r}, x={self.x}, y={self.y}, "
+            f"x_end={self.x_end}, span_id={self.span_id!r}, is_anno={self.is_anno})"
+        )
 
 
 @dataclass
