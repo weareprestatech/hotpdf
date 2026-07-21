@@ -512,3 +512,11 @@ def test_extract_spans_pdfminer_y_preserved(valid_file_name):
     # extract from the bottom left of file
     spans = hot_pdf_object.extract_spans(x0=0, y0=0, x1=300, y1=200)
     assert "EMAIL" in spans[0].to_text()
+
+
+def test_tight_kern_annotation_space_preserved(tight_kern_space_file_name):
+    hotpdf_obj = HotPdf(tight_kern_space_file_name, include_annotation_spaces=True)
+    text = hotpdf_obj.extract_page_text(page=0)
+
+    assert "DI CATALANO" in text
+    assert "DICATALANO" not in text

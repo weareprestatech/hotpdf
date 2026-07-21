@@ -119,7 +119,7 @@ class MemoryMap:
                 ):
                     _elem_width: int = 1
                     space_char: HotCharacter = self.__get_hot_character_of(
-                        value=" ", x=x0, y=y0, x_end=x0 + _elem_width, span_id=span_id, is_anno=True
+                        value=" ", x=x1, y=y0, x_end=x1 + _elem_width, span_id=span_id, is_anno=True
                     )
                     char_hot_characters.append(
                         space_char,
@@ -152,18 +152,23 @@ class MemoryMap:
         # Insert into Trie and Span Maps. Sort by row then x so gap detection sees glyphs in
         # left-to-right order even when pdfminer emits side-by-side containers out of order.
         char_hot_characters.sort(key=lambda hc: (hc.y, hc.x))
+        # Snapshot positions before the loop shifts glyphs in place; the anno-space overlap check
+        # must read the neighbours' original geometry, not a prev char already shifted this pass.
+        original_x: list[int] = [hc.x for hc in char_hot_characters]
+        original_x_end: list[int] = [hc.x_end for hc in char_hot_characters]
         last_inserted_x_y: tuple[int, int] = (-1, -1)
         row_last_x_end: dict[int, int] = {}
         row_prev_space: dict[int, bool] = {}
         for i in range(len(char_hot_characters)):
             _current_character: HotCharacter = char_hot_characters[i]
-            # Determine if annotation spaces should be added
-            if include_annotation_spaces and i > 0 and i < len(char_hot_characters) - 1:
-                prev_char: HotCharacter = char_hot_characters[i - 1]
-                next_char: HotCharacter = char_hot_characters[i + 1]
-                # Anno and non-anno characters should not be overlapping
-                if _current_character.is_anno and next_char.x - prev_char.x <= 0:
-                    continue
+            # Drop the synthesised space only when the real neighbours overlap in the source.
+            if (
+                include_annotation_spaces
+                and 0 < i < len(char_hot_characters) - 1
+                and _current_character.is_anno
+                and original_x[i + 1] < original_x_end[i - 1]
+            ):
+                continue
 
             # Prevent characters from overlapping
             if (last_inserted_x_y[0] > 0 and last_inserted_x_y[1] > 0) and (
