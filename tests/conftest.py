@@ -55,3 +55,8 @@ def document_lt_figure_file_name():
 @pytest.fixture()
 def variations_simple_file_name():
     return "tests/resources/test_variations_simple.pdf"
+
+
+@pytest.fixture()
+def tight_kern_space_file_name():
+    return "tests/resources/tight_kern_space.pdf"
