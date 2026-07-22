@@ -530,3 +530,13 @@ def test_synthesised_gap_space_is_searchable(gap_space_search_file_name):
     assert hotpdf_obj.extract_page_text(page=0).strip() == "FOO BAR"
     assert len(hotpdf_obj.find_text("FOO BAR")[0]) == 1
     assert len(hotpdf_obj.find_text("FOOBAR")[0]) == 1
+
+
+def test_synthesised_gap_space_not_in_span(span_gap_no_leading_space_file_name):
+    hotpdf_obj = HotPdf(span_gap_no_leading_space_file_name)
+
+    assert hotpdf_obj.extract_page_text(page=0).strip() == "WORDONE WORDTWO"
+
+    span = hotpdf_obj.find_text("WORDTWO", take_span=True)[0][0]
+    assert "".join(char.value for char in span) == "WORDTWO"
+    assert span[0].value != " "

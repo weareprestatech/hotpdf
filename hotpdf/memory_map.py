@@ -209,8 +209,6 @@ class MemoryMap:
             )
             self.memory_map.insert(value=" ", row_idx=y, column_idx=last_x_end)
             self.text_trie.insert(word=" ", hot_character=space_char)
-            if space_char.span_id:
-                self.span_map[space_char.span_id] = space_char
         row_last_x_end[y] = max(last_x_end, hot_character.x_end)
         row_prev_space[y] = False
 
