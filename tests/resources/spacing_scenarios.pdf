@@ -9,8 +9,9 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
 endobj
 4 0 obj
-<< /Length 774 >>
+<< /Length 1289 >>
 stream
+q 1 0 0 1 0 0 cm
 BT /F1 10 Tf 1 0 0 1 100 700 Tm (X) Tj ET
 BT /F1 10 Tf 1 0 0 1 100 700 Tm (X) Tj ET
 BT /F1 10 Tf 1 0 0 1 100 700 Tm (X) Tj ET
@@ -29,6 +30,22 @@ BT /F1 10 Tf 1 0 0 1 237.6 700 Tm (L) Tj ET
 BT /F1 10 Tf 1 0 0 1 244.1 700 Tm (A) Tj ET
 BT /F1 10 Tf 1 0 0 1 250.6 700 Tm (N) Tj ET
 BT /F1 10 Tf 1 0 0 1 257.1 700 Tm (O) Tj ET
+Q
+q 1 0 0 1 0 -30 cm
+BT /F1 10 Tf 1 0 0 1 100 700.0 Tm (F) Tj ET
+BT /F1 10 Tf 1 0 0 1 106.67 700.0 Tm (O) Tj ET
+BT /F1 10 Tf 1 0 0 1 114.45 700.0 Tm (O) Tj ET
+BT /F1 10 Tf 1 0 0 1 126.23 700.0 Tm (B) Tj ET
+BT /F1 10 Tf 1 0 0 1 133.23000000000002 700.0 Tm (A) Tj ET
+BT /F1 10 Tf 1 0 0 1 140.23000000000002 700.0 Tm (R) Tj ET
+Q
+q 1 0 0 1 0 -60 cm
+BT /F1 12 Tf 100 700 Td (WORDONE) Tj ET
+BT /F1 12 Tf 400 700 Td (WORDTWO) Tj ET
+Q
+q 1 0 0 1 0 -90 cm
+BT /F1 12 Tf 100 700 Td (AAA          BBB) Tj ET
+Q
 endstream
 endobj
 5 0 obj
@@ -41,9 +58,9 @@ xref
 0000000058 00000 n 
 0000000115 00000 n 
 0000000241 00000 n 
-0000001066 00000 n 
+0000001581 00000 n 
 trailer
 << /Size 6 /Root 1 0 R >>
 startxref
-1136
+1651
 %%EOF

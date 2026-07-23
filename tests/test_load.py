@@ -514,47 +514,47 @@ def test_extract_spans_pdfminer_y_preserved(valid_file_name):
     assert "EMAIL" in spans[0].to_text()
 
 
-def test_tight_kern_annotation_space_preserved(tight_kern_space_file_name):
-    hotpdf_obj = HotPdf(tight_kern_space_file_name, include_annotation_spaces=True)
+def test_tight_kern_annotation_space_preserved(spacing_scenarios_file_name):
+    hotpdf_obj = HotPdf(spacing_scenarios_file_name, include_annotation_spaces=True)
     text = hotpdf_obj.extract_page_text(page=0)
 
     assert "DI CATALANO" in text
     assert "DICATALANO" not in text
 
 
-def test_synthesised_gap_space_is_searchable(gap_space_search_file_name):
+def test_synthesised_gap_space_is_searchable(spacing_scenarios_file_name):
     hotpdf_obj = HotPdf(
-        gap_space_search_file_name, include_annotation_spaces=True, laparams={"char_margin": 0.05}
+        spacing_scenarios_file_name, include_annotation_spaces=True, laparams={"char_margin": 0.05}
     )
 
-    assert hotpdf_obj.extract_page_text(page=0).strip() == "FOO BAR"
+    assert "FOO BAR" in hotpdf_obj.extract_page_text(page=0)
     assert len(hotpdf_obj.find_text("FOO BAR")[0]) == 1
     assert len(hotpdf_obj.find_text("FOOBAR")[0]) == 1
 
 
-def test_synthesised_gap_space_not_in_span(span_gap_no_leading_space_file_name):
-    hotpdf_obj = HotPdf(span_gap_no_leading_space_file_name)
+def test_synthesised_gap_space_not_in_span(spacing_scenarios_file_name):
+    hotpdf_obj = HotPdf(spacing_scenarios_file_name)
 
-    assert hotpdf_obj.extract_page_text(page=0).strip() == "WORDONE WORDTWO"
+    assert "WORDONE WORDTWO" in hotpdf_obj.extract_page_text(page=0)
 
     span = hotpdf_obj.find_text("WORDTWO", take_span=True)[0][0]
     assert "".join(char.value for char in span) == "WORDTWO"
     assert span[0].value != " "
 
 
-def test_wide_space_run_splits_line_span(line_wide_space_split_file_name):
+def test_wide_space_run_splits_line_span(spacing_scenarios_file_name):
     hotpdf_obj = HotPdf(
-        line_wide_space_split_file_name, laparams={"all_texts": True}, space_split_threshold=3
+        spacing_scenarios_file_name, laparams={"all_texts": True}, space_split_threshold=3
     )
 
-    assert hotpdf_obj.extract_page_text(page=0).strip() == "AAA          BBB"
+    assert "AAA          BBB" in hotpdf_obj.extract_page_text(page=0)
 
     span = hotpdf_obj.find_text("BBB", take_span=True)[0][0]
     assert "".join(char.value for char in span) == "BBB"
 
 
-def test_wide_space_run_not_split_by_default(line_wide_space_split_file_name):
-    hotpdf_obj = HotPdf(line_wide_space_split_file_name, laparams={"all_texts": True})
+def test_wide_space_run_not_split_by_default(spacing_scenarios_file_name):
+    hotpdf_obj = HotPdf(spacing_scenarios_file_name, laparams={"all_texts": True})
 
     span = hotpdf_obj.find_text("BBB", take_span=True)[0][0]
     assert "".join(char.value for char in span) == "AAA          BBB"
