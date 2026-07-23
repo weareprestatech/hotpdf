@@ -34,6 +34,7 @@ def __process(
     laparams: Optional[dict[str, Union[float, bool]]] = None,
     include_annotation_spaces: bool = False,
     preserve_pdfminer_coordinates: bool = False,
+    space_split_threshold: Optional[int] = None,
 ) -> list[MemoryMap]:
     pages: list[MemoryMap] = []
     __supress_pdfminer_logs()
@@ -50,6 +51,7 @@ def __process(
             page=page_layout,
             include_annotation_spaces=include_annotation_spaces,
             preserve_pdfminer_coordinates=preserve_pdfminer_coordinates,
+            space_split_threshold=space_split_threshold,
         )
         pages.append(parsed_page)
     return pages
@@ -62,6 +64,7 @@ def process(
     laparams: Optional[dict[str, Union[float, bool]]] = None,
     include_annotation_spaces: bool = False,
     preserve_pdfminer_coordinates: bool = False,
+    space_split_threshold: Optional[int] = None,
 ) -> list[MemoryMap]:
     return __process(
         source=source,
@@ -70,4 +73,5 @@ def process(
         laparams=laparams,
         include_annotation_spaces=include_annotation_spaces,
         preserve_pdfminer_coordinates=preserve_pdfminer_coordinates,
+        space_split_threshold=space_split_threshold,
     )

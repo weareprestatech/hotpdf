@@ -80,6 +80,7 @@ class MemoryMap:
         page: LTPage,
         include_annotation_spaces: bool = False,
         preserve_pdfminer_coordinates: bool = False,
+        space_split_threshold: int | None = None,
     ) -> None:
         """Load memory map data from an XML page.
 
@@ -87,6 +88,8 @@ class MemoryMap:
             page (str): LTPage Element returned by pdfminer
             include_annotation_spaces (bool, optional): Add annotation spaces to the memory map.
             preserve_pdfminer_coordinates(bool, optional): Preserve pdfminer y-coordinate values.
+            space_split_threshold (int, optional): Consecutive spaces within a text line that start a new
+                span. None disables splitting.
         Returns:
             None
         """
@@ -96,6 +99,7 @@ class MemoryMap:
         for component in page_components:
             span_id = uuid4()
             prev_char_inserted = False
+            space_run = 0
             if isinstance(component, LTChar):
                 x0 = round(component.x0)
                 x1 = round(component.x1)
@@ -136,6 +140,9 @@ class MemoryMap:
                     and not isinstance(character, LTAnno)
                 ):
                     char_c = character.get_text()
+                    span_id, space_run = self.__span_after_space_run(
+                        char_c, span_id, space_run, space_split_threshold
+                    )
                     x0 = round(character.x0)
                     x1 = round(character.x1)
                     y0 = round(component.y0) if preserve_pdfminer_coordinates else round(page.height - component.y0)
@@ -184,6 +191,17 @@ class MemoryMap:
             self.__insert_hotcharacter_to_memory(_current_character)
         self.width = math.ceil(page.width)
         self.height = math.ceil(page.height)
+
+    def __span_after_space_run(
+        self, char_c: str, span_id: UUID, space_run: int, threshold: int | None
+    ) -> tuple[UUID, int]:
+        if char_c == " ":
+            return span_id, space_run + 1
+
+        if threshold and space_run >= threshold:
+            return uuid4(), 0
+
+        return span_id, 0
 
     def __insert_gap_space(
         self,

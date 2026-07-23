@@ -70,3 +70,8 @@ def gap_space_search_file_name():
 @pytest.fixture()
 def span_gap_no_leading_space_file_name():
     return "tests/resources/span_gap_no_leading_space.pdf"
+
+
+@pytest.fixture()
+def line_wide_space_split_file_name():
+    return "tests/resources/line_wide_space_split.pdf"

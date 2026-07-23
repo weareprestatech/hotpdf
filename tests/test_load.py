@@ -540,3 +540,21 @@ def test_synthesised_gap_space_not_in_span(span_gap_no_leading_space_file_name):
     span = hotpdf_obj.find_text("WORDTWO", take_span=True)[0][0]
     assert "".join(char.value for char in span) == "WORDTWO"
     assert span[0].value != " "
+
+
+def test_wide_space_run_splits_line_span(line_wide_space_split_file_name):
+    hotpdf_obj = HotPdf(
+        line_wide_space_split_file_name, laparams={"all_texts": True}, space_split_threshold=3
+    )
+
+    assert hotpdf_obj.extract_page_text(page=0).strip() == "AAA          BBB"
+
+    span = hotpdf_obj.find_text("BBB", take_span=True)[0][0]
+    assert "".join(char.value for char in span) == "BBB"
+
+
+def test_wide_space_run_not_split_by_default(line_wide_space_split_file_name):
+    hotpdf_obj = HotPdf(line_wide_space_split_file_name, laparams={"all_texts": True})
+
+    span = hotpdf_obj.find_text("BBB", take_span=True)[0][0]
+    assert "".join(char.value for char in span) == "AAA          BBB"
