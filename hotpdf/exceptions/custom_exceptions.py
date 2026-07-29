@@ -1,2 +1,2 @@
 class HotPdfIsNoneError(Exception):
-    pass
+    """Raised when a HotPdf merge input is None."""

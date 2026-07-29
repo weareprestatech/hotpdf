@@ -8,8 +8,6 @@ from pdfminer.layout import LAParams
 
 from hotpdf.memory_map import MemoryMap
 
-logging.getLogger("pdfminer").setLevel(logging.ERROR)
-
 
 def __make_custom_laparams_object(
     laparams: Optional[dict[str, Union[float, bool]]] = None,
@@ -23,7 +21,7 @@ def __make_custom_laparams_object(
     return laparams_obj
 
 
-def __supress_pdfminer_logs() -> None:
+def __suppress_pdfminer_logs() -> None:
     logging.getLogger("pdfminer").setLevel(logging.ERROR)
 
 
@@ -37,7 +35,7 @@ def __process(
     space_split_threshold: Optional[int] = None,
 ) -> list[MemoryMap]:
     pages: list[MemoryMap] = []
-    __supress_pdfminer_logs()
+    __suppress_pdfminer_logs()
     page_numbers = sorted(page_numbers) if page_numbers else []
     laparams_obj = __make_custom_laparams_object(laparams)
 

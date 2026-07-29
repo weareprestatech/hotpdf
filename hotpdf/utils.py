@@ -70,10 +70,9 @@ def filter_adjacent_coords(text: list[str], page_hot_character_occurences: PageR
             if neighbour_hot_character:
                 neighbours.append(neighbour_hot_character)
                 reference_hot_character = neighbour_hot_character
-        if len(neighbours) == max_len:
-            adjacent_groups.append(neighbours[:])
-            neighbours.clear()
-        neighbours = []
+        if len(neighbours) != max_len:
+            continue
+        adjacent_groups.append(neighbours[:])
     return adjacent_groups
 
 

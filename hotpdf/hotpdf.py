@@ -145,8 +145,8 @@ class HotPdf:
                 preserve_pdfminer_coordinates=preserve_pdfminer_coordinates,
                 space_split_threshold=space_split_threshold,
             )
-        except Exception as e:
-            raise e
+        except Exception:
+            raise
 
     def __extract_full_text_span(
         self,
@@ -194,7 +194,7 @@ class HotPdf:
         self.__check_page_numbers(pages)
 
         query_pages = (
-            {i: self.pages[i] for i in range(len(self.pages))} if len(pages) == 0 else {i: self.pages[i] for i in pages}
+            {i: self.pages[i] for i in range(len(self.pages))} if not pages else {i: self.pages[i] for i in pages}
         )
 
         found_page_map = {}
@@ -224,11 +224,10 @@ class HotPdf:
                     if take_span
                     else None
                 )
-                chars_to_append = (
-                    full_span_dimension_hot_characters
-                    if (take_span and full_span_dimension_hot_characters)
-                    else hot_characters
-                )
+                if take_span and full_span_dimension_hot_characters:
+                    chars_to_append = full_span_dimension_hot_characters
+                else:
+                    chars_to_append = hot_characters
                 if chars_to_append and sort:
                     chars_to_append = sorted(chars_to_append, key=lambda ch: (ch.y, ch.x))
                 final_found_page_map[page_num].append(chars_to_append)
@@ -262,7 +261,7 @@ class HotPdf:
         self.__check_coordinates(x0, y0, x1, y1)
         self.__check_page_number(page)
 
-        for _, span in self.pages[page].span_map.items():
+        for span in self.pages[page].span_map.values():
             if intersect(ElementDimension(x0, y0, x1, y1, None), span.get_element_dimension()):
                 span.characters = sorted(span.characters, key=lambda ch: (ch.y, ch.x))
                 spans.append(span)
@@ -301,13 +300,12 @@ class HotPdf:
         self.__check_page_number(page)
 
         page_to_search: MemoryMap = self.pages[page]
-        extracted_text = page_to_search.extract_text_from_bbox(
+        return page_to_search.extract_text_from_bbox(
             x0=math.floor(x0),
             x1=math.ceil(x1 + self.extraction_tolerance),
             y0=y0,
             y1=y1,
         )
-        return extracted_text
 
     def extract_page_text(
         self,
@@ -331,14 +329,13 @@ class HotPdf:
         self.__check_page_number(page)
 
         page_to_search: MemoryMap = self.pages[page]
-        extracted_text = page_to_search.extract_text_from_bbox(
+        return page_to_search.extract_text_from_bbox(
             x0=0,
             x1=page_to_search.width,
             y0=0,
             y1=page_to_search.height,
             segment=segment,
         )
-        return extracted_text
 
     def extract_spans_text(
         self,

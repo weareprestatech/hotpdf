@@ -100,7 +100,7 @@ class Span:
             ValueError: if the span has no characters.
 
         Returns:
-            ElementDimension: _description_
+            ElementDimension: Bounding box for the span.
         """
         if not self.characters:
             raise ValueError("Span has no characters")

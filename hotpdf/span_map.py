@@ -13,7 +13,7 @@ class SpanMap:
     """
 
     def __init__(self) -> None:
-        self.span_map: dict[UUID, Span] = dict()
+        self.span_map: dict[UUID, Span] = {}
 
     def __len__(self) -> int:
         return len(self.span_map)
@@ -26,6 +26,9 @@ class SpanMap:
 
     def items(self) -> Iterable[tuple[UUID, Span]]:
         yield from self.span_map.items()
+
+    def values(self) -> Iterable[Span]:
+        yield from self.span_map.values()
 
     def insert(self, span_id: UUID, hot_character: HotCharacter) -> None:
         span = self.span_map.get(span_id)

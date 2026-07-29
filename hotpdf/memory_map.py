@@ -140,9 +140,7 @@ class MemoryMap:
                     and not isinstance(character, LTAnno)
                 ):
                     char_c = character.get_text()
-                    span_id, space_run = self.__span_after_space_run(
-                        char_c, span_id, space_run, space_split_threshold
-                    )
+                    span_id, space_run = self.__span_after_space_run(char_c, span_id, space_run, space_split_threshold)
                     x0 = round(character.x0)
                     x1 = round(character.x1)
                     y0 = round(component.y0) if preserve_pdfminer_coordinates else round(page.height - component.y0)
