@@ -59,13 +59,24 @@ def filter_adjacent_coords(text: list[str], page_hot_character_occurences: PageR
 
     anchor_hot_character_instances = page_hot_character_occurences[0]
 
+    rows_by_list: dict[int, dict[int, list[HotCharacter]]] = {}
+    occurences_rows: list[dict[int, list[HotCharacter]]] = []
+    for coords_j in page_hot_character_occurences[1:]:
+        rows = rows_by_list.get(id(coords_j))
+        if rows is None:
+            rows = {}
+            for hot_character in coords_j:
+                rows.setdefault(hot_character.y, []).append(hot_character)
+            rows_by_list[id(coords_j)] = rows
+        occurences_rows.append(rows)
+
     for anchor_hot_character in anchor_hot_character_instances:
         neighbours = [anchor_hot_character]
         reference_hot_character = anchor_hot_character
-        for coords_j in page_hot_character_occurences[1:]:
+        for rows in occurences_rows:
             neighbour_hot_character = find_neighbour_coord(
                 reference_character=reference_hot_character,
-                hot_characters=coords_j,
+                hot_characters=rows.get(reference_hot_character.y, []),
             )
             if neighbour_hot_character:
                 neighbours.append(neighbour_hot_character)

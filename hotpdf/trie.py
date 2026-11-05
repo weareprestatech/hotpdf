@@ -33,7 +33,7 @@ class Trie:
         for char in word:
             node = node.children[char]
         node.is_end_of_word = True
-        node.hot_characters = node.hot_characters + [hot_character]
+        node.hot_characters.append(hot_character)
 
     def search_all(self, text: str, case_sensitive: bool = True) -> tuple[list[str], PageResult]:
         """Search for words in the Trie that match a given text.
