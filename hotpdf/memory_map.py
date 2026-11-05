@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 from collections.abc import Generator
+from operator import attrgetter
 from uuid import UUID, uuid4
 
 from pdfminer.layout import LTAnno, LTChar, LTComponent, LTFigure, LTPage, LTText, LTTextContainer, LTTextLine
@@ -61,20 +62,6 @@ class MemoryMap:
             elif isinstance(obj, (LTFigure)):
                 yield from self.__extract_from_ltfigure(obj)
 
-    def __get_right_shifted_hot_character(self, hot_character: HotCharacter, shift: int) -> HotCharacter:
-        """Shift a hotcharacter on the x-coordinate
-
-        Args:
-            hot_character (HotCharacter): HotCharacter object to be shifted
-            shift (int): shift offset on the x-coordinate
-
-        Returns:
-            HotCharacter: HotCharacter object with new coords
-        """
-        hot_character.x += shift
-        hot_character.x_end += shift
-        return hot_character
-
     def load_memory_map(
         self,
         page: LTPage,
@@ -95,15 +82,14 @@ class MemoryMap:
         """
         char_hot_characters: list[HotCharacter] = []
         page_components: Generator[LTTextLine | LTChar, None, None] = self.__get_page_spans(page)
-        line_shift: defaultdict[int, int] = defaultdict(int)
         for component in page_components:
             span_id = uuid4()
             prev_char_inserted = False
             space_run = 0
+            y0 = round(component.y0) if preserve_pdfminer_coordinates else round(page.height - component.y0)
             if isinstance(component, LTChar):
                 x0 = round(component.x0)
                 x1 = round(component.x1)
-                y0 = round(component.y0) if preserve_pdfminer_coordinates else round(page.height - component.y0)
                 char_hot_characters.extend(
                     self.__get_hot_characters_of(
                         value=component.get_text(),
@@ -129,8 +115,8 @@ class MemoryMap:
                         space_char,
                     )
                     prev_char_inserted = False
-                elif (
-                    isinstance(character, (LTChar, LTText))
+                elif isinstance(character, LTChar) or (
+                    isinstance(character, LTText)
                     and (
                         hasattr(character, "x0")
                         and hasattr(character, "x1")
@@ -145,20 +131,27 @@ class MemoryMap:
                     )
                     x0 = round(character.x0)
                     x1 = round(character.x1)
-                    y0 = round(component.y0) if preserve_pdfminer_coordinates else round(page.height - component.y0)
-                    char_hot_characters.extend(
-                        self.__get_hot_characters_of(
-                            value=char_c,
-                            x=x0,
-                            y=y0,
-                            x_end=x1,
-                            span_id=span_id,
+                    if len(char_c) <= 1:
+                        char_hot_characters.append(HotCharacter(char_c, x0, y0, x1, span_id))
+                    else:
+                        char_hot_characters.extend(
+                            self.__get_hot_characters_of(
+                                value=char_c,
+                                x=x0,
+                                y=y0,
+                                x_end=x1,
+                                span_id=span_id,
+                            )
                         )
-                    )
                     prev_char_inserted = char_c != " "
-        # Insert into Trie and Span Maps. Sort by row then x so gap detection sees glyphs in
-        # left-to-right order even when pdfminer emits side-by-side containers out of order.
-        char_hot_characters.sort(key=lambda hc: (hc.y, hc.x))
+        self.__insert_hot_characters(char_hot_characters, include_annotation_spaces)
+        self.width = math.ceil(page.width)
+        self.height = math.ceil(page.height)
+
+    def __insert_hot_characters(self, char_hot_characters: list[HotCharacter], include_annotation_spaces: bool) -> None:
+        # Sort by row then x so gap detection sees glyphs in left-to-right order even when
+        # pdfminer emits side-by-side containers out of order.
+        char_hot_characters.sort(key=attrgetter("y", "x"))
         # Snapshot positions before the loop shifts glyphs in place; the anno-space overlap check
         # must read the neighbours' original geometry, not a prev char already shifted this pass.
         original_x: list[int] = [hc.x for hc in char_hot_characters]
@@ -166,31 +159,40 @@ class MemoryMap:
         last_inserted_x_y: tuple[int, int] = (-1, -1)
         row_last_x_end: dict[int, int] = {}
         row_prev_space: dict[int, bool] = {}
-        for i in range(len(char_hot_characters)):
-            _current_character: HotCharacter = char_hot_characters[i]
+        line_shift: defaultdict[int, int] = defaultdict(int)
+        memory_map_insert = self.memory_map.insert
+        trie_insert = self.text_trie.insert
+        span_insert = self.span_map.insert
+        last_index = len(char_hot_characters) - 1
+        for i, _current_character in enumerate(char_hot_characters):
             # Drop the synthesised space only when the real neighbours overlap in the source.
             if (
                 include_annotation_spaces
-                and 0 < i < len(char_hot_characters) - 1
+                and 0 < i < last_index
                 and _current_character.is_anno
                 and original_x[i + 1] < original_x_end[i - 1]
             ):
                 continue
 
+            y = _current_character.y
             # Prevent characters from overlapping
             if (last_inserted_x_y[0] > 0 and last_inserted_x_y[1] > 0) and (
-                _current_character.x == last_inserted_x_y[0] and _current_character.y == last_inserted_x_y[1]
+                _current_character.x == last_inserted_x_y[0] and y == last_inserted_x_y[1]
             ):
-                line_shift[_current_character.y] += 1
-            last_inserted_x_y = (_current_character.x, _current_character.y)
-            _current_character = self.__get_right_shifted_hot_character(
-                _current_character, line_shift[_current_character.y]
-            )
+                line_shift[y] += 1
+            last_inserted_x_y = (_current_character.x, y)
+            shift = line_shift[y]
+            _current_character.x += shift
+            _current_character.x_end += shift
 
             self.__insert_gap_space(_current_character, row_last_x_end, row_prev_space)
-            self.__insert_hotcharacter_to_memory(_current_character)
-        self.width = math.ceil(page.width)
-        self.height = math.ceil(page.height)
+            if _current_character.value == "":
+                continue
+
+            memory_map_insert(_current_character.value, y, _current_character.x)
+            trie_insert(_current_character.value, _current_character)
+            if _current_character.span_id:
+                span_insert(_current_character.span_id, _current_character)
 
     def __span_after_space_run(
         self, char_c: str, span_id: UUID, space_run: int, threshold: int | None
@@ -229,18 +231,6 @@ class MemoryMap:
             self.text_trie.insert(word=" ", hot_character=space_char)
         row_last_x_end[y] = max(last_x_end, hot_character.x_end)
         row_prev_space[y] = False
-
-    def __insert_hotcharacter_to_memory(
-        self,
-        hot_character: HotCharacter,
-    ) -> None:
-        """Insert hotcharacter into memory map & trie"""
-        if hot_character.value == "":
-            return None
-        self.memory_map.insert(value=hot_character.value, row_idx=hot_character.y, column_idx=hot_character.x)
-        self.text_trie.insert(word=hot_character.value, hot_character=hot_character)
-        if hot_character.span_id:
-            self.span_map[hot_character.span_id] = hot_character
 
     def __get_hot_character_of(
         self,
